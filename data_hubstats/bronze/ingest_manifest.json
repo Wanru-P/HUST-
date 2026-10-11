@@ -1,0 +1,13 @@
+{
+  "dataset": "cfahlgren1/hub-stats",
+  "file": "models.parquet",
+  "endpoint": "hf-mirror.com",
+  "url": "https://hf-mirror.com/datasets/cfahlgren1/hub-stats/resolve/2c1e195090bbcbe1f940cfdcb4ac25b76e48da70/models.parquet",
+  "commit": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "size_bytes": 1596738497,
+  "sha256": "d86485a02a7aace1b8c4eda4a849dd153a702d5351ab5a57f3c2320176e251ef",
+  "sha256_expected": "d86485a02a7aace1b8c4eda4a849dd153a702d5351ab5a57f3c2320176e251ef",
+  "sha256_match": true,
+  "verified_at": "2026-10-11T03:12:42Z",
+  "local_path": "C:\\Users\\Admin\\Desktop\\大数据\\hf_eco_analysis_交付\\hf_eco_analysis\\data_hubstats\\bronze\\models.parquet"
+}

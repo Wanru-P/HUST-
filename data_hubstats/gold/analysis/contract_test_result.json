@@ -1,0 +1,287 @@
+{
+  "generated_at": "2026-10-11T10:38:30.835545+00:00",
+  "n_tests": 56,
+  "n_failed": 0,
+  "results": [
+    {
+      "test": "Silver 主表行数 == Gold 宽表行数",
+      "ok": true,
+      "detail": "silver=3138954 enriched=3138954"
+    },
+    {
+      "test": "download_distribution 行数 == 主表行数",
+      "ok": true,
+      "detail": "3138954 vs 3138954"
+    },
+    {
+      "test": "model_lifecycle 行数 == 主表行数",
+      "ok": true,
+      "detail": "3138954 vs 3138954"
+    },
+    {
+      "test": "model_adoption_features 行数 == 主表行数",
+      "ok": true,
+      "detail": "3138954 vs 3138954"
+    },
+    {
+      "test": "model_id 无重复",
+      "ok": true,
+      "detail": "重复组数=0"
+    },
+    {
+      "test": "gated 全为 NULL（新数据源无该字段，未被推断）",
+      "ok": true,
+      "detail": "非空=0"
+    },
+    {
+      "test": "task_monthly_stats.new_models 求和 == 主表行数（守恒）",
+      "ok": true,
+      "detail": "3138954 vs 3138954"
+    },
+    {
+      "test": "library_monthly_stats.new_models 求和 == 主表行数（守恒）",
+      "ok": true,
+      "detail": "3138954 vs 3138954"
+    },
+    {
+      "test": "tag_monthly_stats 求和 ≥ 主表行数（一对多，允许大于）",
+      "ok": true,
+      "detail": "20625635 vs 3138954"
+    },
+    {
+      "test": "created_at 全部符合 ISO-8601 UTC（带 Z）",
+      "ok": true,
+      "detail": "不合规=0"
+    },
+    {
+      "test": "last_modified 全部符合 ISO-8601 UTC（带 Z）",
+      "ok": true,
+      "detail": "不合规=0"
+    },
+    {
+      "test": "created_at 可被 to_timestamp 解析",
+      "ok": true,
+      "detail": "失败=0"
+    },
+    {
+      "test": "created_month == date_format(created_ts,'yyyy-MM')",
+      "ok": true,
+      "detail": "不一致=0"
+    },
+    {
+      "test": "month_num ∈ [1,12]",
+      "ok": true,
+      "detail": "越界=0"
+    },
+    {
+      "test": "spark.sql.session.timeZone == UTC",
+      "ok": true,
+      "detail": "当前=UTC"
+    },
+    {
+      "test": "抽样验证：边为 (src=底座, dst=衍生模型)，方向未反",
+      "ok": true,
+      "detail": "抽样 5 个模型"
+    },
+    {
+      "test": "所有 dst 均存在于 Silver 主表",
+      "ok": true,
+      "detail": "孤儿 dst 边=0"
+    },
+    {
+      "test": "外部父模型边被保留（未静默丢弃）",
+      "ok": true,
+      "detail": "外部边=14838"
+    },
+    {
+      "test": "外部边占比 < 10%（合理范围）",
+      "ok": true,
+      "detail": "0.016131"
+    },
+    {
+      "test": "family_size == children_count + 1（全部行）",
+      "ok": true,
+      "detail": "不一致=0"
+    },
+    {
+      "test": "children_count == 以该模型为 src 的边数",
+      "ok": true,
+      "detail": "不一致=0"
+    },
+    {
+      "test": "download_distribution.rank 是 1..n 的排列",
+      "ok": true,
+      "detail": "min=1 max=3138954 distinct=3138954 rows=3138954"
+    },
+    {
+      "test": "Gini(downloads) 由主表重算 == concentration_stats.json",
+      "ok": true,
+      "detail": "重算=0.995355 文件=0.995355"
+    },
+    {
+      "test": "top_1pct_share(downloads) 一致",
+      "ok": true,
+      "detail": "0.971272 vs 0.971272"
+    },
+    {
+      "test": "top_5pct_share(downloads) 一致",
+      "ok": true,
+      "detail": "0.990904 vs 0.990904"
+    },
+    {
+      "test": "top_10pct_share(downloads) 一致",
+      "ok": true,
+      "detail": "0.994817 vs 0.994817"
+    },
+    {
+      "test": "zero_value_models(downloads) 一致",
+      "ok": true,
+      "detail": "1366793 vs 1366793"
+    },
+    {
+      "test": "total_downloads(downloads) 一致",
+      "ok": true,
+      "detail": "2788919780 vs 2788919780"
+    },
+    {
+      "test": "Gini(downloadsAllTime) 由主表重算 == concentration_stats.json",
+      "ok": true,
+      "detail": "重算=0.998117 文件=0.998117"
+    },
+    {
+      "test": "top_1pct_share(downloadsAllTime) 一致",
+      "ok": true,
+      "detail": "0.987017 vs 0.987017"
+    },
+    {
+      "test": "top_5pct_share(downloadsAllTime) 一致",
+      "ok": true,
+      "detail": "0.996536 vs 0.996536"
+    },
+    {
+      "test": "top_10pct_share(downloadsAllTime) 一致",
+      "ok": true,
+      "detail": "0.998409 vs 0.998409"
+    },
+    {
+      "test": "zero_value_models(downloadsAllTime) 一致",
+      "ok": true,
+      "detail": "1317858 vs 1317858"
+    },
+    {
+      "test": "total_downloads(downloadsAllTime) 一致",
+      "ok": true,
+      "detail": "75949397771 vs 75949397771"
+    },
+    {
+      "test": "node_metrics 行数 == 主表行数（覆盖全部模型）",
+      "ok": true,
+      "detail": "3138954 vs 3138954"
+    },
+    {
+      "test": "每条边的 dst 都在 node_metrics 中",
+      "ok": true,
+      "detail": "缺失=0"
+    },
+    {
+      "test": "node_metrics.direct_family_size == children_count + 1",
+      "ok": true,
+      "detail": "不一致=0"
+    },
+    {
+      "test": "graph_stats.json 节点数为并集去重（非朴素相加）",
+      "ok": true,
+      "detail": "并集=931066 相加=975365 差=44299"
+    },
+    {
+      "test": "src 缺失量 == graph_stats 外部父模型边数（缺失只来自外部父模型）",
+      "ok": true,
+      "detail": "缺失=14838 外部父模型边=14838"
+    },
+    {
+      "test": "src 缺失去重数 == graph_stats 外部父模型数",
+      "ok": true,
+      "detail": "缺失去重=3620 外部父模型=3620"
+    },
+    {
+      "test": "graphframes_result.n_vertices_in_graph == graph_stats.n_nodes_involved",
+      "ok": true,
+      "detail": "931066 vs 931066"
+    },
+    {
+      "test": "graphframes_result.n_edges == graph_stats.n_edges",
+      "ok": true,
+      "detail": "919839 vs 919839"
+    },
+    {
+      "test": "RQ4 train+test == 建模样本量",
+      "ok": true,
+      "detail": "501049+125220 vs 626269"
+    },
+    {
+      "test": "RQ4 train∩test == 0",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "test": "RQ4 seed 固定为 42",
+      "ok": true,
+      "detail": "42"
+    },
+    {
+      "test": "RQ4 声明无目标派生特征",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "test": "RQ4 含简单基线",
+      "ok": true,
+      "detail": "['Baseline_mean', 'LinearRegression', 'RandomForest', 'GBT']"
+    },
+    {
+      "test": "RQ4 三种模型指标齐备",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "test": "RQ5 comparable 的任务组均满足最小样本阈值",
+      "ok": true,
+      "detail": "违规=[]"
+    },
+    {
+      "test": "RQ5 unknown 单独成行且不参与比较",
+      "ok": true,
+      "detail": "task=unknown is_unknown=True comparable=False"
+    },
+    {
+      "test": "RQ5 rows 中 unknown 行也为 comparable=False",
+      "ok": true,
+      "detail": "unknown 行数=1 comparable=False"
+    },
+    {
+      "test": "RQ5 n_tasks_comparable == 已标注且 comparable 的任务组数",
+      "ok": true,
+      "detail": "50 vs 50"
+    },
+    {
+      "test": "RQ5 n_tasks_labeled == rows 中非 unknown 行数",
+      "ok": true,
+      "detail": "56 vs 56"
+    },
+    {
+      "test": "RQ5 两种下载口径独立成列",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "test": "crc32 选样：Python(zlib) 与 Spark(pmod(F.crc32)) 选中同一批行",
+      "ok": true,
+      "detail": "样本=200000 py=20041 spark=20041 交集=20041"
+    },
+    {
+      "test": "crc32 选样比例接近 10%",
+      "ok": true,
+      "detail": "rate=0.10021"
+    }
+  ]
+}

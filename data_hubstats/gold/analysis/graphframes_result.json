@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-10-11T06:58:16.093792+00:00",
+  "engine": "graphframes",
+  "graphframes_version": "0.12.3",
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "master": "local[6]",
+  "driver_memory": "4g",
+  "budget_seconds": 2400,
+  "steps": {
+    "degrees": {
+      "seconds": 3.9,
+      "rows": 931066
+    },
+    "connected_components": {
+      "seconds": 352.9,
+      "components_in_graph": 42890,
+      "components_total": 2250778
+    },
+    "pagerank_forward": {
+      "seconds": 375.0
+    },
+    "pagerank_reverse": {
+      "seconds": 348.9
+    },
+    "label_propagation": {
+      "seconds": 215.0,
+      "n_communities": 126431
+    },
+    "merge_node_metrics": {
+      "seconds": 13.6,
+      "rows": 931066
+    }
+  },
+  "status": "completed",
+  "resumed_from": "2026-10-11T06:58:16.093792+00:00",
+  "resumed_steps": [
+    "degrees",
+    "connected_components",
+    "pagerank_forward",
+    "pagerank_reverse",
+    "label_propagation"
+  ],
+  "n_vertices_in_graph": 931066,
+  "n_edges": 919839,
+  "n_models_total": 3138954,
+  "isolated_models_not_in_graph": 2207888,
+  "viz_subgraph": {
+    "component": 1,
+    "component_size": 417584,
+    "n_nodes_shown": 1500,
+    "n_links_shown": 2124,
+    "truncated": true
+  },
+  "total_seconds": 59.1,
+  "resume_note": "下列步骤复用了上一轮**同快照**已落盘的 parquet 结果，未重算：degrees、connected_components、pagerank_forward、pagerank_reverse、label_propagation。其余步骤为本次实际计算。复用只是省去重复迭代，数据与算法完全一致。"
+}

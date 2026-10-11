@@ -1,0 +1,33 @@
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local raw data, Spark outputs, checkpoints, and logs (too large for source control)
+data/
+data_hubstats/bronze/models.parquet
+data_hubstats/silver/
+data_hubstats/gold/models_enriched/
+data_hubstats/gold/model_lifecycle/
+data_hubstats/gold/model_adoption_features/
+data_hubstats/gold/download_distribution/
+data_hubstats/gold/lorenz_points/
+data_hubstats/gold/task_monthly_stats/
+data_hubstats/gold/tag_monthly_stats/
+data_hubstats/gold/library_monthly_stats/
+data_hubstats/gold/model_family_stats/
+data_hubstats/gold/analysis/bench_scale_subsets/
+data_hubstats/gold/analysis/gf_*/
+data_hubstats/sample_run/
+data_hubstats/demo_regress/
+data_hubstats/_smoke/
+*.log
+
+# Legacy outputs and generated local-only files
+_backup_pre_refinement_*/
+figures/
+figures_report/
+figures_supplementary/
+dashboard.html
+report.md

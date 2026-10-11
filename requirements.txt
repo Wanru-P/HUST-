@@ -1,0 +1,33 @@
+# Hugging Face 开源模型生态分析 —— Python 依赖
+#
+# 环境：conda env `hf_eco`（Python 3.11.17），路径 E:/Users/Admin/anaconda3/envs/hf_eco
+# 安装：conda create -n hf_eco python=3.11 && pip install -r requirements.txt
+#
+# 版本以本机实测为准；PySpark 大版本必须与集群/本地一致，否则 Py4J 协议不兼容。
+
+# ---- 核心：Spark 引擎 ----
+pyspark==4.2.0            # 内置 Hadoop 3.5.0 / Scala 2.13 / spark-graphx_2.13-4.2.0
+graphframes-py==0.12.3    # GraphFrames 的 Python 包装
+
+# ---- GraphFrames 的 JVM 构件（不能靠 pip 装，见 README §3.3）----
+# 必须放进 <pyspark>/jars/（由 setup_spark_fs.py 幂等完成），**不要**用 spark.jars：
+#   io.graphframes:graphframes-spark4_2.13:0.12.3
+#   io.graphframes:graphframes-graphx-spark4_2.13:0.12.3
+# 其 compile 依赖 scala-library 2.13.18 与 datasketches-java 6.2.0 已由 PySpark 4.2.0 自带，
+# 因此无需 Ivy 联网解析。
+
+# ---- Windows 文件系统：绕开 winutils.exe（见 README §3.4）----
+#   com.globalmentor:hadoop-bare-naked-local-fs:0.1.0  ->  jars/hadoop-bare-naked-local-fs-0.1.0.jar
+# 同样必须放进 <pyspark>/jars/。
+
+# ---- 分析、出图、可视化 ----
+pandas==3.0.6
+pyarrow==26.0.0           # parquet 读写
+numpy>=2.0
+matplotlib==3.11.2        # 出图（figures_final/）
+networkx==3.6.1           # local 等价路径的图分析与可视化（**仅用于验证/绘图**，不冒充 GraphFrames）
+psutil==7.2.2             # 运行前后内存/磁盘快照，避免资源不足硬上
+
+# ---- 运行前置 ----
+# Java 17（OpenJDK）：本机 E:/Software/jdk-17
+# 不需要 WSL，不需要 winutils.exe，不需要 hadoop.dll

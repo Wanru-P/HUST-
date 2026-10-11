@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>HF 开源模型生态分析 · Dashboard（正式结果）</title><style>
+*{box-sizing:border-box}
+body{font-family:"Microsoft YaHei",system-ui,-apple-system,sans-serif;margin:0;
+background:#f8fafc;color:#111827;line-height:1.6}
+.wrap{max-width:1400px;margin:0 auto;padding:20px 22px 60px}
+header.top{background:#fff;border-bottom:1px solid #e5e7eb;padding:18px 22px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:30px 0 10px;
+padding-bottom:6px;border-bottom:2px solid #eff6ff}
+h3{font-size:14px;margin:20px 0 8px;color:#374151}
+.sub{color:#6b7280;font-size:13px}
+nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.95);
+border-bottom:1px solid #e5e7eb;padding:8px 22px;display:flex;flex-wrap:wrap;
+gap:6px 14px;font-size:12.5px}
+nav a{color:#2563eb;text-decoration:none} nav a:hover{text-decoration:underline}
+.kpigroup{margin:14px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px}
+.kpi b{display:block;font-size:19px;color:#2563eb;line-height:1.25}
+.kpi span{font-size:12px;color:#6b7280}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:16px}
+figure{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px;margin:0}
+figure img{width:100%;height:auto;border-radius:6px;display:block}
+figcaption{font-size:12px;color:#374151;padding-top:8px}
+figcaption .note{display:block;color:#6b7280;font-size:11.5px;margin-top:3px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:#fff;font-size:12.5px;
+margin-bottom:8px;min-width:520px}
+th,td{border:1px solid #e5e7eb;padding:6px 9px;text-align:left;white-space:nowrap}
+th{background:#eff6ff}
+.note{font-size:12.5px;color:#6b7280;line-height:1.75}
+.warn{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;
+padding:10px 14px;font-size:12.5px;color:#9a3412;margin:12px 0}
+code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:12px}
+@media (max-width:760px){
+ body{font-size:13px} h1{font-size:18px} h2{font-size:15px} .wrap{padding:14px}
+ .grid{grid-template-columns:1fr;gap:12px}
+ .kpis{grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}
+ .kpi b{font-size:16px} nav{padding:8px 14px}
+}
+@media print{nav{display:none} .grid{grid-template-columns:1fr 1fr}}
+</style></head><body><header class="top">
+<h1>Hugging Face 开源模型生态分析 · Dashboard（正式结果）</h1>
+<div class="sub">数据快照 <code>cfahlgren1/hub-stats / models.parquet</code>
+@ commit <code>2c1e195090bbcbe1f940cfdcb4ac25b76e48da70</code>；样本 = 快照内全部 3,138,954 个去重模型。
+本页为静态离线页面，<b>打开时不会运行 Spark</b>，所有数字均读取自预先落盘的正式结果文件。</div>
+</header>
+<nav>
+<a href="#overview">概览</a><a href="#rq1">RQ1 演化</a><a href="#rq2">RQ2 集中度</a>
+<a href="#rq3">RQ3 谱系</a><a href="#rq4">RQ4 关联</a><a href="#rq5">RQ5 任务生态</a>
+<a href="#spark">Spark 扩展性</a><a href="#figures">全部图表</a><a href="#limits">口径与限制</a>
+</nav>
+<div class="wrap">
+<h2 id="overview">概览</h2>
+<div class="kpigroup"><h3>数据集与快照</h3><div class="kpis"><div class="kpi"><b>3,138,954</b><span>去重模型总数</span></div><div class="kpi"><b>3,138,959</b><span>原始快照行数</span></div><div class="kpi"><b>2c1e1950</b><span>快照 commit</span></div><div class="kpi"><b>2022-03 → 2026-10</b><span>创建时间范围</span></div></div></div><div class="kpigroup"><h3>下载量集中度（downloads = 近 30 天口径）</h3><div class="kpis"><div class="kpi"><b>0.995355</b><span>Gini</span></div><div class="kpi"><b>97.13%</b><span>Top-1% 下载占比</span></div><div class="kpi"><b>99.48%</b><span>Top-10% 下载占比</span></div><div class="kpi"><b>43.54%</b><span>零下载模型占比</span></div></div></div><div class="kpigroup"><h3>模型谱系结构</h3><div class="kpis"><div class="kpi"><b>919,839</b><span>显式血缘边</span></div><div class="kpi"><b>931,066</b><span>参与血缘的模型</span></div><div class="kpi"><b>43,419</b><span>最大直接衍生数</span></div><div class="kpi"><b>417,584</b><span>最大弱连通分量</span></div></div></div><div class="kpigroup"><h3>任务标签与实验环境</h3><div class="kpis"><div class="kpi"><b>1,081,212</b><span>有效任务分类模型</span></div><div class="kpi"><b>65.55%</b><span>任务标签缺失</span></div><div class="kpi"><b>local[6] / 3g</b><span>Spark Master / Driver</span></div><div class="kpi"><b>142.8 秒</b><span>全量 ETL 端到端墙钟</span></div></div></div>
+<div class="warn"><b>口径提示（结论成立的前提）</b>：<b>downloads</b> 为近 30 天下载计数，
+<b>downloadsAllTime</b> 为历史累计，两者合计相差约 27.2 倍，<b>不可混用、不可相加</b>。
+下载量只反映传播热度，<b>不代表模型质量</b>；PageRank 同理不等于质量。
+<code>pipeline_tag</code> 缺失率 65.55%，
+缺失记为 unknown 单独报告，<b>不被当作一个任务类别</b>，所有按任务的结论只覆盖已标注部分。</div>
+
+<h2 id="rq1">RQ1 · 生态演化</h2>
+<p class="note">研究对象是「快照中仍可见模型的创建时间分布」，<b>不是</b>历史上所有曾发布模型的完整记录。
+峰值月 2024-09（125,030 个）；2026-10 为快照截止月，尚未走完，不与完整月份直接比较。</p>
+<div class="warn">首月 <code>2022-03</code> 存在<b>时间戳异常聚集</b>：约 90.66% 的模型挤在
+<code>2022-03-02</code> 一天，而该日只有 5 个不同时间戳。
+这是<b>已观测到的现象</b>；<b>根因未确认</b>（平台元数据迁移 / 时间戳记录下限等解释均缺可核验证据），
+故不作因果推断，也不当作自然发布高峰。</div>
+
+<h2 id="rq2">RQ2 · 注意力集中与长尾</h2>
+<div class="tablewrap"><table><tr><th>口径</th><th>Gini</th><th>Top-1%</th><th>Top-5%</th><th>Top-10%</th><th>零值占比</th></tr><tr><td>downloads</td><td>0.995355</td><td>97.13%</td><td>99.09%</td><td>99.48%</td><td>43.54%</td></tr><tr><td>downloadsAllTime</td><td>0.998117</td><td>98.70%</td><td>99.65%</td><td>99.84%</td><td>41.98%</td></tr></table></div>
+<p class="note">Gini 由频数加权秩公式精确计算（非采样近似）；Top-p 份额按值降序取前
+<code>max(1, int(n·p))</code> 个，并列值整体同权。只描述长尾形态，
+<b>未做严格幂律拟合与模型比较，因此不宣称幂律分布</b>。</p>
+
+<h2 id="rq3">RQ3 · 模型谱系网络</h2>
+<div class="tablewrap"><table><tr><th>指标</th><th>数值</th></tr><tr><td>血缘边数</td><td>919,839</td></tr><tr><td>不同底座（父）模型</td><td>88,333</td></tr><tr><td>不同衍生（子）模型</td><td>887,032</td></tr><tr><td>参与血缘的模型（并集去重）</td><td>931,066</td></tr><tr><td>既是底座又是衍生的模型</td><td>44,299</td></tr><tr><td>外部父模型边（快照外引用，已保留）</td><td>14,838（1.61%）</td></tr><tr><td>最大直接衍生数（children_count）</td><td>43,419</td></tr><tr><td>最大 ≤3 跳可达后代数</td><td>43,682</td></tr><tr><td>最大弱连通分量规模（GraphFrames，全量图）</td><td>417,584</td></tr><tr><td>GraphFrames 状态</td><td>completed</td></tr></table></div>
+<p class="note">边语义固定为 <code>src = 底座</code> → <code>dst = 衍生模型</code>，方向不可反转。
+四类规模指标含义不同、禁止互相替代：<code>children_count</code>（出度）/ 
+<code>direct_family_size</code>（= children_count + 1，1 跳直系）/
+<code>descendant_count_khop</code>（≤3 跳有界可达，是下界）/
+<code>component_size</code>（弱连通分量，跨多跳）。<b>PageRank 不等于模型质量。</b>
+Figure 7 右侧为<b>代表性局部子图</b>，不可解释为完整弱连通分量。</p>
+
+<h2 id="rq4">RQ4 · 属性与下载热度的统计关联</h2>
+<div class="tablewrap"><table><tr><th>模型</th><th>RMSE</th><th>MAE</th><th>R²</th></tr><tr><td>Baseline_mean</td><td>1.7467</td><td>1.4033</td><td>-0.0000</td></tr><tr><td>LinearRegression</td><td>1.3328</td><td>0.9501</td><td>0.4177</td></tr><tr><td>RandomForest</td><td>1.0139</td><td>0.5876</td><td>0.6631</td></tr><tr><td>GBT</td><td>1.0606</td><td>0.6239</td><td>0.6313</td></tr></table></div>
+<p class="note">目标 y = log(1+downloads)；<b>先划分后拟合</b>，预处理只在训练集上 fit，
+指标只在<b>独立测试集</b>上计算。likes 与 downloads 同取自一个快照，存在同期相关，
+<b>不能</b>解释为前瞻性预测能力；特征重要性也不代表因果或模型质量。</p>
+
+<h2 id="rq5">RQ5 · 任务生态对比（仅已标注任务，样本量 ≥ 200）</h2>
+<div class="tablewrap"><table><tr><th>任务</th><th>模型数</th><th>总下载(downloads)</th><th>中位下载</th><th>Gini(downloads)</th><th>Top-10% 份额</th><th>底座关系覆盖率</th></tr><tr><td>text-generation</td><td>422,224</td><td>500,535,196</td><td>16</td><td>0.9844</td><td>98.43%</td><td>46.38%</td></tr><tr><td>text-classification</td><td>123,924</td><td>67,458,349</td><td>7</td><td>0.9889</td><td>98.83%</td><td>39.19%</td></tr><tr><td>text-to-image</td><td>111,444</td><td>35,835,009</td><td>6</td><td>0.9827</td><td>97.89%</td><td>71.34%</td></tr><tr><td>reinforcement-learning</td><td>78,390</td><td>1,074,550</td><td>0</td><td>0.9220</td><td>84.67%</td><td>1.73%</td></tr><tr><td>image-text-to-text</td><td>41,815</td><td>299,808,409</td><td>17</td><td>0.9904</td><td>99.35%</td><td>62.57%</td></tr><tr><td>automatic-speech-recognition</td><td>37,438</td><td>157,562,969</td><td>8</td><td>0.9963</td><td>99.81%</td><td>49.99%</td></tr><tr><td>robotics</td><td>35,285</td><td>1,468,073</td><td>9</td><td>0.8537</td><td>82.58%</td><td>30.48%</td></tr><tr><td>token-classification</td><td>30,975</td><td>54,557,292</td><td>8</td><td>0.9851</td><td>99.56%</td><td>44.33%</td></tr><tr><td>image-classification</td><td>29,681</td><td>68,493,859</td><td>8</td><td>0.9948</td><td>99.65%</td><td>47.42%</td></tr><tr><td>feature-extraction</td><td>21,485</td><td>163,161,230</td><td>10</td><td>0.9967</td><td>99.80%</td><td>18.76%</td></tr></table></div>
+<p class="note">下载量口径为 <b>downloads（近 30 天）</b>；unknown 与样本不足的任务组已剔除，
+不参与比较。表中「底座关系覆盖率」指该任务下显式声明血缘的模型占比。</p>
+
+<h2 id="spark">Spark 扩展性实验（真实数据）</h2>
+<div class="tablewrap"><table><tr><th>规模</th><th>行数</th><th>算子</th><th>分区数</th><th>中位耗时(s)</th><th>CPU/run 时间(ms)</th><th>shuffle 读(MiB)</th></tr><tr><td>real_10pct</td><td>314,455</td><td>etl_pipeline</td><td>64</td><td>2.592</td><td>10989</td><td>7.3</td></tr><tr><td>real_10pct</td><td>314,455</td><td>explode_tags</td><td>64</td><td>0.216</td><td>522</td><td>0.0</td></tr><tr><td>real_10pct</td><td>314,455</td><td>filter</td><td>64</td><td>0.220</td><td>493</td><td>0.0</td></tr><tr><td>real_10pct</td><td>314,455</td><td>graph_edges</td><td>64</td><td>0.295</td><td>577</td><td>0.0</td></tr><tr><td>real_10pct</td><td>314,455</td><td>groupby</td><td>64</td><td>1.249</td><td>4869</td><td>0.0</td></tr><tr><td>real_10pct</td><td>314,455</td><td>join</td><td>64</td><td>0.187</td><td>475</td><td>0.0</td></tr><tr><td>real_10pct</td><td>314,455</td><td>parquet_scan_full</td><td>64</td><td>0.797</td><td>2719</td><td>0.0</td></tr><tr><td>real_10pct</td><td>314,455</td><td>parquet_scan_projected</td><td>64</td><td>0.392</td><td>793</td><td>0.0</td></tr><tr><td>real_10pct</td><td>314,455</td><td>parquet_scan_scaled</td><td>64</td><td>1.056</td><td>3534</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>etl_pipeline</td><td>64</td><td>3.986</td><td>15492</td><td>13.6</td></tr><tr><td>real_25pct</td><td>785,597</td><td>explode_tags</td><td>64</td><td>0.241</td><td>674</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>filter</td><td>64</td><td>0.237</td><td>607</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>graph_edges</td><td>64</td><td>0.304</td><td>596</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>groupby</td><td>64</td><td>1.814</td><td>7251</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>join</td><td>64</td><td>0.259</td><td>606</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>parquet_scan_full</td><td>64</td><td>1.767</td><td>6414</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>parquet_scan_projected</td><td>64</td><td>0.383</td><td>1007</td><td>0.0</td></tr><tr><td>real_25pct</td><td>785,597</td><td>parquet_scan_scaled</td><td>64</td><td>1.816</td><td>6755</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>etl_pipeline</td><td>64</td><td>3.983</td><td>19536</td><td>21.2</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>explode_tags</td><td>64</td><td>0.398</td><td>1436</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>filter</td><td>64</td><td>0.311</td><td>855</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>graph_edges</td><td>64</td><td>0.369</td><td>1007</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>groupby</td><td>64</td><td>1.697</td><td>7968</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>join</td><td>64</td><td>0.304</td><td>781</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>parquet_scan_full</td><td>64</td><td>3.256</td><td>12822</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>parquet_scan_projected</td><td>64</td><td>0.543</td><td>1546</td><td>0.0</td></tr><tr><td>real_50pct</td><td>1,569,149</td><td>parquet_scan_scaled</td><td>64</td><td>3.010</td><td>12118</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>etl_pipeline</td><td>16</td><td>2.558</td><td>11944</td><td>31.8</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>etl_pipeline</td><td>32</td><td>3.064</td><td>14908</td><td>32.6</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>etl_pipeline</td><td>64</td><td>5.105</td><td>22801</td><td>33.2</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>explode_tags</td><td>16</td><td>0.489</td><td>1809</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>explode_tags</td><td>32</td><td>0.459</td><td>1764</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>explode_tags</td><td>64</td><td>0.457</td><td>1730</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>filter</td><td>64</td><td>0.333</td><td>1053</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>graph_edges</td><td>16</td><td>0.447</td><td>1158</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>graph_edges</td><td>32</td><td>0.416</td><td>1145</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>graph_edges</td><td>64</td><td>0.435</td><td>1161</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>groupby</td><td>16</td><td>0.853</td><td>3426</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>groupby</td><td>32</td><td>1.225</td><td>5047</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>groupby</td><td>64</td><td>1.863</td><td>7872</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>join</td><td>16</td><td>0.327</td><td>921</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>join</td><td>32</td><td>0.316</td><td>965</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>join</td><td>64</td><td>0.365</td><td>985</td><td>0.0</td></tr><tr><td>real_cold_touch</td><td>3,138,959</td><td>parquet_scan_first_touch</td><td>64</td><td>4.693</td><td>22480</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>parquet_scan_full</td><td>64</td><td>4.891</td><td>22458</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>parquet_scan_projected</td><td>64</td><td>0.567</td><td>2115</td><td>0.0</td></tr><tr><td>real_100pct</td><td>3,138,959</td><td>parquet_scan_scaled</td><td>64</td><td>4.691</td><td>20638</td><td>0.0</td></tr></table></div>
+<p class="note">全部实验在 <code>local[N]</code> <b>单机多核</b>上完成，
+<b>不构成多节点横向扩展结论</b>。Windows 无法清 OS 文件缓存，除首次接触外扫描计时均为<b>缓存热态</b>；
+列裁剪实验使用<b>不可下推</b>的 <code>count(每列)</code>，以避开 Parquet 统计下推造成的测量偏差。
+内存压力行已单独成组，不与正常测量混算中位数。</p>
+
+<h2 id="figures">全部正式图表（Figure 1–12，按研究问题分组）</h2>
+<h3>RQ1 · 生态演化</h3><div class="grid"><figure><img src="figures_final/fig01_monthly_evolution.png" alt="Figure 1：月度新增模型数（快照可见模型的创建时间分布）" loading="lazy"><figcaption><b>Figure 1</b> · 月度新增模型数（快照可见模型的创建时间分布）<span class="note">峰值月 2024-09（125,030 个）；pipeline_tag 缺失率 65.6% 记为 unknown 单独报告；首月 2022-03 有 90.7% 集中在最早一天（2022-03-02，该日仅 5 个不同时间戳）：这是已观测到的时间戳异常聚集，**根因未确认**，不作真实发布高峰解读，该月不与其它月份直接比较</span></figcaption></figure><figure><img src="figures_final/fig02_task_growth.png" alt="Figure 2：任务构成演化（堆叠面积图）" loading="lazy"><figcaption><b>Figure 2</b> · 任务构成演化（堆叠面积图）<span class="note">unknown（pipeline_tag 缺失）占全部模型 65.6%，缺失未被推断成任何具体任务；按任务的结论只覆盖已标注部分</span></figcaption></figure><figure><img src="figures_final/fig03_task_time_heatmap.png" alt="Figure 3：Task × 年份热力图" loading="lazy"><figcaption><b>Figure 3</b> · Task × 年份热力图<span class="note">2026 为快照截止年，只含 1—10 月，年际比较需注意覆盖不全</span></figcaption></figure></div><h3>RQ2 · 注意力集中与长尾</h3><div class="grid"><figure><img src="figures_final/fig05_lorenz.png" alt="Figure 5：下载量 Lorenz 曲线（双口径）" loading="lazy"><figcaption><b>Figure 5</b> · 下载量 Lorenz 曲线（双口径）<span class="note">曲线由频数聚合后的真实累计点构成，未抽样、未插值；Gini 用频数加权秩公式精确计算</span></figcaption></figure><figure><img src="figures_final/fig06_ccdf_longtail.png" alt="Figure 6：下载量长尾与头部集中度" loading="lazy"><figcaption><b>Figure 6</b> · 下载量长尾与头部集中度<span class="note">Top-p 份额按值降序取前 max(1,int(n·p)) 个模型，并列值整体同权，结果可复现</span></figcaption></figure></div><h3>RQ3 · 模型谱系网络</h3><div class="grid"><figure><img src="figures_final/fig07_family_network.png" alt="Figure 7：模型谱系结构：全量统计 + 代表性家族子图" loading="lazy"><figcaption><b>Figure 7</b> · 模型谱系结构：全量统计 + 代表性家族子图<span class="note">Panel A 为**全量图**统计（919,839 边 / 931,066 节点 / 最大弱连通分量 417,584 节点 / 最大直接衍生 43,419）；Panel B 为代表性局部子图：每个底座按 relation 各取 downloadsAllTime 前 10 个（不足则全取），非完整继承关系，不可解释为完整弱连通分量。节点大小/深浅编码角色而非 children_count。</span></figcaption></figure><figure><img src="figures_final/fig08_family_size.png" alt="Figure 8：家族规模与连通分量规模分布" loading="lazy"><figcaption><b>Figure 8</b> · 家族规模与连通分量规模分布<span class="note">最大 children_count = 43,419；direct_family_size 只是 1 跳直系规模，不等于连通分量规模，也不等于可达后代数</span></figcaption></figure></div><h3>RQ4 · 属性与下载热度的统计关联</h3><div class="grid"><figure><img src="figures_final/fig09_ml_importance.png" alt="Figure 9：特征重要性与模型对比" loading="lazy"><figcaption><b>Figure 9</b> · 特征重要性与模型对比<span class="note">训练 501,049 / 测试 125,220 行，seed=42，train∩test=0；likes 与 downloads 同取自一个快照，存在同期相关，不代表前瞻预测能力</span></figcaption></figure></div><h3>RQ5 · 任务生态对比</h3><div class="grid"><figure><img src="figures_final/fig04_library_task_structure.png" alt="Figure 4：库与任务生态结构对比" loading="lazy"><figcaption><b>Figure 4</b> · 库与任务生态结构对比<span class="note">unknown 任务已剔除；小样本任务组（n<200）不参与比较</span></figcaption></figure></div><h3>Spark 扩展性实验（真实数据）</h3><div class="grid"><figure><img src="figures_final/fig10_scale_runtime.png" alt="Figure 10：执行时间 vs 数据规模" loading="lazy"><figcaption><b>Figure 10</b> · 执行时间 vs 数据规模<span class="note">各档为同一 crc32 哈希阈值的嵌套子集（10%⊂25%⊂50%⊂100%）且**已物化成独立 Parquet 文件**，差异只来自数据量；Windows 无法清 OS page cache，除首次接触外均为缓存热态</span></figcaption></figure><figure><img src="figures_final/fig11_partitions_perf.png" alt="Figure 11：shuffle 分区数 vs 性能" loading="lazy"><figcaption><b>Figure 11</b> · shuffle 分区数 vs 性能<span class="note">仅在 real_100pct 上扫描 16/32/64，其余条件（数据、算子、master、driver 内存）全部固定；本机为 local[N] 单机多核，不得表述为多节点横向扩展</span></figcaption></figure><figure><img src="figures_final/fig12_operator_comparison.png" alt="Figure 12：算子耗时与 shuffle 量对比" loading="lazy"><figcaption><b>Figure 12</b> · 算子耗时与 shuffle 量对比<span class="note">shuffle 量为 Spark UI REST 的 stage 级 shuffleRead/WriteBytes 之和；确实取不到时记为**空值**并在汇总中排除（本图 0 个算子不可用），绝不写 0 —— 写 0 等于谎称该算子没有发生 shuffle</span></figcaption></figure></div>
+<p class="note">每张图同时提供 PNG（300 dpi）/ PDF / SVG，矢量版适合 LaTeX 插入。
+图目录（编号 / 标题 / 数据源 / 口径）见 <code>data_hubstats/gold/analysis/figure_index.json</code>。
+旧版 Figure 7（最大弱连通分量 Top-1500 力导向网络）作为<b>补充材料</b>保留在
+<code>figures_supplementary/</code>：节点过密、无分类着色，缩小后不可读，故不作为正式图。</p>
+
+<h2 id="limits">口径与限制（易混淆项）</h2>
+<div class="tablewrap"><table><tr><th>易混淆的两侧</th><th>正确表述</th></tr><tr><td>下载热度 / 模型质量</td><td>下载量只反映传播热度，<b>不等于质量</b></td></tr><tr><td>PageRank / 模型质量</td><td>只反映图结构中的被引用强度，<b>不等于质量</b></td></tr><tr><td>同期统计关联 / 前瞻性预测</td><td>RQ4 是同一快照内的同期关联，<b>不是</b>预测</td></tr><tr><td>快照创建时间分布 / 历史完整发布记录</td><td>只含当前仍可见模型，<b>不是</b>全部历史</td></tr><tr><td>任务标签缺失 / 已标注任务</td><td>unknown <b>不是</b>一个任务类别，不计入按任务结论</td></tr><tr><td>children_count / direct_family_size</td><td>后者 = 前者 + 1（含自身），均为 1 跳直系</td></tr><tr><td>component_size / 家族规模</td><td>弱连通分量跨多跳，<b>不等于</b> 1 跳家族规模</td></tr><tr><td>descendant_count_khop / 全量后代</td><td>只统计 ≤3 跳，<b>是下界</b></td></tr><tr><td>maintenance_span_days / 更新频率</td><td>lastModified − createdAt 是<b>维护跨度</b>，不是更新频率</td></tr><tr><td>本地单机 / 多节点集群</td><td>local[N] 单机多核，<b>不构成</b>横向扩展结论</td></tr></table></div>
+</div></body></html>

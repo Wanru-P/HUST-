@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-10-11T07:46:26.696718+00:00",
+  "engine": "spark",
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "n_models": 3138954,
+  "method": {
+    "gini": "频数加权秩公式 G=2S/(n·total)-1，精确值，非采样近似",
+    "topk": "按值降序取前 max(1,int(n·p)) 个模型；并列值整体同权，结果可复现",
+    "lorenz": "频数聚合后的真实累计点，未抽样、未插值"
+  },
+  "downloads": {
+    "n_models": 3138954,
+    "total_downloads": 2788919780,
+    "distinct_values": 14894,
+    "zero_value_models": 1366793,
+    "zero_value_share": 0.435429,
+    "gini": 0.995355,
+    "top_1pct_share": 0.971272,
+    "top_5pct_share": 0.990904,
+    "top_10pct_share": 0.994817
+  },
+  "downloadsAllTime": {
+    "n_models": 3138954,
+    "total_downloads": 75949397771,
+    "distinct_values": 47869,
+    "zero_value_models": 1317858,
+    "zero_value_share": 0.41984,
+    "gini": 0.998117,
+    "top_1pct_share": 0.987017,
+    "top_5pct_share": 0.996536,
+    "top_10pct_share": 0.998409
+  },
+  "metric_note": "downloads 为近 30 天窗口口径，downloadsAllTime 为历史累计口径，两者相差约 27 倍，任何集中度结论都必须声明所用口径，不可混用。",
+  "powerlaw_note": "本分析只描述长尾形态（Lorenz 偏离、CCDF 双对数近似直线），**未**做严格幂律拟合与模型比较，因此不宣称已证明幂律分布。"
+}

@@ -1,0 +1,76 @@
+{
+  "max_abs_diff": 5.551115123125783e-16,
+  "equivalent": true,
+  "cases": [
+    {
+      "case": "classic_[0,10]",
+      "n": 2,
+      "gini_rank": 0.5,
+      "gini_cumsum": 0.5,
+      "abs_diff": 0.0
+    },
+    {
+      "case": "zeros_[0,0,1]",
+      "n": 3,
+      "gini_rank": 0.666666666667,
+      "gini_cumsum": 0.666666666667,
+      "abs_diff": 1.1102230246251565e-16
+    },
+    {
+      "case": "simple_[1,2,3]",
+      "n": 3,
+      "gini_rank": 0.222222222222,
+      "gini_cumsum": 0.222222222222,
+      "abs_diff": 0.0
+    },
+    {
+      "case": "mixed_[0,0,0,5,5]",
+      "n": 5,
+      "gini_rank": 0.6,
+      "gini_cumsum": 0.6,
+      "abs_diff": 1.1102230246251565e-16
+    },
+    {
+      "case": "all_equal_[1]*10",
+      "n": 10,
+      "gini_rank": 0.0,
+      "gini_cumsum": 0.0,
+      "abs_diff": 0.0
+    },
+    {
+      "case": "all_zero_[0]*10",
+      "n": 10,
+      "gini_rank": 0.0,
+      "gini_cumsum": 0.0,
+      "abs_diff": 0.0
+    },
+    {
+      "case": "heavy_tail_[0]*90+[1]+[1000]",
+      "n": 92,
+      "gini_rank": 0.98910871737,
+      "gini_cumsum": 0.98910871737,
+      "abs_diff": 0.0
+    },
+    {
+      "case": "lorenz_extreme_[0]*99+[100]",
+      "n": 100,
+      "gini_rank": 0.99,
+      "gini_cumsum": 0.99,
+      "abs_diff": 0.0
+    },
+    {
+      "case": "random_uniform_100",
+      "n": 100,
+      "gini_rank": 0.322120317995,
+      "gini_cumsum": 0.322120317995,
+      "abs_diff": 4.440892098500626e-16
+    },
+    {
+      "case": "random_longtail_200",
+      "n": 200,
+      "gini_rank": 0.666048585734,
+      "gini_cumsum": 0.666048585734,
+      "abs_diff": 5.551115123125783e-16
+    }
+  ]
+}

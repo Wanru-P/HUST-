@@ -1,0 +1,125 @@
+{
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "footer": "数据快照 cfahlgren1/hub-stats models.parquet @ 2c1e1950（截至 2026-10-10）；样本：快照内全部 3,138,954 个去重模型（Bronze 3,138,959 行去重后）",
+  "figures": [
+    {
+      "figure": "Figure 1",
+      "file": "fig01_monthly_evolution.png",
+      "title": "月度新增模型数（快照可见模型的创建时间分布）",
+      "data_sources": [
+        "gold/analysis/monthly_new_models.csv",
+        "gold/analysis/summary_rq1.json"
+      ],
+      "note": "峰值月 2024-09（125,030 个）；pipeline_tag 缺失率 65.6% 记为 unknown 单独报告；首月 2022-03 有 90.7% 集中在最早一天（2022-03-02，该日仅 5 个不同时间戳）：这是已观测到的时间戳异常聚集，**根因未确认**，不作真实发布高峰解读，该月不与其它月份直接比较"
+    },
+    {
+      "figure": "Figure 2",
+      "file": "fig02_task_growth.png",
+      "title": "任务构成演化（堆叠面积图）",
+      "data_sources": [
+        "gold/analysis/pipeline_trend.csv",
+        "gold/analysis/summary_rq1.json"
+      ],
+      "note": "unknown（pipeline_tag 缺失）占全部模型 65.6%，缺失未被推断成任何具体任务；按任务的结论只覆盖已标注部分"
+    },
+    {
+      "figure": "Figure 3",
+      "file": "fig03_task_time_heatmap.png",
+      "title": "Task × 年份热力图",
+      "data_sources": [
+        "gold/analysis/pipeline_trend.csv"
+      ],
+      "note": "2026 为快照截止年，只含 1—10 月，年际比较需注意覆盖不全"
+    },
+    {
+      "figure": "Figure 4",
+      "file": "fig04_library_task_structure.png",
+      "title": "库与任务生态结构对比",
+      "data_sources": [
+        "gold/analysis/library_trend.csv",
+        "gold/analysis/rq5_task_ecosystem.csv"
+      ],
+      "note": "unknown 任务已剔除；小样本任务组（n<200）不参与比较"
+    },
+    {
+      "figure": "Figure 5",
+      "file": "fig05_lorenz.png",
+      "title": "下载量 Lorenz 曲线（双口径）",
+      "data_sources": [
+        "gold/analysis/lorenz_curve.csv",
+        "gold/concentration_stats.json"
+      ],
+      "note": "曲线由频数聚合后的真实累计点构成，未抽样、未插值；Gini 用频数加权秩公式精确计算"
+    },
+    {
+      "figure": "Figure 6",
+      "file": "fig06_ccdf_longtail.png",
+      "title": "下载量长尾与头部集中度",
+      "data_sources": [
+        "gold/analysis/ccdf.csv",
+        "gold/concentration_stats.json"
+      ],
+      "note": "Top-p 份额按值降序取前 max(1,int(n·p)) 个模型，并列值整体同权，结果可复现"
+    },
+    {
+      "figure": "Figure 7",
+      "file": "fig07_family_network.png",
+      "title": "模型谱系结构：全量统计 + 代表性家族子图",
+      "data_sources": [
+        "gold/analysis/results_manifest.json",
+        "silver/model_base_edges",
+        "gold/analysis/node_metrics",
+        "gold/analysis/graphframes_result.json"
+      ],
+      "note": "Panel A 为**全量图**统计（919,839 边 / 931,066 节点 / 最大弱连通分量 417,584 节点 / 最大直接衍生 43,419）；Panel B 为代表性局部子图：每个底座按 relation 各取 downloadsAllTime 前 10 个（不足则全取），非完整继承关系，不可解释为完整弱连通分量。节点大小/深浅编码角色而非 children_count。"
+    },
+    {
+      "figure": "Figure 8",
+      "file": "fig08_family_size.png",
+      "title": "家族规模与连通分量规模分布",
+      "data_sources": [
+        "gold/model_family_stats",
+        "gold/analysis/component_size_dist.csv",
+        "gold/analysis/graph_stats.json"
+      ],
+      "note": "最大 children_count = 43,419；direct_family_size 只是 1 跳直系规模，不等于连通分量规模，也不等于可达后代数"
+    },
+    {
+      "figure": "Figure 9",
+      "file": "fig09_ml_importance.png",
+      "title": "特征重要性与模型对比",
+      "data_sources": [
+        "gold/analysis/ml_feature_importance_randomforest.csv",
+        "gold/analysis/ml_summary.json"
+      ],
+      "note": "训练 501,049 / 测试 125,220 行，seed=42，train∩test=0；likes 与 downloads 同取自一个快照，存在同期相关，不代表前瞻预测能力"
+    },
+    {
+      "figure": "Figure 10",
+      "file": "fig10_scale_runtime.png",
+      "title": "执行时间 vs 数据规模",
+      "data_sources": [
+        "gold/analysis/benchmark_all_summary.csv"
+      ],
+      "note": "各档为同一 crc32 哈希阈值的嵌套子集（10%⊂25%⊂50%⊂100%）且**已物化成独立 Parquet 文件**，差异只来自数据量；Windows 无法清 OS page cache，除首次接触外均为缓存热态"
+    },
+    {
+      "figure": "Figure 11",
+      "file": "fig11_partitions_perf.png",
+      "title": "shuffle 分区数 vs 性能",
+      "data_sources": [
+        "gold/analysis/benchmark_all_summary.csv"
+      ],
+      "note": "仅在 real_100pct 上扫描 16/32/64，其余条件（数据、算子、master、driver 内存）全部固定；本机为 local[N] 单机多核，不得表述为多节点横向扩展"
+    },
+    {
+      "figure": "Figure 12",
+      "file": "fig12_operator_comparison.png",
+      "title": "算子耗时与 shuffle 量对比",
+      "data_sources": [
+        "gold/analysis/benchmark_all_summary.csv"
+      ],
+      "note": "shuffle 量为 Spark UI REST 的 stage 级 shuffleRead/WriteBytes 之和；确实取不到时记为**空值**并在汇总中排除（本图 0 个算子不可用），绝不写 0 —— 写 0 等于谎称该算子没有发生 shuffle"
+    }
+  ]
+}

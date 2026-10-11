@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-10-11T07:26:25.495035+00:00",
+  "engine": "spark_native",
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "n_models_total": 3138954,
+  "n_edges": 919839,
+  "n_distinct_base_models": 88333,
+  "n_distinct_derived_models": 887032,
+  "n_nodes_involved": 931066,
+  "n_base_plus_derived": 975365,
+  "n_nodes_both_base_and_derived": 44299,
+  "node_count_note": "n_nodes_involved 是 (src ∪ dst) 去重后的节点数，与 graphframes_result.json 的 n_vertices_in_graph 应完全相等；n_base_plus_derived 是直接相加，会重复计算同时扮演两种角色的模型。",
+  "n_models_without_base": 2251922,
+  "n_edges_with_external_parent": 14838,
+  "n_distinct_external_parents": 3620,
+  "external_edge_share": 0.016131,
+  "max_children_count": 43419,
+  "avg_children_count": 10.4133,
+  "max_descendant_count_khop": 43682,
+  "avg_descendant_count_khop": 17.0759,
+  "reach_hops": 3,
+  "relation_counts": {
+    "finetune": 354320,
+    "adapter": 329707,
+    "quantized": 187784,
+    "merge": 48028
+  },
+  "top10_bases_by_children": [
+    {
+      "base_model": "black-forest-labs/FLUX.1-dev",
+      "children_count": 43419,
+      "downloads": 661619,
+      "downloadsAllTime": 34112217
+    },
+    {
+      "base_model": "Qwen/Qwen1.5-0.5B",
+      "children_count": 32534,
+      "downloads": 38442,
+      "downloadsAllTime": 4105872
+    },
+    {
+      "base_model": "Qwen/Qwen1.5-1.8B",
+      "children_count": 30626,
+      "downloads": 12777,
+      "downloadsAllTime": 3367195
+    },
+    {
+      "base_model": "google/gemma-2b",
+      "children_count": 24036,
+      "downloads": 129505,
+      "downloadsAllTime": 10250038
+    },
+    {
+      "base_model": "distilbert/distilbert-base-uncased",
+      "children_count": 13182,
+      "downloads": 7837070,
+      "downloadsAllTime": 693258213
+    },
+    {
+      "base_model": "stabilityai/stable-diffusion-xl-base-1.0",
+      "children_count": 10998,
+      "downloads": 4301092,
+      "downloadsAllTime": 126659657
+    },
+    {
+      "base_model": "google/gemma-7b",
+      "children_count": 9585,
+      "downloads": 14850,
+      "downloadsAllTime": 3209443
+    },
+    {
+      "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+      "children_count": 8570,
+      "downloads": 3563213,
+      "downloadsAllTime": 63918418
+    },
+    {
+      "base_model": "lerobot/smolvla_base",
+      "children_count": 8100,
+      "downloads": 123058,
+      "downloadsAllTime": 787776
+    },
+    {
+      "base_model": "meta-llama/Llama-3.1-8B-Instruct",
+      "children_count": 7237,
+      "downloads": 6015326,
+      "downloadsAllTime": 188968200
+    }
+  ],
+  "seconds": 146.8
+}

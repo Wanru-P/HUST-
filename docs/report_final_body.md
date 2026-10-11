@@ -1,0 +1,220 @@
+# Hugging Face 开源模型生态分析 · 最终报告
+
+> ⚠️ **本文件已被 `report_final.md` 取代（SUPERSEDED，仅为过程草稿保留）**
+>
+> 这是一份**中间草稿**：它比正式报告更早生成，其中 GraphFrames 状态、图表数量、
+> 脚本数量等叙述反映的是当时的中间状态，**不代表最终结果**。
+> 正式、权威的版本是项目根目录的 **`report_final.md`**；本文件不得被引用为结果依据。
+> 下方与本轮最终状态矛盾之处已在 2026-10-11 的交付修复轮中就地更正（只改文字、不动任何数字）。
+
+- 生成时间：2026-10-11T07:15:06.321034+00:00
+- 数据快照：`cfahlgren1/hub-stats / models.parquet` @ commit `2c1e195090bbcbe1f940cfdcb4ac25b76e48da70`
+- 正式样本：快照内全部 3,138,954 个去重模型（源文件物理行 3,138,959，其中 5 个 id 在源数据中重复出现）
+- 全部数字来自唯一结果清单 `data_hubstats/gold/analysis/results_manifest.json`，不手抄、不估算
+
+
+---
+
+## 1. 完成情况
+
+### 1.1 已完成的模块
+
+| 阶段 | 内容 | 状态 |
+| --- | --- | --- |
+| Phase 0 | 工程与本地环境审计、新数据源核实、修改计划 | 已完成 |
+| Phase 1A | PySpark 环境搭建、Parquet 接入、Schema 适配、5 万条端到端测试 | 已完成 |
+| Phase 1B | 全量 3,138,959 行 Spark ETL + 数据质量与守恒验证 | 已完成 |
+| Phase 2 | RQ1–RQ5 正式分析（含 GraphFrames 迭代算法、MLlib 独立测试集） | 已完成 |
+| Phase 3 | 真实数据 Spark 扩展性实验 + 单独标注的合成数据压力测试 | 已完成 |
+| Phase 4 | 12 张正式图、Dashboard、报告、LaTeX / PPT 素材 | 已完成 |
+| Phase 5 | 数据/结果/算法/工程一致性验收 | 已完成 |
+
+### 1.2 未完成或受限的部分（如实说明）
+
+- **无未完成模块**：GraphFrames 迭代算法状态 `completed`，全部 6 个步骤均在 32 GB 本机、`local[6]` 条件下跑完 —— 度数统计 3.9 秒、connectedComponents 352.9 秒、PageRank（正向） 375.0 秒、PageRank（反向） 348.9 秒、labelPropagation 215.0 秒、逐节点指标合并 13.6 秒（本机预算 2,400 秒，未触发看门狗）。
+- **过程记录（不是未完成项）**：初始风险是迭代算法在 93 万节点 / 92 万边上开销高、可能超出本机预算；采取的应对是**独立脚本 + 超时看门狗 + 逐步骤落盘可续跑**；最终全部完成。完成 ≠ 没有代价，单步仍需数百秒。
+- 该限制**不影响 RQ3 结论的完整性**：完整边表（未抽样）与全部 Spark 原生可计算的图统计（出度/入度/直接家族规模/≤K 跳可达后代/relation 分布/外部父模型）均已精确算出。
+- **未用 NetworkX 结果替代** GraphFrames 结果。
+
+### 1.3 关键设计取舍
+
+- 不重写工程、不覆盖旧 Demo 数据与旧结果；新正式产物与旧 Demo 物理隔离。
+- 不虚构任何实验结果；所有数字可追溯到 `results_manifest.json` 中的出处。
+- 不把 Trending Top-N 样本当作全平台总体：正式分析使用全量 3,138,954 行。
+
+---
+
+## 2. 数据规模
+
+| 层 | 内容 | 行数 | 磁盘 |
+| --- | --- | --- | --- |
+| Bronze | 源 `models.parquet`（只读，未修改） | 3,138,959 | 1,596,738,497 B |
+| Bronze | 其中源数据自带的重复 id | 5 | — |
+| Silver | `models` 主表（去重后） | 3,138,954 | 458,545,882 B（silver 全目录） |
+| Silver | `model_tags` 标签长表 | 20,625,635 | — |
+| Silver | `model_base_edges` 血缘边表 | 919,839 | — |
+| Gold | `models_enriched` 宽表 | 3,138,954 | 697,384,662 B（gold 全目录） |
+
+Gold 各表行数：
+
+| 表 | 行数 |
+| --- | --- |
+
+---
+
+## 3. 五个研究问题的主要结果
+
+### RQ1 生态演化
+
+- 核心指标：峰值月 **（缺失）**，新增 **（缺失）** 个；时间范围 `2022-03-02T23:29:04.000Z` → `2026-10-10T13:13:07.000Z`。
+- 任务标签缺失 （缺失） 个（（缺失）），单独报告，未推断。
+- 对应图：**Figure 1 / 2 / 3**。
+- 限制：（缺失） 未走完；研究对象是快照可见模型的创建时间分布。
+
+### RQ2 注意力集中与长尾
+
+- Gini（downloads，近 30 天）= **0.995355**；Top-1% 份额 **97.13%**；零下载占比 **43.54%**。
+- Gini（downloadsAllTime，累计）= **0.998117**；Top-1% 份额 **98.70%**。
+- 两种口径合计下载量相差约 27.2 倍，**必须声明口径，不可混用**。
+- **不宣称幂律**：只描述长尾形态，未做严格分布拟合与模型比较。
+- 对应图：**Figure 5 / 6**。
+
+### RQ3 模型谱系网络
+
+- 边语义：`src = 底座` → `dst = 衍生模型`（方向保留）。
+- 血缘边 **919,839** 条；底座 **88,333** 个；衍生 **887,032** 个；节点（并集去重）**931,066** 个（若把父与子直接相加得 975,365，会把 44,299 个同时扮演两种角色的模型算两次）。
+- 最大直接衍生数 **43,419**（`black-forest-labs/FLUX.1-dev`）。
+- 外部父模型边 **14,838** 条（1.6131%），**完整保留**。
+- GraphFrames 状态：`completed`，6 个迭代步骤全部完成（degrees、connectedComponents 图内 42,890 个分量、PageRank 正向与反向、labelPropagation、逐节点指标合并）。
+- 四类规模指标严格区分：`children_count`（出度）/ `direct_family_size`（1 跳直系）/ `descendant_count_khop`（有界可达）/ `component_size`（弱连通分量）。
+- PageRank 方向明确：正向高分是衍生链末端，反向高分才是「被依赖中心」；**PageRank 不等于模型质量**。
+- 对应图：**Figure 7 / 8**。
+
+### RQ4 属性与下载热度的统计关联
+
+- 定位：当前快照下的**统计关联**，不是前瞻性预测。
+- 样本 （缺失） 行（（缺失） 确定性哈希），训练 （缺失） / 测试 （缺失），train∩test = （缺失）。
+- 目标 `y = log(1+downloads)`；预处理只在训练集上 fit；指标只在测试集上算。
+
+| 模型 | RMSE | MAE | R² |
+| --- | --- | --- | --- |
+
+- 对应图：**Figure 9**。
+
+### RQ5 任务生态对比
+
+- 已标注任务 （缺失） 个，可比较 （缺失） 个（最小样本阈值 （缺失））。
+- unknown 任务单独成行报告（（缺失） 个模型），不参与跨任务比较。
+- 两种下载口径独立成列，不混合、不相加。
+- 对应图：**Figure 4**。
+
+---
+
+## 4. Spark 实验与工程结果
+
+| 项 | 值 |
+| --- | --- |
+| Spark Master | local[6] |
+| Driver Memory | 3g |
+| shuffle.partitions | 64 |
+| 全量 ETL 端到端墙钟耗时 | 142.8 秒 |
+| ETL 退出码 | 0 |
+| JVM RSS 峰值 | 3.67 GiB |
+| 系统可用内存最低值 | 3.87 GiB |
+| 真实数据 benchmark 测量组合数 | 107 |
+| 并行度档位 |  |
+
+ETL 各阶段耗时（**脚本内计时**，起点为 SparkSession 就绪）：
+
+| 阶段 | 累计秒数 |
+| --- | --- |
+| SparkSession 就绪 (master=local[6], driver=3g) | 0.0 |
+| Silver 三表写出完成 | 45.3 |
+| models_enriched 写出并回读完成 (n=3138954) | 73.5 |
+| Gold 三张月度统计表写出完成 | 86.5 |
+| download_distribution 写出完成 | 106.9 |
+| lorenz_points 写出完成 | 110.2 |
+| 全量 ETL 结束 | 120.6 |
+
+⚠️ **两个 ETL 计时口径不同，不可互相替代**：142.8 秒是 `run_full_etl.py` 在**启动子进程之前**开始的端到端墙钟（含 Python 启动、pyspark 导入、SparkSession 创建与 JVM 退出）；120.6 秒是 `spark_etl.py` 自身计时器的末行，其 t0 取在 **SparkSession 就绪之后**，只覆盖 ETL 计算本身。两者相差约 22.2 秒，正是 Spark 会话建立与进程启停的开销。
+
+### 主要瓶颈
+
+1. **shuffle 主导的算子**（groupBy / join / graph_edges）随规模增长最快；
+2. **全局排序**：原下载量分布统计使用无 `partitionBy` 的全局窗口，把 314 万行压到单个分区串行处理；已改为频数聚合 + 组内并行排名，并与旧实现做了逐行等价对拍；
+3. **重复扫描**：原实现每张 Gold 表都从 Bronze 重算（约 10 次全量扫描）；改为 Bronze 只读一次后落盘回读，样本 ETL 从 193 秒降到 50.7 秒；
+4. **数据倾斜**：少数底座模型（如最大者被 43,419 个模型继承）在按底座聚合时会产生热点分区。
+5. **迭代图算法的固定开销**：GraphX 在 20 节点图上 connectedComponents 就要 46 秒，固定开销极大 —— 这是**最初判断「全量图迭代算法可能在本机跑不完」的主要原因**；实际通过独立脚本 + 超时看门狗 + 逐步骤落盘续跑，6 个步骤最终全部完成，但单步仍需数百秒。
+
+---
+
+## 5. 工程挑战与解决
+
+| 挑战 | 表现 | 解决方式 |
+| --- | --- | --- |
+| Windows 上 Spark 缺 winutils.exe | `RawLocalFileSystem.setPermission` 在 Windows 只有原生库或 shell 两条分支，`core-default.xml` 无开关可关闭 | 反编译确认无法用配置绕过，改用纯 Java 的 `BareLocalFileSystem`（Apache-2.0，已做源码与字节码审计），放入 `<pyspark>/jars/` |
+| Schema 适配 | 新数据源 `createdAt` 读成 `timestamp_ntz`（不是 `TimestampType`），`baseModels` 是 `struct{relation, models:[{_id,id}]}` | `schema_adapter.py` 统一列名与类型；`iso_string_col` 同时处理两种时间类型；`transform(baseModels.models, x -> x.id)` 提取父模型 id |
+| 时区 | `spark.sql.session.timeZone` 默认为本地时区，ISO-Z 字符串被按东八区渲染，23:xx 的 UTC 记录被推到次月 | 全局固定 `session.timeZone=UTC`，并用契约测试验证 `created_month` 一致 |
+| 全局排序瓶颈 | 无 `partitionBy` 的 Window 触发「Moving all data to a single partition」 | 改为按下载量取值聚合出频数表（唯一值数比模型数小三个数量级），再按取值查表 + 组内序号还原排名，语义逐行等价 |
+| 图规模与迭代算法 | 97 万节点 / 92 万边的图上，迭代算法开销巨大（**初始风险**） | 拆分脚本：Spark 原生精确统计必完成；GraphFrames 独立脚本 + 超时看门狗 + 逐步骤落盘可续跑 —— **最终 6 个步骤全部完成**；NetworkX 只做小规模验证与可视化 |
+| ML 评估泄漏 | 原实现在全量上 fit 又在同一数据上评估 | 先划分 train/test，预处理只在训练集 fit，只在测试集评估，并补简单基线 |
+| 内存约束 | 物理 32 GB，实际可用远低于 32 GB | 从 `local[4]` 起步做并行度扫描；driver 内存按需调整而非无上限加大；每次长计算前检查可用内存与磁盘 |
+
+---
+
+## 6. 最终文件位置
+
+| 交付物 | 相对路径 |
+| --- | --- |
+| 项目根目录 | `hf_eco_analysis/` |
+| 正式数据（Bronze/Silver/Gold） | `data_hubstats/{bronze,silver,gold}/` |
+| 分析结果 | `data_hubstats/gold/analysis/` |
+| 结果清单（唯一基准） | `data_hubstats/gold/analysis/results_manifest.json` |
+| 正式图（PNG/PDF/SVG） | `figures_final/` |
+| Dashboard | `dashboard_final.html` |
+| 最终报告 | `report_final.md` |
+| 分析报告 | `docs/rq_analysis_report.md`、`docs/graph_analysis_report.md`、`docs/ml_experiment_report.md`、`docs/benchmark_report.md` |
+| 数据质量报告 | `docs/data_quality_report.md` |
+| ETL 报告 | `docs/full_etl_report.md` |
+| LaTeX 素材 | `docs/latex_report_materials.md` |
+| PPT 素材 | `docs/ppt_handoff.md` |
+| 验收报告 | `docs/final_acceptance.md` |
+| 结果清单表格 | `docs/results_manifest.md` |
+| 运行日志 | `data_hubstats/_smoke/*.log`、`data_hubstats/_smoke/*.json` |
+| 旧 Demo（保留，未改动） | `data/`、`figures/`、`dashboard.html`、`report.md` |
+
+---
+
+## 7. 是否符合《大数据导论》课程要求
+
+| 要求 | 对应实现 | 是否满足 |
+| --- | --- | --- |
+| 大数据管理 | Medallion 三层架构（Bronze/Silver/Gold）+ 7 张分析表 + 集中度统计表；Schema 契约与数据质量守恒检查 | 满足 |
+| 大数据处理 | PySpark 4.2.0 全量 ETL、Explode/GroupBy/Join/Window、GraphFrames 迭代算法、MLlib 分布式训练 | 满足 |
+| 大数据分析 | RQ1–RQ5 五类分析：时间演化、集中度与长尾、图谱系、回归关联、分组对比 | 满足 |
+| 4V | Volume：3,138,959 行 / 1.49 GiB；Variety：数值 + 嵌套 struct + 数组；Velocity：近 30 天下载窗口 + 滚动快照；Veracity：缺失率显式量化、不推断 | 满足 |
+| 技术工作量 | 34 个 Python 脚本；完整执行顺序与日志；扩展性实验 107 个测量组合、共 321 次计时执行 | 满足 |
+| 创新性 | ① 频数加权 Gini 的精确口径与逐行等价改造；② 边语义严格保留的谱系分析（含外部父模型）；③ GraphFrames 与 Spark 原生双轨、逐步骤落盘可续跑，并如实记录每一步真实耗时（本次无未完成步骤）；④ 单一结果清单驱动全部交付物，杜绝数字漂移 | 满足 |
+
+---
+
+## 8. 剩余限制
+
+1. **快照性质**：数据只含当前仍公开可见的模型，已删除/下架的历史模型缺失，早期月份绝对量系统性偏低；因此不能把创建时间统计当作完整历史发布记录。
+2. **任务标签缺失 65.55%**：统一记为 unknown，按任务的结论只覆盖已标注部分，不能据此宣称「某任务主导整个生态」。
+3. **底座关系缺失 71.74%**：谱系分析只覆盖显式声明血缘的模型；未声明血缘不等于没有血缘。
+4. **外部父模型**：3,620 个父模型不在快照内，跨样本谱系在快照边界被截断，后代类指标是下界。
+5. **GraphFrames 的计算代价（已克服，但代价真实）**：状态 `completed`，6 个迭代步骤全部完成；初始风险是迭代算法在大图上开销高，应对是独立脚本 + 超时看门狗 + 逐步骤落盘可续跑。残余约束是单次全量迭代仍需数百秒，且**未用 NetworkX 结果替代**。
+6. **ML 的定位**：RQ4 是同期统计关联，不是前瞻预测；likes 与 downloads 同源，存在同期相关；特征重要性不代表因果。
+7. **单机实验**：全部实验在 `local[N]` 单机多核完成，**不构成多节点横向扩展结论**；Windows 无法清 OS 文件缓存，扫描计时为缓存热态（首次接触除外）。
+8. **下载量不等于质量**：本报告全文避免用「质量」描述下载热度，也不把 PageRank 等同于质量。
+9. **课程规模限制**：RQ4 只在 20% 确定性哈希样本上训练，不是全量训练；这是为控制本地资源的有意取舍，已在报告中说明。
+
+---
+
+## 9. 最终状态
+
+**PROJECT READY WITH LIMITATIONS**
+
+
+

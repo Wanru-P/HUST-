@@ -1,0 +1,21 @@
+run_tag,mode,data_kind,scale_label,op,shuffle_partitions,mem_pressure,note,n_rows,rows_out,repeats,seconds_median,seconds_min,seconds_max,executor_run_ms_median,shuffle_read_bytes_median,shuffle_write_bytes_median,jvm_rss_peak_mib,system_avail_min_gib,spark_master,driver_memory
+cores_local4,real,hubstats_models_parquet,real_50pct,etl_pipeline,16,False,partition_sweep=16,1569149,549814,3,2.911,2.77,3.061,9472,21183125,21183125,3401.2,5.541,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,etl_pipeline,32,False,partition_sweep=32,1569149,549814,3,3.837,3.811,3.99,12512,21702312,21702312,3881.5,5.192,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,etl_pipeline,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,549814,3,5.839,5.75,6.279,19645,22181807,22181807,3376.5,5.345,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,explode_tags,16,False,partition_sweep=16,1569149,10326929,3,0.395,0.388,0.434,988,649,649,3505.3,5.15,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,explode_tags,32,False,partition_sweep=32,1569149,10326929,3,0.392,0.388,0.407,1023,649,649,3477.5,5.54,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,explode_tags,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,10326929,3,0.442,0.423,0.456,1135,649,649,3096.3,6.046,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,filter,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,18712,3,0.326,0.312,0.34,629,649,649,3211.0,5.965,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,graph_edges,16,False,partition_sweep=16,1569149,459662,3,0.349,0.341,0.417,651,649,649,3275.0,5.352,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,graph_edges,32,False,partition_sweep=32,1569149,459662,3,0.352,0.347,0.356,641,649,649,3477.8,5.512,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,graph_edges,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,459662,3,0.405,0.36,0.413,673,649,649,2915.1,6.273,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,groupby,16,False,partition_sweep=16,1569149,57,3,0.884,0.815,0.913,2644,26255,26255,3270.7,5.351,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,groupby,32,False,partition_sweep=32,1569149,57,3,1.32,1.319,1.355,4089,34193,34193,3480.9,5.516,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,groupby,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,57,3,1.947,1.895,1.978,5968,41489,41489,3104.2,5.99,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,join,16,False,partition_sweep=16,1569149,1569149,3,0.271,0.263,0.275,498,649,649,3273.3,5.352,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,join,32,False,partition_sweep=32,1569149,1569149,3,0.29,0.271,0.305,537,649,649,3469.2,5.524,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,join,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,1569149,3,0.336,0.306,0.338,625,649,649,3092.3,6.119,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,parquet_scan_full,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,1569149,3,4.193,4.021,4.404,12482,1267,1267,4640.6,3.402,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,parquet_scan_projected,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,1569149,3,0.679,0.603,0.685,1718,882,882,3194.4,6.051,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_50pct,parquet_scan_scaled,64,False,在物化子集上计时，数据规模为唯一自变量,1569149,1569149,3,3.818,3.738,3.98,11165,1267,1267,5170.1,4.115,local[4],3g
+cores_local4,real,hubstats_models_parquet,real_cold_touch,parquet_scan_first_touch,64,False,本进程首次读该文件（强制解码全部列）；Windows 无法清 OS page cache，这是冷态近似,3138959,3138959,3,6.974,6.642,8.395,24324,1386,1386,3652.9,4.545,local[4],3g

@@ -1,0 +1,173 @@
+{
+  "generated_at": "2026-10-11T07:41:05.358856+00:00",
+  "engine": "spark",
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "research_positioning": "研究对象是**当前快照**下模型属性与下载热度的统计关联，不是对未来是否会火的预测。label 与 likes 同取自一个时间点，存在同期相关，不能解释为前瞻性预测能力。",
+  "target": "label = log1p(downloads)，downloads 为近 30 天下载计数",
+  "n_rows_full": 3138954,
+  "n_duplicate_model_id_groups": 0,
+  "sampling": {
+    "method": "确定性哈希 crc32(model_id) % 5 == 0",
+    "n_sample": 626269,
+    "sample_share": 0.199515,
+    "reason": "全量 314 万行直接训练 GBT 在本机代价过高；用户明确要求不要盲目对全量做复杂 GBT 训练。"
+  },
+  "split": {
+    "method": "randomSplit([0.8, 0.19999999999999996], seed=42)",
+    "seed": 42,
+    "n_train": 501049,
+    "n_test": 125220,
+    "train_test_overlap": 0,
+    "note": "先划分再拟合；所有预处理只在 train 上 fit，指标只在 test 上计算。"
+  },
+  "features": {
+    "numeric": [
+      "likes_log",
+      "model_age_days",
+      "tag_count",
+      "children_count",
+      "maintenance_span_days"
+    ],
+    "categorical": [
+      "task",
+      "library_top"
+    ],
+    "encoding": "两类特征均 one-hot；Top-50 库词表只在训练集统计",
+    "top_libraries_from_train": [
+      null,
+      "transformers",
+      "peft",
+      "diffusers",
+      "lerobot",
+      "stable-baselines3",
+      "sentence-transformers",
+      "mlx",
+      "ml-agents",
+      "pytorch",
+      "keras",
+      "gguf",
+      "tf-keras",
+      "transformers.js",
+      "adapter-transformers",
+      "timm",
+      "sample-factory",
+      "bpnet",
+      "flair",
+      "onnx",
+      "vllm",
+      "setfit",
+      "llama.cpp",
+      "ultralytics",
+      "cleanrl",
+      "chrombpnet",
+      "openmed",
+      "nemo",
+      "fastai",
+      "nanochat",
+      "espnet",
+      "sklearn",
+      "spacy",
+      "phosphobot",
+      "onnxruntime",
+      "zeromodels",
+      "open_clip",
+      "bertopic",
+      "mlc-llm",
+      "ctranslate2",
+      "diffusion-single-file",
+      "coreml",
+      "keras-hub",
+      "segmentation-models-pytorch",
+      "model2vec",
+      "fasttext",
+      "litert",
+      "openpi",
+      "litert-lm",
+      "nanovlm"
+    ],
+    "rename_note": "源列 update_interval_days = lastModified - createdAt，含义是维护跨度（天），不是更新频率；对外统一名 maintenance_span_days。",
+    "no_target_derived_inputs": true
+  },
+  "correlations": [
+    {
+      "feature": "likes_log",
+      "pearson": 0.38847635977700046,
+      "spearman": 0.27052267505417615
+    },
+    {
+      "feature": "model_age_days",
+      "pearson": -0.0068121865848762364,
+      "spearman": 0.004530479834124941
+    },
+    {
+      "feature": "tag_count",
+      "pearson": 0.37372035461248687,
+      "spearman": 0.653001521522005
+    },
+    {
+      "feature": "children_count",
+      "pearson": 0.05809199389423941,
+      "spearman": 0.2021036285860482
+    },
+    {
+      "feature": "maintenance_span_days",
+      "pearson": 0.146849499043949,
+      "spearman": 0.2296301348954882
+    }
+  ],
+  "correlation_note": "相关系数在建模样本上计算，属描述性统计，不参与模型选择。",
+  "metrics_on_test": {
+    "Baseline_mean": {
+      "rmse": 1.7466664323431675,
+      "mae": 1.403250302481077,
+      "r2": -5.279920219258827e-06
+    },
+    "LinearRegression": {
+      "rmse": 1.3328008239128513,
+      "mae": 0.9501018464612001,
+      "r2": 0.41774550482168404
+    },
+    "RandomForest": {
+      "rmse": 1.013861243861044,
+      "mae": 0.5876231321899712,
+      "r2": 0.6630702273978253
+    },
+    "GBT": {
+      "rmse": 1.060570973581985,
+      "mae": 0.6239115139174335,
+      "r2": 0.6313096091270538
+    }
+  },
+  "baseline_note": "Baseline_mean 用训练集 label 均值做常数预测，作为‘不建模’的下界参照。",
+  "feature_importance_note": "重要性是 one-hot 分列按源列汇总后的结果，只表示模型内部的统计贡献，不代表因果，也不代表模型质量。若 likes_log 占主导，只能说明‘同一快照内的点赞与下载高度同期相关’。",
+  "rf_importance_ranked": [
+    {
+      "feature": "tag_count",
+      "importance": 0.4129934556193599
+    },
+    {
+      "feature": "library_top",
+      "importance": 0.19444540038234442
+    },
+    {
+      "feature": "likes_log",
+      "importance": 0.15142080137937414
+    },
+    {
+      "feature": "task",
+      "importance": 0.13263307946110775
+    },
+    {
+      "feature": "model_age_days",
+      "importance": 0.05484153167593953
+    },
+    {
+      "feature": "maintenance_span_days",
+      "importance": 0.034598938212951444
+    },
+    {
+      "feature": "children_count",
+      "importance": 0.01906679326892269
+    }
+  ]
+}

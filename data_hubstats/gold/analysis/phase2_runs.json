@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-10-11T16:50:50+0800",
+  "config": {
+    "HF_SPARK_MASTER": "local[6]",
+    "HF_SPARK_DRIVER_MEMORY": "4g",
+    "HF_SHUFFLE_PARTITIONS": "64",
+    "HF_ENGINE": "spark",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "ran_this_invocation": [
+    "rq5"
+  ],
+  "steps": [
+    {
+      "step": "ml",
+      "script": "analysis_ml.py",
+      "desc": "RQ4 MLlib 独立测试集训练与评估",
+      "exit_code": 0,
+      "seconds": 276.1,
+      "log": "phase2_ml.log",
+      "ok": true
+    },
+    {
+      "step": "rq5",
+      "script": "analysis_rq5.py",
+      "desc": "RQ5 任务生态对比",
+      "exit_code": 0,
+      "seconds": 58.1,
+      "log": "phase2_rq5.log",
+      "ok": true
+    }
+  ],
+  "all_ok": true
+}

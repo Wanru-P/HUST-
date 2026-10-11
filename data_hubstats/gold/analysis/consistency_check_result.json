@@ -1,0 +1,577 @@
+{
+  "generated_at": "2026-10-11T11:51:15.693364+00:00",
+  "n_checks": 114,
+  "n_failed": 0,
+  "results": [
+    {
+      "check": "交付物存在：report_final.md",
+      "ok": true,
+      "detail": "9118 字符"
+    },
+    {
+      "check": "交付物存在：dashboard_final.html",
+      "ok": true,
+      "detail": "19438 字符"
+    },
+    {
+      "check": "交付物存在：docs/latex_report_materials.md",
+      "ok": true,
+      "detail": "9078 字符"
+    },
+    {
+      "check": "交付物存在：docs/ppt_handoff.md",
+      "ok": true,
+      "detail": "5186 字符"
+    },
+    {
+      "check": "交付物存在：docs/rq_analysis_report.md",
+      "ok": true,
+      "detail": "3355 字符"
+    },
+    {
+      "check": "交付物存在：docs/graph_analysis_report.md",
+      "ok": true,
+      "detail": "4595 字符"
+    },
+    {
+      "check": "交付物存在：docs/ml_experiment_report.md",
+      "ok": true,
+      "detail": "3046 字符"
+    },
+    {
+      "check": "交付物存在：docs/benchmark_report.md",
+      "ok": true,
+      "detail": "7838 字符"
+    },
+    {
+      "check": "report_final.md 关键数字齐全（14 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "dashboard_final.html 关键数字齐全（8 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/latex_report_materials.md 关键数字齐全（11 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/ppt_handoff.md 关键数字齐全（8 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/rq_analysis_report.md 关键数字齐全（7 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/graph_analysis_report.md 关键数字齐全（3 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/ml_experiment_report.md 关键数字齐全（1 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/benchmark_report.md 关键数字齐全（1 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "report_final.md Gini 使用清单中的完整精度值、未写成粗粒度近似",
+      "ok": true,
+      "detail": "粗粒度=[] 含完整精度=True"
+    },
+    {
+      "check": "dashboard_final.html Gini 使用清单中的完整精度值、未写成粗粒度近似",
+      "ok": true,
+      "detail": "粗粒度=[] 含完整精度=True"
+    },
+    {
+      "check": "docs/latex_report_materials.md Gini 使用清单中的完整精度值、未写成粗粒度近似",
+      "ok": true,
+      "detail": "粗粒度=[] 含完整精度=True"
+    },
+    {
+      "check": "docs/rq_analysis_report.md Gini 使用清单中的完整精度值、未写成粗粒度近似",
+      "ok": true,
+      "detail": "粗粒度=[] 含完整精度=True"
+    },
+    {
+      "check": "report_final.md 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "dashboard_final.html 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/latex_report_materials.md 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/ppt_handoff.md 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/rq_analysis_report.md 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/graph_analysis_report.md 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/ml_experiment_report.md 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/benchmark_report.md 无旧 Demo / 旧环境残留",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "图数量为 12",
+      "ok": true,
+      "detail": "12 张"
+    },
+    {
+      "check": "Figure 1 存在 png",
+      "ok": true,
+      "detail": "fig01_monthly_evolution"
+    },
+    {
+      "check": "Figure 1 存在 pdf",
+      "ok": true,
+      "detail": "fig01_monthly_evolution"
+    },
+    {
+      "check": "Figure 1 存在 svg",
+      "ok": true,
+      "detail": "fig01_monthly_evolution"
+    },
+    {
+      "check": "Figure 2 存在 png",
+      "ok": true,
+      "detail": "fig02_task_growth"
+    },
+    {
+      "check": "Figure 2 存在 pdf",
+      "ok": true,
+      "detail": "fig02_task_growth"
+    },
+    {
+      "check": "Figure 2 存在 svg",
+      "ok": true,
+      "detail": "fig02_task_growth"
+    },
+    {
+      "check": "Figure 3 存在 png",
+      "ok": true,
+      "detail": "fig03_task_time_heatmap"
+    },
+    {
+      "check": "Figure 3 存在 pdf",
+      "ok": true,
+      "detail": "fig03_task_time_heatmap"
+    },
+    {
+      "check": "Figure 3 存在 svg",
+      "ok": true,
+      "detail": "fig03_task_time_heatmap"
+    },
+    {
+      "check": "Figure 4 存在 png",
+      "ok": true,
+      "detail": "fig04_library_task_structure"
+    },
+    {
+      "check": "Figure 4 存在 pdf",
+      "ok": true,
+      "detail": "fig04_library_task_structure"
+    },
+    {
+      "check": "Figure 4 存在 svg",
+      "ok": true,
+      "detail": "fig04_library_task_structure"
+    },
+    {
+      "check": "Figure 5 存在 png",
+      "ok": true,
+      "detail": "fig05_lorenz"
+    },
+    {
+      "check": "Figure 5 存在 pdf",
+      "ok": true,
+      "detail": "fig05_lorenz"
+    },
+    {
+      "check": "Figure 5 存在 svg",
+      "ok": true,
+      "detail": "fig05_lorenz"
+    },
+    {
+      "check": "Figure 6 存在 png",
+      "ok": true,
+      "detail": "fig06_ccdf_longtail"
+    },
+    {
+      "check": "Figure 6 存在 pdf",
+      "ok": true,
+      "detail": "fig06_ccdf_longtail"
+    },
+    {
+      "check": "Figure 6 存在 svg",
+      "ok": true,
+      "detail": "fig06_ccdf_longtail"
+    },
+    {
+      "check": "Figure 7 存在 png",
+      "ok": true,
+      "detail": "fig07_family_network"
+    },
+    {
+      "check": "Figure 7 存在 pdf",
+      "ok": true,
+      "detail": "fig07_family_network"
+    },
+    {
+      "check": "Figure 7 存在 svg",
+      "ok": true,
+      "detail": "fig07_family_network"
+    },
+    {
+      "check": "Figure 8 存在 png",
+      "ok": true,
+      "detail": "fig08_family_size"
+    },
+    {
+      "check": "Figure 8 存在 pdf",
+      "ok": true,
+      "detail": "fig08_family_size"
+    },
+    {
+      "check": "Figure 8 存在 svg",
+      "ok": true,
+      "detail": "fig08_family_size"
+    },
+    {
+      "check": "Figure 9 存在 png",
+      "ok": true,
+      "detail": "fig09_ml_importance"
+    },
+    {
+      "check": "Figure 9 存在 pdf",
+      "ok": true,
+      "detail": "fig09_ml_importance"
+    },
+    {
+      "check": "Figure 9 存在 svg",
+      "ok": true,
+      "detail": "fig09_ml_importance"
+    },
+    {
+      "check": "Figure 10 存在 png",
+      "ok": true,
+      "detail": "fig10_scale_runtime"
+    },
+    {
+      "check": "Figure 10 存在 pdf",
+      "ok": true,
+      "detail": "fig10_scale_runtime"
+    },
+    {
+      "check": "Figure 10 存在 svg",
+      "ok": true,
+      "detail": "fig10_scale_runtime"
+    },
+    {
+      "check": "Figure 11 存在 png",
+      "ok": true,
+      "detail": "fig11_partitions_perf"
+    },
+    {
+      "check": "Figure 11 存在 pdf",
+      "ok": true,
+      "detail": "fig11_partitions_perf"
+    },
+    {
+      "check": "Figure 11 存在 svg",
+      "ok": true,
+      "detail": "fig11_partitions_perf"
+    },
+    {
+      "check": "Figure 12 存在 png",
+      "ok": true,
+      "detail": "fig12_operator_comparison"
+    },
+    {
+      "check": "Figure 12 存在 pdf",
+      "ok": true,
+      "detail": "fig12_operator_comparison"
+    },
+    {
+      "check": "Figure 12 存在 svg",
+      "ok": true,
+      "detail": "fig12_operator_comparison"
+    },
+    {
+      "check": "Dashboard 引用了全部 PNG 图",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "check": "Dashboard 不含在线外链（离线自包含）",
+      "ok": true,
+      "detail": "发现外链"
+    },
+    {
+      "check": "旧产物仍存在：data",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "旧产物仍存在：figures",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "旧产物仍存在：dashboard.html",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "旧产物仍存在：report.md",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "GraphFrames 状态：正式结果文件 = 结果清单",
+      "ok": true,
+      "detail": "file=completed manifest=completed"
+    },
+    {
+      "check": "六个迭代步骤在正式结果文件中齐全",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "check": "六个迭代步骤在结果清单中齐全",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "check": "final.gf_unfinished 与步骤完成情况一致",
+      "ok": true,
+      "detail": "gf_unfinished=[] 全部完成=True"
+    },
+    {
+      "check": "全部步骤已完成时，交付物无「未完成」自相矛盾描述",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "Figure Index 登记 12 张正式图",
+      "ok": true,
+      "detail": "12 张"
+    },
+    {
+      "check": "每张正式图都有 PNG / PDF / SVG 三种输出",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "check": "旧版 Figure 7 作为补充材料保留（三种格式）",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "check": "figure_index.json 图注与 results_manifest.json 逐字一致",
+      "ok": true,
+      "detail": "manifest 收录 12 张"
+    },
+    {
+      "check": "Figure 7 图注数字与结果清单一致（4 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "Figure 7 图注声明「全量图」与「代表性局部子图」",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "Figure Index 快照版本 = 结果清单快照版本",
+      "ok": true,
+      "detail": "index=2c1e1950"
+    },
+    {
+      "check": "dashboard_final.html 引用的 12 张 PNG 全部存在",
+      "ok": true,
+      "detail": "12 个引用，缺失 []"
+    },
+    {
+      "check": "dashboard_final.html 不含在线外链",
+      "ok": true,
+      "detail": "发现外链"
+    },
+    {
+      "check": "dashboard_standalone.html 内嵌 12 张 PNG（base64）",
+      "ok": true,
+      "detail": "12 张"
+    },
+    {
+      "check": "dashboard_standalone.html 不依赖外部相对路径",
+      "ok": true,
+      "detail": "仍引用相对路径"
+    },
+    {
+      "check": "dashboard_standalone.html 不含在线外链",
+      "ok": true,
+      "detail": "发现外链"
+    },
+    {
+      "check": "Dashboard 主图用新版 Figure 7、未混入旧版网络图",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "write_reports.py 保留全部修复标记（7 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "make_figures.py 保留全部修复标记（9 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "analysis_evo.py 保留全部修复标记（2 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "build_manifest.py 保留全部修复标记（1 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "report_final.md 产物中包含修复标记（2 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/ppt_handoff.md 产物中包含修复标记（1 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/graph_analysis_report.md 产物中包含修复标记（2 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "docs/rq_analysis_report.md 产物中包含修复标记（1 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "现役交付物中无无证据的根因断言 / 未完成断言",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "Bronze→Silver→Gold 月度守恒（已保存结果）",
+      "ok": true,
+      "detail": "{'task_monthly_stats': True, 'library_monthly_stats': True, 'tag_monthly_stats': None, 'monthly_total': True}"
+    },
+    {
+      "check": "Bronze 行数 = 去重后行数 + 源重复行数",
+      "ok": true,
+      "detail": "3138959 vs 3138954+5"
+    },
+    {
+      "check": "去重模型数在各处口径完全一致",
+      "ok": true,
+      "detail": "{3138954}"
+    },
+    {
+      "check": "血缘边数 = 四种 relation 之和 = 各处记录值",
+      "ok": true,
+      "detail": "{'adapter': 329707, 'merge': 48028, 'finetune': 354320, 'quantized': 187784} -> {919839}"
+    },
+    {
+      "check": "参与血缘节点数 = GraphFrames 顶点数（清单与结果文件一致）",
+      "ok": true,
+      "detail": "{931066}"
+    },
+    {
+      "check": "血缘边方向正确：底座在 src、不在 dst（真实边表抽查）",
+      "ok": true,
+      "detail": "{'base': 'black-forest-labs/FLUX.1-dev', 'children_count': 43419, 'as_src': 43419, 'as_dst': 0, 'relations': ['adapter', 'finetune', 'merge', 'quantized']}"
+    },
+    {
+      "check": "relation 取值仅限 finetune / adapter / quantized / merge",
+      "ok": true,
+      "detail": "['adapter', 'finetune', 'merge', 'quantized']"
+    },
+    {
+      "check": "downloads：Gini∈(0,1) 且 Top-1% ≤ Top-5% ≤ Top-10%",
+      "ok": true,
+      "detail": "gini=0.995355 top1=0.971272 top5=0.990904 top10=0.994817"
+    },
+    {
+      "check": "downloadsAllTime：Gini∈(0,1) 且 Top-1% ≤ Top-5% ≤ Top-10%",
+      "ok": true,
+      "detail": "gini=0.998117 top1=0.987017 top5=0.996536 top10=0.998409"
+    },
+    {
+      "check": "家族规模表行数与口径说明齐备",
+      "ok": true,
+      "detail": "rows=575"
+    },
+    {
+      "check": "RQ4 train/test 行数守恒、无重叠、seed=42",
+      "ok": true,
+      "detail": "501049+125220 vs 626269 overlap=0 seed=42"
+    },
+    {
+      "check": "快照版本（commit / SHA-256）齐备且与图索引、图计算结果一致",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "下载双口径各自独立、未相加（口径说明存在）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "make_figures.py 未硬编码应由结果清单提供的头条数字（10 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "write_reports.py 未硬编码应由结果清单提供的头条数字（10 项）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "人工语义复核清单已生成",
+      "ok": true,
+      "detail": "docs\\manual_review_checklist.md"
+    }
+  ]
+}

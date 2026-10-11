@@ -1,0 +1,147 @@
+{
+  "generated_at": "2026-10-11T09:10:50.757130+00:00",
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "config": {
+    "master": "local[6]",
+    "driver_memory": "4g",
+    "shuffle_partitions": "64"
+  },
+  "n_models_silver": 3138954,
+  "n_unique_model_id": 3138954,
+  "dup_model_id": 0,
+  "downloads_sum": 2788919780,
+  "downloadsAllTime_sum": 75949397771,
+  "created_at_min": "2022-03-02T23:29:04.000Z",
+  "created_at_max": "2026-10-10T13:13:07.000Z",
+  "n_models_enriched": 3138954,
+  "n_bronze_source_rows": 3138959,
+  "n_bronze_duplicate_ids": 5,
+  "n_tag_rows": 20625635,
+  "n_unique_tags": 424435,
+  "n_edges": 919839,
+  "n_edge_src": 88333,
+  "n_edge_dst": 887032,
+  "n_pipeline_tag_values": 57,
+  "n_library_values": 2708,
+  "models_per_year": {
+    "2022": 100392,
+    "2023": 318206,
+    "2024": 740836,
+    "2025": 1103162,
+    "2026": 876358
+  },
+  "created_at_iso_z_ok": true,
+  "created_at_parse_fail": 0,
+  "concentration": {
+    "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+    "source": "cfahlgren1/hub-stats",
+    "n_models": 3138954,
+    "downloads": {
+      "n_models": 3138954,
+      "total_downloads": 2788919780,
+      "distinct_values": 14894,
+      "zero_value_models": 1366793,
+      "zero_value_share": 0.435429,
+      "gini": 0.995355,
+      "top_1pct_share": 0.971272,
+      "top_5pct_share": 0.990904,
+      "top_10pct_share": 0.994817
+    },
+    "downloadsAllTime": {
+      "n_models": 3138954,
+      "total_downloads": 75949397771,
+      "distinct_values": 47869,
+      "zero_value_models": 1317858,
+      "zero_value_share": 0.41984,
+      "gini": 0.998117,
+      "top_1pct_share": 0.987017,
+      "top_5pct_share": 0.996536,
+      "top_10pct_share": 0.998409
+    }
+  },
+  "recomputed": {
+    "downloads": {
+      "n_models": 3138954,
+      "total_downloads": 2788919780,
+      "distinct_values": 14894,
+      "zero_value_models": 1366793,
+      "zero_value_share": 0.435429,
+      "gini": 0.995355,
+      "top_1pct_share": 0.971272,
+      "top_5pct_share": 0.990904,
+      "top_10pct_share": 0.994817,
+      "matches_etl_json": true
+    },
+    "downloadsAllTime": {
+      "n_models": 3138954,
+      "total_downloads": 75949397771,
+      "distinct_values": 47869,
+      "zero_value_models": 1317858,
+      "zero_value_share": 0.41984,
+      "gini": 0.998117,
+      "top_1pct_share": 0.987017,
+      "top_5pct_share": 0.996536,
+      "top_10pct_share": 0.998409,
+      "matches_etl_json": true
+    }
+  },
+  "missing_rate": {
+    "model_id": 0.0,
+    "author": 0.0,
+    "created_at": 0.0,
+    "last_modified": 0.0,
+    "downloads": 0.0,
+    "downloadsAllTime": 0.0,
+    "likes": 0.0,
+    "pipeline_tag": 0.65555,
+    "library_name": 0.509585,
+    "tags": 0.0,
+    "gated": 1.0,
+    "base_models": 0.717412,
+    "base_relation": 0.717412
+  },
+  "gated_all_null": true,
+  "conservation": {
+    "task_monthly_stats": {
+      "sum_new_models": 3138954,
+      "equals_n_models": true
+    },
+    "library_monthly_stats": {
+      "sum_new_models": 3138954,
+      "equals_n_models": true
+    },
+    "tag_monthly_stats": {
+      "sum_new_models": 20625635,
+      "equals_n_models": null
+    },
+    "monthly_total": {
+      "sum_new_models": 3138954,
+      "equals_n_models": true
+    }
+  },
+  "n_edges_with_external_parent": 14838,
+  "n_distinct_external_parents": 3620,
+  "edge_relation_counts": {
+    "adapter": 329707,
+    "merge": 48028,
+    "finetune": 354320,
+    "quantized": 187784
+  },
+  "gold_rows": {
+    "task_monthly_stats": 2587,
+    "library_monthly_stats": 7915,
+    "tag_monthly_stats": 861394,
+    "download_distribution": 3138954,
+    "model_family_stats": 575,
+    "model_lifecycle": 3138954,
+    "model_adoption_features": 3138954,
+    "lorenz_points": 62763
+  },
+  "silver_rows": {
+    "models": 3138954,
+    "model_tags": 20625635,
+    "model_base_edges": 919839
+  },
+  "hard_fail": [],
+  "ok": true
+}

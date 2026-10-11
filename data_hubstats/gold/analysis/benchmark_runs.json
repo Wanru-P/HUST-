@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-10-11T16:44:30+0800",
+  "runs": [
+    {
+      "tag": "cores_local2",
+      "exit_code": 0,
+      "seconds": 260.3,
+      "log": "benchmark_p2_cores_local2.log",
+      "env": {
+        "HF_SPARK_MASTER": "local[2]",
+        "HF_SPARK_DRIVER_MEMORY": "3g"
+      },
+      "detail": "benchmark_cores_local2_detail.csv",
+      "summary": "benchmark_cores_local2_summary.csv"
+    },
+    {
+      "tag": "cores_local4",
+      "exit_code": 0,
+      "seconds": 180.1,
+      "log": "benchmark_p2_cores_local4.log",
+      "env": {
+        "HF_SPARK_MASTER": "local[4]",
+        "HF_SPARK_DRIVER_MEMORY": "3g"
+      },
+      "detail": "benchmark_cores_local4_detail.csv",
+      "summary": "benchmark_cores_local4_summary.csv"
+    },
+    {
+      "tag": "cores_local6",
+      "exit_code": 0,
+      "seconds": 142.2,
+      "log": "benchmark_p2_cores_local6.log",
+      "env": {
+        "HF_SPARK_MASTER": "local[6]",
+        "HF_SPARK_DRIVER_MEMORY": "3g"
+      },
+      "detail": "benchmark_cores_local6_detail.csv",
+      "summary": "benchmark_cores_local6_summary.csv"
+    },
+    {
+      "tag": "p3_local6",
+      "exit_code": 0,
+      "seconds": 128.1,
+      "log": "benchmark_p3.log",
+      "env": {
+        "HF_SPARK_MASTER": "local[6]",
+        "HF_SPARK_DRIVER_MEMORY": "3g"
+      },
+      "detail": "benchmark_synth_detail.csv",
+      "summary": "benchmark_synth_summary.csv"
+    }
+  ],
+  "phases": {
+    "p2": "并行度扫描（local[2] / local[4] / local[6]，50% 规模）",
+    "p3": "合成数据压力测试（仅用于受控压力测试）"
+  },
+  "note": "本机为 local[N] 单机多核，实验只能说明本地并行度与资源对耗时的影响，不得表述为多节点横向扩展；合成数据结果只用于受控压力测试。"
+}

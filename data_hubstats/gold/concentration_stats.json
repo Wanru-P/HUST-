@@ -1,0 +1,27 @@
+{
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "source": "cfahlgren1/hub-stats",
+  "n_models": 3138954,
+  "downloads": {
+    "n_models": 3138954,
+    "total_downloads": 2788919780,
+    "distinct_values": 14894,
+    "zero_value_models": 1366793,
+    "zero_value_share": 0.435429,
+    "gini": 0.995355,
+    "top_1pct_share": 0.971272,
+    "top_5pct_share": 0.990904,
+    "top_10pct_share": 0.994817
+  },
+  "downloadsAllTime": {
+    "n_models": 3138954,
+    "total_downloads": 75949397771,
+    "distinct_values": 47869,
+    "zero_value_models": 1317858,
+    "zero_value_share": 0.41984,
+    "gini": 0.998117,
+    "top_1pct_share": 0.987017,
+    "top_5pct_share": 0.996536,
+    "top_10pct_share": 0.998409
+  }
+}
