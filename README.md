@@ -11,6 +11,7 @@
 - `data_hubstats/gold/analysis/`：已发布结果的 JSON/CSV 摘要，含结果清单、集中度、谱系、ML、任务生态和基准测试输出。
 - `docs/`：数据质量、各研究问题、图表审查、展示素材及验收文档。
 - `docs/FULL_REPRODUCTION_GUIDE.md`：完整环境配置与全量复现说明。
+- `docs/supplementary_analysis.md` + `figures_supp/` + `data_hubstats/gold/analysis/supplementary_results.json`：对 RQ2 集中度稳健性、RQ4 时间外推、RQ2×RQ3 衍生-下载关系与一项数据质量异常（负维护跨度）的补充验证（独立于 `results_manifest.json`，不改动原清单任何数值）。
 
 本公开交付包**不包含**约 1.49 GiB 的原始模型快照、约 5.8 GB 的 Spark 中间表/日志、缓存和历史备份。它们可由脚本按下述数据来源重新获取；项目输出中必要的轻量结果摘要已保留。
 
@@ -59,6 +60,8 @@ python check_consistency.py
 ├── data_hubstats/              # 数据指纹与轻量结果摘要（不含原始/中间数据）
 ├── docs/                       # 方法、结果、质量与展示文档
 ├── figures_final/              # Fig01–Fig12
+├── figures_supp/               # 补充验证图（Figure S1–S2，PNG/PDF/SVG）
+├── supplementary/              # 补充验证脚本（Gini / 零下载年龄 / 时间切分 / 陈旧性 / 衍生-下载 / 负维护跨度）
 ├── jars/                       # Windows 本地 Spark 所需的额外 JVM 构件
 ├── *.py                        # 下载、ETL、分析、绘图及验证脚本
 ├── dashboard_standalone.html   # 单文件离线看板

@@ -1,0 +1,37 @@
+{
+  "snapshot": "2026-10-11",
+  "bins": [
+    {
+      "group": "fresh (≤30d)",
+      "n": 128759,
+      "zero_share": 0.3809,
+      "pearson_likes_downloads": 0.3531,
+      "spearman_likes_downloads": 0.2497,
+      "pearson_positive_only": 0.5257
+    },
+    {
+      "group": "recent (31–180d)",
+      "n": 456461,
+      "zero_share": 0.3919,
+      "pearson_likes_downloads": 0.4399,
+      "spearman_likes_downloads": 0.276,
+      "pearson_positive_only": 0.5836
+    },
+    {
+      "group": "mid (181–365d)",
+      "n": 595425,
+      "zero_share": 0.5741,
+      "pearson_likes_downloads": 0.3992,
+      "spearman_likes_downloads": 0.28,
+      "pearson_positive_only": 0.5452
+    },
+    {
+      "group": "stale (>365d)",
+      "n": 1958314,
+      "zero_share": 0.407,
+      "pearson_likes_downloads": 0.373,
+      "spearman_likes_downloads": 0.2658,
+      "pearson_positive_only": 0.4916
+    }
+  ]
+}

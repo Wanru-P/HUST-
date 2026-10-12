@@ -1,0 +1,221 @@
+{
+  "n_total": 3138959,
+  "n_valid_timestamps": 3138959,
+  "n_negative_span": 28097,
+  "negative_share": 0.008951,
+  "n_zero_span": 2631564,
+  "n_exact_zero_span": 423856,
+  "zero_span_definition": "span_days==0 表示 0 ≤ (lastModified − createdAt) < 1 天（.dt.days 向下取整），不等于日历日期相同；n_exact_zero_span 为精确 Δ==0 的计数",
+  "zero_share": 0.838356,
+  "n_positive_span": 479298,
+  "min_span_days": -20041,
+  "max_span_days": 1680,
+  "mean_span_days": 11.2851,
+  "median_span_days": 0,
+  "distribution_buckets": [
+    {
+      "bucket": "≤−365天",
+      "n": 1260,
+      "share": 0.000401
+    },
+    {
+      "bucket": "−364~−31天",
+      "n": 19566,
+      "share": 0.006233
+    },
+    {
+      "bucket": "−30~−8天",
+      "n": 2338,
+      "share": 0.000745
+    },
+    {
+      "bucket": "−7~−1天",
+      "n": 4933,
+      "share": 0.001572
+    },
+    {
+      "bucket": "0（0≤Δ<1天）",
+      "n": 2631564,
+      "share": 0.838356
+    },
+    {
+      "bucket": "1~7天",
+      "n": 188133,
+      "share": 0.059935
+    },
+    {
+      "bucket": "8~30天",
+      "n": 102961,
+      "share": 0.032801
+    },
+    {
+      "bucket": "31~365天",
+      "n": 157450,
+      "share": 0.05016
+    },
+    {
+      "bucket": ">365天",
+      "n": 30754,
+      "share": 0.009798
+    }
+  ],
+  "top_tasks_by_negative_span": [
+    {
+      "task": "unknown",
+      "n_models": 2057743,
+      "n_negative_span": 13944,
+      "mean_span_days": 6.3783,
+      "negative_rate": 0.006776
+    },
+    {
+      "task": "text-generation",
+      "n_models": 422226,
+      "n_negative_span": 4570,
+      "mean_span_days": 12.1089,
+      "negative_rate": 0.010824
+    },
+    {
+      "task": "text-classification",
+      "n_models": 123924,
+      "n_negative_span": 2717,
+      "mean_span_days": 14.7327,
+      "negative_rate": 0.021925
+    },
+    {
+      "task": "fill-mask",
+      "n_models": 18381,
+      "n_negative_span": 1704,
+      "mean_span_days": 42.2436,
+      "negative_rate": 0.092704
+    },
+    {
+      "task": "token-classification",
+      "n_models": 30975,
+      "n_negative_span": 1024,
+      "mean_span_days": 38.2651,
+      "negative_rate": 0.033059
+    },
+    {
+      "task": "question-answering",
+      "n_models": 14185,
+      "n_negative_span": 949,
+      "mean_span_days": 8.6086,
+      "negative_rate": 0.066902
+    },
+    {
+      "task": "automatic-speech-recognition",
+      "n_models": 37438,
+      "n_negative_span": 932,
+      "mean_span_days": 29.7581,
+      "negative_rate": 0.024894
+    },
+    {
+      "task": "feature-extraction",
+      "n_models": 21485,
+      "n_negative_span": 694,
+      "mean_span_days": 23.6921,
+      "negative_rate": 0.032302
+    },
+    {
+      "task": "summarization",
+      "n_models": 2973,
+      "n_negative_span": 236,
+      "mean_span_days": 35.707,
+      "negative_rate": 0.079381
+    },
+    {
+      "task": "any-to-any",
+      "n_models": 11658,
+      "n_negative_span": 234,
+      "mean_span_days": 3.5196,
+      "negative_rate": 0.020072
+    },
+    {
+      "task": "sentence-similarity",
+      "n_models": 20363,
+      "n_negative_span": 185,
+      "mean_span_days": 38.5588,
+      "negative_rate": 0.009085
+    },
+    {
+      "task": "image-classification",
+      "n_models": 29681,
+      "n_negative_span": 181,
+      "mean_span_days": 97.1665,
+      "negative_rate": 0.006098
+    }
+  ],
+  "top_libraries_by_negative_span": [
+    {
+      "lib": "transformers",
+      "n_models": 936073,
+      "n_negative_span": 16263,
+      "mean_span_days": 17.8242,
+      "negative_rate": 0.017374
+    },
+    {
+      "lib": "unknown",
+      "n_models": 1599565,
+      "n_negative_span": 10784,
+      "mean_span_days": 5.8759,
+      "negative_rate": 0.006742
+    },
+    {
+      "lib": "sentence-transformers",
+      "n_models": 23589,
+      "n_negative_span": 197,
+      "mean_span_days": 38.8081,
+      "negative_rate": 0.008351
+    },
+    {
+      "lib": "diffusers",
+      "n_models": 121642,
+      "n_negative_span": 141,
+      "mean_span_days": 18.4077,
+      "negative_rate": 0.001159
+    },
+    {
+      "lib": "adapter-transformers",
+      "n_models": 3651,
+      "n_negative_span": 114,
+      "mean_span_days": 6.9932,
+      "negative_rate": 0.031224
+    },
+    {
+      "lib": "tf-keras",
+      "n_models": 3814,
+      "n_negative_span": 79,
+      "mean_span_days": 30.9452,
+      "negative_rate": 0.020713
+    },
+    {
+      "lib": "spacy",
+      "n_models": 958,
+      "n_negative_span": 64,
+      "mean_span_days": 109.6785,
+      "negative_rate": 0.066806
+    },
+    {
+      "lib": "kernels",
+      "n_models": 238,
+      "n_negative_span": 62,
+      "mean_span_days": 95.1471,
+      "negative_rate": 0.260504
+    },
+    {
+      "lib": "generic",
+      "n_models": 238,
+      "n_negative_span": 33,
+      "mean_span_days": -0.7647,
+      "negative_rate": 0.138655
+    },
+    {
+      "lib": "timm",
+      "n_models": 3210,
+      "n_negative_span": 33,
+      "mean_span_days": 280.3336,
+      "negative_rate": 0.01028
+    }
+  ],
+  "note": "负跨度 lastModified < createdAt 物理上不可能，属时间戳口径/记录问题。本脚本只量化、不臆断根因（与 RQ1 2022-03 异常同口径处理）。"
+}

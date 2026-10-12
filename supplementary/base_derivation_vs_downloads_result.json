@@ -1,0 +1,204 @@
+{
+  "snapshot": "2026-10-11",
+  "n_edges": 919839,
+  "n_distinct_bases": 88333,
+  "n_bases_in_snapshot": 84713,
+  "n_bases_compared": 84713,
+  "spearman_children_vs_downloads30d": 0.37139,
+  "spearman_children_vs_downloadsAllTime": 0.394699,
+  "pearson_log1p_children_vs_log1p_downloads30d": 0.462983,
+  "pearson_log1p_children_vs_log1p_downloadsAllTime": 0.476655,
+  "top10_by_children": [
+    {
+      "base_model": "black-forest-labs/FLUX.1-dev",
+      "children_count": 43419,
+      "downloads": 661619,
+      "downloadsAllTime": 34112217
+    },
+    {
+      "base_model": "Qwen/Qwen1.5-0.5B",
+      "children_count": 32534,
+      "downloads": 38442,
+      "downloadsAllTime": 4105872
+    },
+    {
+      "base_model": "Qwen/Qwen1.5-1.8B",
+      "children_count": 30626,
+      "downloads": 12777,
+      "downloadsAllTime": 3367195
+    },
+    {
+      "base_model": "google/gemma-2b",
+      "children_count": 24036,
+      "downloads": 129505,
+      "downloadsAllTime": 10250038
+    },
+    {
+      "base_model": "distilbert/distilbert-base-uncased",
+      "children_count": 13182,
+      "downloads": 7837070,
+      "downloadsAllTime": 693258213
+    },
+    {
+      "base_model": "stabilityai/stable-diffusion-xl-base-1.0",
+      "children_count": 10998,
+      "downloads": 4301092,
+      "downloadsAllTime": 126659657
+    },
+    {
+      "base_model": "google/gemma-7b",
+      "children_count": 9585,
+      "downloads": 14850,
+      "downloadsAllTime": 3209443
+    },
+    {
+      "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+      "children_count": 8570,
+      "downloads": 3563213,
+      "downloadsAllTime": 63918418
+    },
+    {
+      "base_model": "lerobot/smolvla_base",
+      "children_count": 8100,
+      "downloads": 123058,
+      "downloadsAllTime": 787776
+    },
+    {
+      "base_model": "meta-llama/Llama-3.1-8B-Instruct",
+      "children_count": 7237,
+      "downloads": 6015326,
+      "downloadsAllTime": 188968200
+    }
+  ],
+  "top10_by_downloads30d": [
+    {
+      "base_model": "sentence-transformers/all-MiniLM-L6-v2",
+      "children_count": 1280,
+      "downloads": 225633601,
+      "downloadsAllTime": 4057904143
+    },
+    {
+      "base_model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+      "children_count": 112,
+      "downloads": 80398259,
+      "downloadsAllTime": 626928693
+    },
+    {
+      "base_model": "BAAI/bge-small-en-v1.5",
+      "children_count": 554,
+      "downloads": 60561582,
+      "downloadsAllTime": 507042201
+    },
+    {
+      "base_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "children_count": 379,
+      "downloads": 48797791,
+      "downloadsAllTime": 643642044
+    },
+    {
+      "base_model": "google/electra-base-discriminator",
+      "children_count": 94,
+      "downloads": 45353786,
+      "downloadsAllTime": 964417415
+    },
+    {
+      "base_model": "google-bert/bert-base-uncased",
+      "children_count": 7194,
+      "downloads": 36586526,
+      "downloadsAllTime": 3258478337
+    },
+    {
+      "base_model": "BAAI/bge-m3",
+      "children_count": 910,
+      "downloads": 33016456,
+      "downloadsAllTime": 331954333
+    },
+    {
+      "base_model": "Qwen/Qwen3-0.6B",
+      "children_count": 2484,
+      "downloads": 30768858,
+      "downloadsAllTime": 240038513
+    },
+    {
+      "base_model": "google-t5/t5-small",
+      "children_count": 2430,
+      "downloads": 24098674,
+      "downloadsAllTime": 283388204
+    },
+    {
+      "base_model": "Comfy-Org/MiniMax-H3",
+      "children_count": 82,
+      "downloads": 23218255,
+      "downloadsAllTime": 53529269
+    }
+  ],
+  "top10_by_children_population": "快照内底座（children_count≥1，n=84,713）按衍生数排序",
+  "top10_by_downloads30d_population": "全部 3,138,954 个模型按自身近 30 天下载量排序",
+  "top10_overlap_with_downloads_ranking": 0,
+  "top10_overlap_models": [],
+  "top10_by_downloads_among_bases": [
+    {
+      "base_model": "sentence-transformers/all-MiniLM-L6-v2",
+      "children_count": 1280,
+      "downloads": 225633601,
+      "downloadsAllTime": 4057904143
+    },
+    {
+      "base_model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+      "children_count": 112,
+      "downloads": 80398259,
+      "downloadsAllTime": 626928693
+    },
+    {
+      "base_model": "BAAI/bge-small-en-v1.5",
+      "children_count": 554,
+      "downloads": 60561582,
+      "downloadsAllTime": 507042201
+    },
+    {
+      "base_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "children_count": 379,
+      "downloads": 48797791,
+      "downloadsAllTime": 643642044
+    },
+    {
+      "base_model": "google/electra-base-discriminator",
+      "children_count": 94,
+      "downloads": 45353786,
+      "downloadsAllTime": 964417415
+    },
+    {
+      "base_model": "google-bert/bert-base-uncased",
+      "children_count": 7194,
+      "downloads": 36586526,
+      "downloadsAllTime": 3258478337
+    },
+    {
+      "base_model": "BAAI/bge-m3",
+      "children_count": 910,
+      "downloads": 33016456,
+      "downloadsAllTime": 331954333
+    },
+    {
+      "base_model": "Qwen/Qwen3-0.6B",
+      "children_count": 2484,
+      "downloads": 30768858,
+      "downloadsAllTime": 240038513
+    },
+    {
+      "base_model": "google-t5/t5-small",
+      "children_count": 2430,
+      "downloads": 24098674,
+      "downloadsAllTime": 283388204
+    },
+    {
+      "base_model": "Comfy-Org/MiniMax-H3",
+      "children_count": 82,
+      "downloads": 23218255,
+      "downloadsAllTime": 53529269
+    }
+  ],
+  "top10_overlap_within_bases": 0,
+  "top10_overlap_within_bases_models": [],
+  "note": "children_count 为以该模型为底座的衍生边数（去重 id，与报告 919,839 边一致）；downloads 为该模型自身下载量。相关只在快照内底座（children_count≥1）上计算；n 大故即使小 rho 也统计显著，应看效应量（rho 绝对值）而非 p 值。Spearman 为秩上的 Pearson（自算，无 scipy 依赖）。"
+}

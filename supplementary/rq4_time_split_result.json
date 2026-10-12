@@ -1,0 +1,30 @@
+{
+  "snapshot": "2026-10-11",
+  "n_sample": 626269,
+  "cutoffs": {
+    "temporal": "2026-03-15",
+    "calendar": "2026-01-01"
+  },
+  "models": {
+    "Baseline_mean": {
+      "random": -3e-06,
+      "temporal": -0.027752,
+      "calendar": -0.004143
+    },
+    "LinearRegression": {
+      "random": 0.423358,
+      "temporal": 0.324396,
+      "calendar": 0.359471
+    },
+    "RandomForest": {
+      "random": 0.677857,
+      "temporal": 0.503397,
+      "calendar": 0.532779
+    },
+    "GBT": {
+      "random": 0.618844,
+      "temporal": 0.470559,
+      "calendar": 0.506709
+    }
+  }
+}

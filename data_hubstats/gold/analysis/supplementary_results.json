@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-10-12",
+  "note": "对正式报告 results_manifest.json 的补充验证（RQ2 稳健性 + RQ4 时间外推 + RQ4 陈旧性对照 + RQ2×RQ3 衍生-下载关系 + 数据质量负维护跨度）。不改动原清单任何数值，本文件全部为新增指标，作为正式报告的补充依据。数字可由 supplementary/ 目录下的脚本复现。",
+  "snapshot": {
+    "dataset": "cfahlgren1/hub-stats",
+    "file": "models.parquet",
+    "commit": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+    "sha256": "d86485a02a7aace1b8c4eda4a849dd153a702d5351ab5a57f3c2320176e251ef",
+    "n_models": 3138954
+  },
+  "scripts": {
+    "part_a": "supplementary/analyze_gini.py -> supplementary/rq2_gini_result.json",
+    "part_a_supp": "supplementary/zero_download_age.py -> supplementary/zero_download_age_result.json",
+    "part_b": "supplementary/time_split_rq4.py -> supplementary/rq4_time_split_result.json",
+    "part_c": "supplementary/staleness_analysis.py -> supplementary/staleness_result.json",
+    "part_d": "supplementary/base_derivation_vs_downloads.py -> supplementary/base_derivation_vs_downloads_result.json",
+    "part_e": "supplementary/maintenance_span_sanity.py -> supplementary/maintenance_span_sanity_result.json",
+    "figures": "supplementary/make_supp_figures.py -> figures_supp/*.{png,pdf,svg}"
+  },
+  "rq2_robustness": {
+    "question": "Gini≈0.995 是否被 43.5% 零下载模型机械推高？",
+    "method": "从 gold/analysis/ccdf.csv 重建频数分布（float ccdf + round 反推，非位精确；重建总频数经校验等于 3,138,954），计算三口径 Gini：G_all（全量）、G_pos（剔除零下载）、G_top（Top-1% 内部，取 int(N·0.01)=31,389，与正式工程 stats_utils 一致）。",
+    "downloads": {
+      "g_all": 0.995355,
+      "g_pos_excl_zero": 0.991773,
+      "g_top1pct_internal": 0.936576,
+      "n_zero": 1366793,
+      "zero_share": 0.435429,
+      "n_top1pct": 31389
+    },
+    "downloadsAllTime": {
+      "g_all": 0.998117,
+      "g_pos_excl_zero": 0.996754,
+      "g_top1pct_internal": 0.943409,
+      "n_zero": 1317858,
+      "zero_share": 0.41984,
+      "n_top1pct": 31389
+    },
+    "conclusion": "剔除零下载后 Gini 仍为 0.991773（近30天）/ 0.996754（累计），Top-1% 内部 0.936576：下载量高度集中的现象并不只是由零下载记录造成的。原 RQ2 结论不变。"
+  },
+  "zero_download_age": {
+    "question": "零下载占比 43.54% 中，多少是「新模型 30 天下载窗口未走完」的时间伪影？",
+    "result": "零下载以「创建已超 30 天、下载窗口完整」为主：创建 ≤30 天的零下载仅占 2.81%，>30 天的占 97.19%；仅计 >30 天时零下载率 43.74%（≈原 43.54%），说明零下载不能主要归因于新模型的时间伪影。",
+    "n_zero": 1366793,
+    "n_zero_age_le30": 38349,
+    "n_zero_age_gt30": 1328444,
+    "share_zero_le30": 0.0281,
+    "share_zero_gt30": 0.9719,
+    "refined_zero_rate_excl_le30": 0.4374,
+    "buckets": [
+      {"age": "≤30天", "n_total": 101610, "n_zero": 38349, "zero_rate": 0.3774},
+      {"age": "31-90天", "n_total": 177470, "n_zero": 70560, "zero_rate": 0.3976},
+      {"age": "91-180天", "n_total": 271550, "n_zero": 109562, "zero_rate": 0.4035},
+      {"age": "181-365天", "n_total": 591049, "n_zero": 343304, "zero_rate": 0.5808},
+      {"age": "1-2年", "n_total": 1027432, "n_zero": 433576, "zero_rate": 0.422},
+      {"age": ">2年", "n_total": 969848, "n_zero": 371442, "zero_rate": 0.383}
+    ],
+    "interpretation": "零下载以「创建超 30 天仍为零」为主（97.19%），不能主要归因于新模型的时间伪影；与 Gini 剔零后的稳健性互为印证。"
+  },
+  "rq4_time_split": {
+    "question": "同一模型在随机切分与按创建时间切分下，泛化性能差多少？",
+    "method": "同一特征（likes_log/model_age_days/tag_count/children_count/maintenance_span_days/task/library_top）、同一 20% 确定性哈希建模样本、同一模型，唯一变量是 train/test 切分方式。用 sklearn 复现（与 Spark 实现有小差异，故同时报告复现值）。",
+    "n_sample": 626269,
+    "reproduction_random_split": {
+      "LinearRegression": 0.4234,
+      "RandomForest": 0.6779,
+      "GBT": 0.6188,
+      "note": "原报告 Spark 口径为 LR 0.4177 / RF 0.6631 / GBT 0.6313；差异来自 sklearn 与 Spark MLlib 的实现细节，属正常。"
+    },
+    "temporal_split": {"cutoff": "2026-03-15", "note": "按 createdAt 排序，最老 80% 训练 / 最新 20% 测试"},
+    "calendar_split": {"cutoff": "2026-01-01", "note": "2026-01-01 之前训练 / 之后测试"},
+    "r2_by_split": {
+      "Baseline_mean": {"random": -0.0, "temporal": -0.0278, "calendar": -0.0041},
+      "LinearRegression": {"random": 0.4234, "temporal": 0.3244, "calendar": 0.3595},
+      "RandomForest": {"random": 0.6779, "temporal": 0.5034, "calendar": 0.5328},
+      "GBT": {"random": 0.6188, "temporal": 0.4706, "calendar": 0.5067}
+    },
+    "randomforest_drop": {
+      "random_to_temporal_absolute": -0.1745,
+      "random_to_temporal_relative": -0.2574
+    },
+    "conclusion": "在相同的 sklearn 实现下，随机森林测试集 R² 由随机切分的 0.68 降至按 createdAt 切分的 0.50（−26%），GBT 由 0.62 降至 0.47（−24%），方向一致：模型性能对创建时间队列的分布差异较为敏感。由于特征与目标均取自同一快照，该实验只度量跨队列泛化差异，不能把 −26% 直接归因为「时间泄漏的贡献」，也不代表严格的未来热度预测。时间切分的 0.50 仍显著优于基线（−0.03），说明特征携带可跨队列泛化的信号。",
+    "caveat": "时间切分只能度量「跨创建队列的泛化差异」；其下降还可能来自队列分布变化、训练样本构成等因素，不能唯一归因于时间泄漏。特征与目标同一快照，单快照也无法做带时间差（t 特征 → t+Δt 热度）的真预测。likes 的同期相关问题见 rq4_staleness_control——该分层对照未发现单调衰减，但也不足以证明同期相关不构成影响。"
+  },
+  "rq4_staleness_control": {
+    "question": "likes→downloads 关联是否随内容陈旧度（距 lastModified）衰减？",
+    "result": "空结果——关联强度基本平坦，不随陈旧度单调衰减。",
+    "bins": [
+      {"group": "fresh ≤30d", "n": 128759, "zero_share": 0.381, "pearson": 0.3531, "spearman": 0.2497},
+      {"group": "recent 31-180d", "n": 456461, "zero_share": 0.392, "pearson": 0.4399, "spearman": 0.276},
+      {"group": "mid 181-365d", "n": 595425, "zero_share": 0.574, "pearson": 0.3992, "spearman": 0.28},
+      {"group": "stale >365d", "n": 1958314, "zero_share": 0.407, "pearson": 0.373, "spearman": 0.2658}
+    ],
+    "interpretation": "lastModified 是内容陈旧度，而 likes/downloads 始终同一快照测得，故该分层对照在概念上测不到指标的同期性。关联不随陈旧度单调衰减，这一点既不能证明「同期相关是虚高主因」，也不能证明「同期相关没有问题」；只保留观察结果，不作机制归因。"
+  },
+  "window_comparison": {
+    "likes_vs_downloads_30d_pearson": 0.388,
+    "likes_vs_downloadsAllTime_pearson": 0.3798,
+    "downloads30d_vs_downloadsAllTime_pearson": 0.9196,
+    "interpretation": "likes（累计）与两种下载口径的关联几乎相同，无有意义的口径错配。"
+  },
+  "derivation_vs_downloads": {
+    "question": "被大量用作底座（衍生数高）的模型，是否也是被下载最多的模型？",
+    "method": "从原始 parquet 重建血缘边（src=底座→dst=衍生，去重 id 后 919,839 条，与报告一致）聚合成 children_count；取该底座自身 downloads/downloadsAllTime。相关只在快照内底座（children_count≥1，n=84,713；另有 3,620 个外部父模型无自身下载、不参与）上计算。Spearman 为秩上的 Pearson（自算，无 scipy 依赖）。",
+    "n_edges": 919839,
+    "n_distinct_bases": 88333,
+    "n_bases_in_snapshot": 84713,
+    "n_bases_compared": 84713,
+    "spearman_children_vs_downloads30d": 0.37139,
+    "spearman_children_vs_downloadsAllTime": 0.394699,
+    "pearson_log1p_children_vs_log1p_downloads30d": 0.462983,
+    "pearson_log1p_children_vs_log1p_downloadsAllTime": 0.476655,
+    "top10_overlap_with_downloads_ranking": 0,
+    "top10_overlap_models": [],
+    "top10_overlap_within_bases": 0,
+    "top10_overlap_within_bases_models": [],
+    "top10_by_children_population": "快照内底座（children_count≥1，n=84,713）按衍生数排序",
+    "top10_by_downloads30d_population": "全部 3,138,954 个模型按自身近 30 天下载量排序",
+    "top_by_children_examples": [
+      {"base_model": "black-forest-labs/FLUX.1-dev", "children_count": 43419, "downloads": 661619},
+      {"base_model": "Qwen/Qwen1.5-0.5B", "children_count": 32534, "downloads": 38442},
+      {"base_model": "google/gemma-2b", "children_count": 24036, "downloads": 129505}
+    ],
+    "top_by_downloads_examples": [
+      {"base_model": "sentence-transformers/all-MiniLM-L6-v2", "children_count": 1280, "downloads": 225633601},
+      {"base_model": "cross-encoder/ms-marco-MiniLM-L6-v2", "children_count": 112, "downloads": 80398259},
+      {"base_model": "BAAI/bge-small-en-v1.5", "children_count": 554, "downloads": 60561582}
+    ],
+    "conclusion": "衍生热度与下载热度是中等正相关（Spearman≈0.37–0.39），不是同一个量、也非相互独立；两种流行度的头部由不同类别模型占据——被大量微调的是大型生成式底座，被大量下载的是小型句子嵌入/编码模型。top10_by_children（底座总体）与 top10_by_downloads30d（全部模型总体）的交集为 0；收窄到同一总体（都在快照内底座内排序）后交集同样为 0。据此不能把下载量读作被依赖程度（或反之）。",
+    "self_correction": "（1）本节最初假设二者近乎脱钩，数据只支持「中等相关」，已按数据修正；（2）最初把两榜前十交集写成 1，实为把 distilbert/distilbert-base-uncased 与 google-bert/bert-base-uncased 当成同一模型，实际交集为 0——现已改为由脚本计算，不再手写。"
+  },
+  "maintenance_span_sanity": {
+    "question": "维护跨度 lastModified − createdAt 是否存在负值（物理上不可能）？规模与分布如何？",
+    "n_total": 3138959,
+    "n_valid_timestamps": 3138959,
+    "n_negative_span": 28097,
+    "negative_share": 0.008951,
+    "n_zero_span": 2631564,
+    "n_exact_zero_span": 423856,
+    "zero_span_definition": "span_days==0 表示 0 ≤ (lastModified − createdAt) < 1 天（.dt.days 向下取整），不等于日历日期相同；n_exact_zero_span 为精确 Δ==0 的计数",
+    "zero_share": 0.838356,
+    "n_positive_span": 479298,
+    "min_span_days": -20041,
+    "max_span_days": 1680,
+    "mean_span_days": 11.2851,
+    "median_span_days": 0,
+    "bucket_negative": {
+      "le_minus_365": 1260,
+      "minus_364_to_minus_31": 19566,
+      "minus_30_to_minus_8": 2338,
+      "minus_7_to_minus_1": 4933
+    },
+    "highest_negative_rate_tasks": [
+      {"task": "fill-mask", "n_models": 18381, "negative_rate": 0.092704},
+      {"task": "question-answering", "n_models": 14185, "negative_rate": 0.066902},
+      {"task": "text-classification", "n_models": 123924, "negative_rate": 0.021925}
+    ],
+    "highest_negative_rate_libraries": [
+      {"lib": "kernels", "n_models": 238, "negative_rate": 0.260504},
+      {"lib": "generic", "n_models": 238, "negative_rate": 0.138655, "mean_span_days": -0.7647},
+      {"lib": "spacy", "n_models": 958, "negative_rate": 0.066806}
+    ],
+    "conclusion": "maintenance_span_days（RQ4 特征）含 0.895% 物理上不可能的值，最小 −20,041 天（约 −55 年）；另有 83.836% 的整日法取值为 0（即 0 ≤ Δ < 1 天，**不是**「同一日历日期」，其中精确 Δ==0 的只有 423,856 个）。只量化、不臆断根因（与 RQ1 2022-03 时间戳异常同口径处理）。"
+  }
+}

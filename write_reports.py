@@ -37,6 +37,118 @@ def load_manifest():
         return json.load(f)["metrics"]
 
 
+SUPP_PATH = os.path.join(ANALYSIS, "supplementary_results.json")
+
+
+def load_supplementary():
+    """读取补充验证结果（Part A–E）。文件缺失时返回 {}，生成器仍可正常运行。"""
+    if not os.path.exists(SUPP_PATH):
+        return {}
+    with open(SUPP_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _d(supp, *keys):
+    cur = supp
+    for k in keys:
+        if not isinstance(cur, dict) or k not in cur:
+            return {}
+        cur = cur[k]
+    return cur if isinstance(cur, dict) else {}
+
+
+def supp_blocks(supp):
+    """由 supplementary_results.json 生成补充分析（Part A–E）的报告条目。
+
+    ⚠️ P0-3：此前补充结论是**手工**写进 report_final.md 的，重跑本生成器会被覆盖。
+    现在补充结论统一由生成器产出；数字只来自 supplementary_results.json，本函数不手写任何数字。
+    """
+    if not supp:
+        return {"rq2": [], "rq3": [], "rq4": [], "limits": [],
+                "ml_section": [], "ml_limit": [], "challenge_rows": []}
+    d2 = _d(supp, "rq2_robustness", "downloads")
+    d2a = _d(supp, "rq2_robustness", "downloadsAllTime")
+    dd = _d(supp, "derivation_vs_downloads")
+    tt = _d(supp, "rq4_time_split")
+    trf = _d(supp, "rq4_time_split", "r2_by_split", "RandomForest")
+    tgb = _d(supp, "rq4_time_split", "r2_by_split", "GBT")
+    ms = _d(supp, "maintenance_span_sanity")
+    z = _d(supp, "zero_download_age")
+
+    rq2 = [
+        f"- **稳健性（补充验证）**：剔除 {pct(d2.get('zero_share'), 2)} 的零下载模型后，Gini 仅从 "
+        f"{num(d2.get('g_all'), 6)} 降至 **{num(d2.get('g_pos_excl_zero'), 6)}**"
+        f"（累计口径从 {num(d2a.get('g_all'), 6)} 降至 {num(d2a.get('g_pos_excl_zero'), 6)}），"
+        f"Top-1% 内部 Gini **{num(d2.get('g_top1pct_internal'), 6)}** —— 下载量高度集中的现象"
+        f"**并不只是由零下载记录造成的**；零下载中 {pct(z.get('share_zero_gt30'), 1)} 创建已超 30 天，"
+        f"仅计创建 >30 天时零下载率 {pct(z.get('refined_zero_rate_excl_le30'), 2)} 与原值几乎相同。"
+        f"详见图 Figure S1 与 `docs/supplementary_analysis.md` Part A。",
+    ]
+    rq3 = [
+        f"- **衍生热度 ≠ 下载热度（补充验证）**：底座模型的衍生数（`children_count`）与**其自身**下载量的"
+        f"秩相关仅 **+{num(dd.get('spearman_children_vs_downloads30d'), 2)}**"
+        f"（累计口径 +{num(dd.get('spearman_children_vs_downloadsAllTime'), 2)}；"
+        f"n = {num(dd.get('n_bases_compared'))}）—— 属中等正相关，**既不是同一个量，也非相互独立**。"
+        f"`top10_by_children` 与 `top10_by_downloads30d` 的交集为 "
+        f"**{num(dd.get('top10_overlap_with_downloads_ranking'))}**"
+        f"（收窄到同一总体亦为 {num(dd.get('top10_overlap_within_bases'))}），且类别构成相反："
+        f"被大量微调的是**大型生成式底座**，被大量下载的是**小型句子嵌入/编码模型**。"
+        f"据此**不能把下载量读作被依赖程度**（反之亦然）。详见 `docs/supplementary_analysis.md` Part D。",
+    ]
+    rq4 = [
+        f"- **时间切分对照（补充验证）**：同一模型按 `createdAt` 切分（最老 80% 训练 / 最新 20% 测试）后，"
+        f"RandomForest R² 由随机切分 {num(trf.get('random'), 2)} 降至 **{num(trf.get('temporal'), 2)}**，"
+        f"GBT 由 {num(tgb.get('random'), 2)} 降至 {num(tgb.get('temporal'), 2)}。该差值说明**模型性能对"
+        f"创建时间队列的分布差异较为敏感**；由于特征与目标均取自同一快照，**不能**把该差值归因为"
+        f"「时间泄漏的贡献」，也不代表未来热度预测。时间切分的 R² 仍显著优于基线，"
+        f"说明特征携带可跨队列泛化的信号。详见图 Figure S2。",
+        f"- **特征数据质量（补充验证）**：RQ4 所用特征 `maintenance_span_days`（= lastModified − createdAt）"
+        f"存在 **{num(ms.get('n_negative_span'))} 个负值（{pct(ms.get('negative_share'), 3)}）**"
+        f"（最小 {num(ms.get('min_span_days'))} 天，物理上不可能）；另有 {pct(ms.get('zero_share'), 3)} 的"
+        f"整日法取值为 0（即 0 ≤ Δ < 1 天，**不是**「同一日历日期」，其中精确 Δ==0 仅 "
+        f"{num(ms.get('n_exact_zero_span'))} 个）。该项**只量化、不臆断根因**。"
+        f"详见 `docs/supplementary_analysis.md` Part E。",
+    ]
+    limits = [
+        f"10. **`maintenance_span_days` 含不可能值**："
+        f"{num(ms.get('n_negative_span'))} 个负值（{pct(ms.get('negative_share'), 3)}，"
+        f"最小 {num(ms.get('min_span_days'))} 天，物理上不可能），且 {pct(ms.get('zero_share'), 3)} 的"
+        f"整日法取值为 0（0 ≤ Δ < 1 天，**不是**「同日」；精确 Δ==0 仅 "
+        f"{num(ms.get('n_exact_zero_span'))} 个）。这是时间戳记录/口径问题，"
+        f"**只量化、不臆断根因**（与本条第 1 项同口径）。详见 `docs/supplementary_analysis.md` Part E。",
+    ]
+    ml_section = [
+        "### 3.1 时间切分对照（补充验证）", "",
+        "为对照模型在不同创建时间队列上的表现，用 sklearn 复现同一特征与建模样本，"
+        "仅把切分改为按 `createdAt` 时间切分（最老 80% 训练 / 最新 20% 测试）：", "",
+        table(["模型", "随机切分 R²", "时间切分 R²"],
+              [[k, num(_d(supp, "rq4_time_split", "r2_by_split", k).get("random"), 4),
+                num(_d(supp, "rq4_time_split", "r2_by_split", k).get("temporal"), 4)]
+               for k in ("LinearRegression", "RandomForest", "GBT")]), "",
+        f"RandomForest 的 R² 从 {num(trf.get('random'), 2)} 降至 {num(trf.get('temporal'), 2)}。"
+        f"该差值只说明模型性能**对创建时间队列的分布差异较为敏感**；特征与目标均取自同一快照，"
+        f"**不能**把该差值归因为「时间泄漏的贡献」，也不代表未来热度预测。"
+        f"详细方法与限制见 `docs/supplementary_analysis.md`（Part B）。", "",
+    ]
+    ml_limit = [
+        f"- **时间切分不是泄漏幅度的量化**：随机切分 → 按 `createdAt` 切分的 R² 变化"
+        f"（{num(trf.get('random'), 2)} → {num(trf.get('temporal'), 2)}）只反映**跨创建队列的泛化差异**；"
+        f"特征与目标同一快照，队列分布变化、训练样本构成等同样可能贡献该差值。"
+        f"likes 的同期相关性无法用快照内分层对照排除（见 `docs/supplementary_analysis.md` Part C）。",
+    ]
+    return {"rq2": rq2, "rq3": rq3, "rq4": rq4, "limits": limits,
+            "ml_section": ml_section, "ml_limit": ml_limit,
+            "challenge_rows": [
+                ["原始时间戳质量",
+                 f"`{num(ms.get('n_negative_span'))}` 条记录的 `lastModified` 早于 `createdAt`"
+                 f"（{pct(ms.get('negative_share'), 3)}，最小 {num(ms.get('min_span_days'))} 天），"
+                 f"物理上不可能；另有 {pct(ms.get('zero_share'), 3)} 的记录整日法差值为 0"
+                 f"（0 ≤ Δ < 1 天，**不是**「同一日历日期」）",
+                 "作为 RQ4 特征的已知数据质量限制**如实披露**：量化规模与分布、**不臆断根因**"
+                 "（与 2022-03 时间戳异常同口径处理）；`supplementary/maintenance_span_sanity.py` 可复现"],
+            ]}
+
+
 def mv(m, key, default="（缺失）"):
     """取清单里的值；不存在时返回默认标记，绝不猜数。"""
     item = m.get(key)
@@ -657,6 +769,7 @@ def ml_report(m):
                for k, v in metrics.items()]), "",
         "`Baseline_mean` 是「用训练集 label 均值做常数预测」的下界参照："
         "如果复杂模型的 R² 没有明显超过基线，就说明这些属性对下载热度的解释力有限。", "",
+        *supp_blocks(load_supplementary()).get("ml_section", []),
         "## 4. 相关分析（描述性）", "",
         # ml_summary.json 的 correlations 是**列表**（每项 {feature, pearson, spearman}），
         # 不是 {特征名: {pearson, spearman}} 的字典。早先这里按字典调用 .items()，
@@ -678,7 +791,8 @@ def ml_report(m):
         "这是为了在本地 32GB 环境下控制 GBT 训练代价；"
         "用户明确要求不要为课程作业盲目对 314 万条全量做复杂 GBT 训练。",
         "- 特征重要性表示模型内部的统计贡献，**不代表因果**，也不代表模型质量。",
-        "- 模型年龄、维护跨度等特征随快照时间变化，换一个时间点的快照，结论可能不同。", "",
+        "- 模型年龄、维护跨度等特征随快照时间变化，换一个时间点的快照，结论可能不同。",
+        *supp_blocks(load_supplementary()).get("ml_limit", []), "",
         "## 7. 对应图", "",
         table(["图", "文件"], [["Figure 9", "`figures_final/fig09_ml_importance.png`"]]), "",
     ]
@@ -1390,6 +1504,7 @@ def final_report(m):
         f"- 两种口径合计下载量相差约 {num(caliber_ratio(m), 1)} 倍，"
         f"**必须声明口径，不可混用、不可相加**。",
         "- **不宣称幂律**：只描述长尾形态，未做严格分布拟合与模型比较。",
+        *supp_blocks(load_supplementary()).get("rq2", []),
         "- 对应图：**Figure 5 / 6**。", "",
         "### RQ3 模型谱系网络", "",
         f"- 边语义：`src = 底座` → `dst = 衍生模型`（方向保留）。",
@@ -1412,6 +1527,7 @@ def final_report(m):
         "`descendant_count_khop`（有界可达）/ `component_size`（弱连通分量）。",
         "- PageRank 方向明确：正向高分是衍生链末端，反向高分才是「被依赖中心」；"
         "**PageRank 不等于模型质量**。",
+        *supp_blocks(load_supplementary()).get("rq3", []),
         "- 对应图：**Figure 7 / 8**。", "",
         "### RQ4 属性与下载热度的统计关联", "",
         f"- 定位：当前快照下的**统计关联**，不是前瞻性预测。",
@@ -1425,6 +1541,7 @@ def final_report(m):
         table(["模型", "RMSE", "MAE", "R²"],
               [[k, num(v.get("rmse"), 4), num(v.get("mae"), 4), num(v.get("r2"), 4)]
                for k, v in (mv(m, "rq4.metrics_on_test", {}) or {}).items()]), "",
+        *supp_blocks(load_supplementary()).get("rq4", []),
         "- 对应图：**Figure 9**。", "",
         "### RQ5 任务生态对比", "",
         f"- 已标注任务 {num(mv(m, 'rq5.n_tasks_labeled'))} 个，可比较 {num(mv(m, 'rq5.n_tasks_comparable'))} 个"
@@ -1501,6 +1618,7 @@ def final_report(m):
              "物理 32 GB，实际可用远低于 32 GB",
              "从 `local[4]` 起步做并行度扫描；driver 内存按需调整而非无上限加大；"
              "每次长计算前检查可用内存与磁盘"],
+            *supp_blocks(load_supplementary()).get("challenge_rows", []),
         ]), "",
         "---", "",
         "## 6. 最终文件位置", "",
@@ -1575,14 +1693,16 @@ def final_report(m):
         f"应对策略是独立脚本 + 超时看门狗 + 逐步骤落盘可续跑；最终全部完成。"
         f"残余约束是单次全量迭代仍需数百秒，且**未用 NetworkX 结果替代**。",
         f"6. **ML 的定位**：RQ4 是同期统计关联，不是前瞻预测；"
-        f"likes 与 downloads 同源，存在同期相关；特征重要性不代表因果。",
+        f"likes 与 downloads 同源，**「同期相关」无法用同一快照内的分层对照排除**；"
+        f"时间切分只度量跨创建队列的泛化差异，**不是**泄漏幅度的量化；特征重要性不代表因果。",
         f"7. **单机实验**：全部实验在 `local[N]` 单机多核完成，"
         f"**不构成多节点横向扩展结论**；Windows 无法清 OS 文件缓存，"
         f"扫描计时为缓存热态（首次接触除外）。",
         f"8. **下载量不等于质量**：本报告全文避免用「质量」描述下载热度，"
         f"也不把 PageRank 等同于质量。",
         f"9. **课程规模限制**：RQ4 只在 20% 确定性哈希样本上训练，"
-        f"不是全量训练；这是为控制本地资源的有意取舍，已在报告中说明。", "",
+        f"不是全量训练；这是为控制本地资源的有意取舍，已在报告中说明。",
+        *supp_blocks(load_supplementary()).get("limits", []), "",
         "---", "",
         "## 9. 最终状态", "",
         f"**{mv(m, 'final.status', 'PROJECT READY WITH LIMITATIONS')}**", "",

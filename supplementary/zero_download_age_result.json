@@ -1,0 +1,55 @@
+{
+  "snapshot": "2026-10-11",
+  "n_total": 3138959,
+  "n_zero": 1366793,
+  "zero_rate_overall": 0.4354,
+  "buckets": [
+    {
+      "bucket": "≤30天",
+      "n_total": 101610,
+      "n_zero": 38349,
+      "zero_rate": 0.3774,
+      "share_of_all_zeros": 0.0281
+    },
+    {
+      "bucket": "31–90天",
+      "n_total": 177470,
+      "n_zero": 70560,
+      "zero_rate": 0.3976,
+      "share_of_all_zeros": 0.0516
+    },
+    {
+      "bucket": "91–180天",
+      "n_total": 271550,
+      "n_zero": 109562,
+      "zero_rate": 0.4035,
+      "share_of_all_zeros": 0.0802
+    },
+    {
+      "bucket": "181–365天",
+      "n_total": 591049,
+      "n_zero": 343304,
+      "zero_rate": 0.5808,
+      "share_of_all_zeros": 0.2512
+    },
+    {
+      "bucket": "1–2年",
+      "n_total": 1027432,
+      "n_zero": 433576,
+      "zero_rate": 0.422,
+      "share_of_all_zeros": 0.3172
+    },
+    {
+      "bucket": ">2年",
+      "n_total": 969848,
+      "n_zero": 371442,
+      "zero_rate": 0.383,
+      "share_of_all_zeros": 0.2718
+    }
+  ],
+  "n_zero_age_le30": 38349,
+  "n_zero_age_gt30": 1328444,
+  "share_zero_le30_of_all_zeros": 0.0281,
+  "share_zero_gt30_of_all_zeros": 0.9719,
+  "refined_zero_rate_excl_le30": 0.4374
+}
