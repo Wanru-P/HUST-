@@ -1,0 +1,37 @@
+{
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "footer": "数据快照 cfahlgren1/hub-stats models.parquet @ 2c1e1950（截至 2026-10-10）；样本：快照内全部 3,138,954 个去重模型（Bronze 3,138,959 行去重后）",
+  "figures": [
+    {
+      "figure": "Figure 13",
+      "file": "fig13_family_structure_compare.png",
+      "title": "三种典型家族结构对比（星/链/合并）",
+      "data_sources": [
+        "gold/analysis/family_cases.json",
+        "silver/model_base_edges",
+        "gold/analysis/family_base_metrics.csv"
+      ],
+      "note": "各面板为代表性局部子图（按上限采样），非完整家族网络；星型=FLUX.1-dev、链型=Meta-Llama-3-8B、合并型=Laxhar/noobai-XL-1.1；橙色方块/虚线表示多父（合并）来源。"
+    },
+    {
+      "figure": "Figure 14",
+      "file": "fig14_family_depth_relation.png",
+      "title": "模型家族深度与关系类型分布",
+      "data_sources": [
+        "gold/analysis/family_base_metrics.csv",
+        "gold/analysis/family_ext_stats.json"
+      ],
+      "note": "深度=凝聚 DAG 上的最长衍生链（含环图先做 SCC 折叠）；关系类型占比基于 919,839 条显式血缘边；(c) 只统计 children_count≥100 的成规模家族。"
+    },
+    {
+      "figure": "Figure 15",
+      "file": "fig15_download_derivative_heat.png",
+      "title": "下载热度与衍生热度对比",
+      "data_sources": [
+        "gold/analysis/family_base_metrics.csv",
+        "gold/analysis/family_cases.json"
+      ],
+      "note": "下载量只反映传播热度，不代表模型质量；两者为同一快照下的同期统计，不构成因果。纵轴 log10 便于跨量级比较。"
+    }
+  ]
+}

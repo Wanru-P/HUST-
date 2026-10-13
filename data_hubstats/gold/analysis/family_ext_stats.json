@@ -1,0 +1,131 @@
+{
+  "generated_at": "2026-10-13T11:23:11.191775+00:00",
+  "engine": "spark_native + python_graph",
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "n_models_total": 3138954,
+  "n_edges": 919839,
+  "n_nodes_involved": 931066,
+  "n_distinct_base_models": 88333,
+  "n_distinct_derived_models": 887032,
+  "n_multi_parent_models": 15047,
+  "multi_parent_share_of_derived": 0.016963,
+  "n_merge_edges": 48028,
+  "relation_counts": {
+    "adapter": 329707,
+    "merge": 48028,
+    "finetune": 354320,
+    "quantized": 187784
+  },
+  "relation_shares": {
+    "adapter": 0.35844,
+    "merge": 0.052213,
+    "finetune": 0.385198,
+    "quantized": 0.204149
+  },
+  "max_children_count": 43419,
+  "max_subtree_height": 151,
+  "max_root_depth": 151,
+  "mean_subtree_height_all_bases": 2.3529,
+  "structure_class_counts_all_bases": {
+    "mixed": 78381,
+    "merge": 8939,
+    "star": 647,
+    "chain": 366
+  },
+  "structure_class_counts_by_tier": {
+    "all": {
+      "mixed": 78381,
+      "merge": 8939,
+      "star": 647,
+      "chain": 366
+    },
+    "ge10": {
+      "mixed": 3482,
+      "merge": 1595,
+      "star": 647,
+      "chain": 257
+    },
+    "ge100": {
+      "star": 647,
+      "chain": 169,
+      "merge": 43,
+      "mixed": 1
+    }
+  },
+  "scc": {
+    "n_nodes": 931066,
+    "n_strongly_connected_components": 931052,
+    "n_scc_size_gt1": 10,
+    "max_scc_size": 3,
+    "n_nodes_in_cycles": 24,
+    "cycle_node_share": 2.578e-05,
+    "n_self_loop_edges": 2060,
+    "condensation_edges": 917754,
+    "condensation_is_dag": true,
+    "note": "强连通分量按 Tarjan 迭代实现；size>1 的分量即真实有向环。自环(src==dst)是 size=1 的特殊环，单独计数。深度/高度均在**凝聚 DAG** 上计算，因此含环图也有严格定义。"
+  },
+  "top_bases_by_children": [
+    {
+      "base_model": "black-forest-labs/FLUX.1-dev",
+      "children_count": 43419,
+      "subtree_height": 5,
+      "structure": "star"
+    },
+    {
+      "base_model": "Qwen/Qwen1.5-0.5B",
+      "children_count": 32534,
+      "subtree_height": 3,
+      "structure": "star"
+    },
+    {
+      "base_model": "Qwen/Qwen1.5-1.8B",
+      "children_count": 30626,
+      "subtree_height": 3,
+      "structure": "star"
+    },
+    {
+      "base_model": "google/gemma-2b",
+      "children_count": 24036,
+      "subtree_height": 3,
+      "structure": "star"
+    },
+    {
+      "base_model": "distilbert/distilbert-base-uncased",
+      "children_count": 13182,
+      "subtree_height": 8,
+      "structure": "chain"
+    },
+    {
+      "base_model": "stabilityai/stable-diffusion-xl-base-1.0",
+      "children_count": 10998,
+      "subtree_height": 7,
+      "structure": "chain"
+    },
+    {
+      "base_model": "google/gemma-7b",
+      "children_count": 9585,
+      "subtree_height": 7,
+      "structure": "chain"
+    },
+    {
+      "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+      "children_count": 8570,
+      "subtree_height": 12,
+      "structure": "chain"
+    },
+    {
+      "base_model": "lerobot/smolvla_base",
+      "children_count": 8100,
+      "subtree_height": 2,
+      "structure": "star"
+    },
+    {
+      "base_model": "meta-llama/Llama-3.1-8B-Instruct",
+      "children_count": 7237,
+      "subtree_height": 140,
+      "structure": "chain"
+    }
+  ],
+  "scope_note": "结论限定在**显式继承网络**内；base_models 缺失率 71.74%，无显式底座的模型不在图内。深度/高度为凝聚 DAG 上的最长路径，不等同于可达后代数。",
+  "seconds": 194.3
+}

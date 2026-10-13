@@ -43,79 +43,6 @@ DIRS = SA.resolve_dirs()
 GOLD = DIRS["gold"]
 SILVER = DIRS["silver"]
 ANALYSIS = os.path.join(GOLD, "analysis")
-
-SUPP_PATH = os.path.join(ANALYSIS, "supplementary_results.json")
-
-
-def load_supplementary():
-    """读取补充验证结果（Part A–E）；缺失时返回 {}。"""
-    if not os.path.exists(SUPP_PATH):
-        return {}
-    with open(SUPP_PATH, encoding="utf-8") as f:
-        return json.load(f)
-
-
-def _sn(v, nd=0):
-    try:
-        return f"{float(v):,.{nd}f}"
-    except (TypeError, ValueError):
-        return "—"
-
-
-def _sp(v, nd=1):
-    try:
-        return f"{float(v) * 100:.{nd}f}%"
-    except (TypeError, ValueError):
-        return "—"
-
-
-def supp_dashboard():
-    """Dashboard 的补充结论（Part A–E），数字只取自 supplementary_results.json。
-
-    ⚠️ 两份 Dashboard 由本脚本生成；补充结论必须在这里产出，
-    否则重新运行本脚本会把手工加进去的内容冲掉。
-    """
-    s = load_supplementary()
-    if not s:
-        return {"rq2": "", "rq3": "", "rq4": "", "limit_rows": []}
-    d2 = (s.get("rq2_robustness") or {}).get("downloads", {})
-    d2a = (s.get("rq2_robustness") or {}).get("downloadsAllTime", {})
-    z = s.get("zero_download_age") or {}
-    dd = s.get("derivation_vs_downloads") or {}
-    trf = ((s.get("rq4_time_split") or {}).get("r2_by_split") or {}).get("RandomForest", {})
-    ms = s.get("maintenance_span_sanity") or {}
-    rq2 = (f"稳健性（补充验证）：剔除 {_sp(d2.get('zero_share'), 2)} 零下载模型后 Gini 仍为 "
-           f"{_sn(d2.get('g_pos_excl_zero'), 6)}（累计 {_sn(d2a.get('g_pos_excl_zero'), 6)}）、"
-           f"Top-1% 内部 {_sn(d2.get('g_top1pct_internal'), 6)}，下载量高度集中"
-           f"<b>并不只是由零下载记录造成的</b>；零下载中 {_sp(z.get('share_zero_gt30'), 1)} 创建超 30 天，"
-           f"剔除新模型后零下载率 {_sp(z.get('refined_zero_rate_excl_le30'), 2)}"
-           f"（见 <code>docs/supplementary_analysis.md</code> Part A）。")
-    rq3 = (f"衍生热度 ≠ 下载热度（补充验证）：底座衍生数与其自身下载量的秩相关仅 "
-           f"<b>+{_sn(dd.get('spearman_children_vs_downloads30d'), 2)}</b>"
-           f"（累计 +{_sn(dd.get('spearman_children_vs_downloadsAllTime'), 2)}，"
-           f"n={_sn(dd.get('n_bases_compared'))}）；两榜前十交集为 "
-           f"<b>{_sn(dd.get('top10_overlap_with_downloads_ranking'))}</b>"
-           f"（同一总体内亦为 {_sn(dd.get('top10_overlap_within_bases'))}），且类别相反——"
-           f"被大量微调的是大型生成式底座，被大量下载的是小型句子嵌入/编码模型；"
-           f"<b>不能</b>把下载量读作被依赖程度（见 <code>docs/supplementary_analysis.md</code> Part D）。")
-    rq4 = (f"时间切分对照（补充验证；与 Spark MLlib 口径分别列出、<b>不混算</b>）：同一模型按 "
-           f"<code>createdAt</code> 切分后，RandomForest R² 由随机切分 {_sn(trf.get('random'), 2)} "
-           f"降至 <b>{_sn(trf.get('temporal'), 2)}</b>；该差值说明模型对"
-           f"<b>创建时间队列的分布差异</b>较为敏感，特征与目标同快照，<b>不能</b>把该差值归因为"
-           f"「时间泄漏的贡献」，也<b>不能</b>解释为前瞻性预测能力。"
-           f"特征质量（补充验证）：<code>maintenance_span_days</code> 含 "
-           f"<b>{_sn(ms.get('n_negative_span'))} 个负值（{_sp(ms.get('negative_share'), 3)}）</b>"
-           f"（最小 {_sn(ms.get('min_span_days'))} 天，物理上不可能）且 "
-           f"<b>{_sp(ms.get('zero_share'), 3)} 整日法取值为 0</b>"
-           f"（0 ≤ Δ < 1 天，<b>不是</b>「同日」；精确 Δ==0 仅 {_sn(ms.get('n_exact_zero_span'))} 个），"
-           f"属时间戳/口径问题、不臆断根因（见 <code>docs/supplementary_analysis.md</code> Part C/E）。")
-    limit_rows = [
-        ["衍生数（children_count）/ 下载量",
-         "中等正相关（ρ≈0.37–0.39），头部由不同类别模型占据，<b>不能互相替代读</b>"],
-        ["maintenance_span_days 负值 / 有效维护跨度",
-         f"<b>{_sp(ms.get('negative_share'), 3)}</b> 为负（物理上不可能），属时间戳/口径问题"],
-    ]
-    return {"rq2": rq2, "rq3": rq3, "rq4": rq4, "limit_rows": limit_rows}
 FIG_DIR = os.path.join(PROJECT_ROOT, "figures_final")
 SUPP_DIR = os.path.join(PROJECT_ROOT, "figures_supplementary")
 FIG_REPORT_DIR = os.path.join(PROJECT_ROOT, "figures_report")
@@ -1534,7 +1461,7 @@ def dashboard():
 <nav>
 <a href="#overview">概览</a><a href="#rq1">RQ1 演化</a><a href="#rq2">RQ2 集中度</a>
 <a href="#rq3">RQ3 谱系</a><a href="#rq4">RQ4 关联</a><a href="#rq5">RQ5 任务生态</a>
-<a href="#spark">Spark 扩展性</a><a href="#figures">全部图表</a><a href="#limits">口径与限制</a>
+<a href="#spark">Spark 扩展性</a><a href="#figures">全部图表</a><a href="family_explorer.html">家族探索器</a><a href="#limits">口径与限制</a>
 </nav>
 <div class="wrap">
 <h2 id="overview">概览</h2>
@@ -1557,7 +1484,7 @@ def dashboard():
 <div class="tablewrap">{rq2_table}</div>
 <p class="note">Gini 由频数加权秩公式精确计算（非采样近似）；Top-p 份额按值降序取前
 <code>max(1, int(n·p))</code> 个，并列值整体同权。只描述长尾形态，
-<b>未做严格幂律拟合与模型比较，因此不宣称幂律分布</b>。{supp_dashboard()['rq2']}</p>
+<b>未做严格幂律拟合与模型比较，因此不宣称幂律分布</b>。</p>
 
 <h2 id="rq3">RQ3 · 模型谱系网络</h2>
 <div class="tablewrap">{rq3_table}</div>
@@ -1566,13 +1493,13 @@ def dashboard():
 <code>direct_family_size</code>（= children_count + 1，1 跳直系）/
 <code>descendant_count_khop</code>（≤{reach} 跳有界可达，是下界）/
 <code>component_size</code>（弱连通分量，跨多跳）。<b>PageRank 不等于模型质量。</b>
-Figure 7 右侧为<b>代表性局部子图</b>，不可解释为完整弱连通分量。{supp_dashboard()['rq3']}</p>
+Figure 7 右侧为<b>代表性局部子图</b>，不可解释为完整弱连通分量。</p>
 
 <h2 id="rq4">RQ4 · 属性与下载热度的统计关联</h2>
 <div class="tablewrap">{ml_table}</div>
 <p class="note">目标 y = log(1+downloads)；<b>先划分后拟合</b>，预处理只在训练集上 fit，
 指标只在<b>独立测试集</b>上计算。likes 与 downloads 同取自一个快照，存在同期相关，
-<b>不能</b>解释为前瞻性预测能力；特征重要性也不代表因果或模型质量。{supp_dashboard()['rq4']}</p>
+<b>不能</b>解释为前瞻性预测能力；特征重要性也不代表因果或模型质量。</p>
 
 <h2 id="rq5">RQ5 · 任务生态对比（仅已标注任务，样本量 ≥ 200）</h2>
 <div class="tablewrap">{rq5_table}</div>
@@ -1593,6 +1520,16 @@ Figure 7 右侧为<b>代表性局部子图</b>，不可解释为完整弱连通�
 旧版 Figure 7（最大弱连通分量 Top-1500 力导向网络）作为<b>补充材料</b>保留在
 <code>figures_supplementary/</code>：节点过密、无分类着色，缩小后不可读，故不作为正式图。</p>
 
+<h2 id="explorer">模型家族探索器（交互式）</h2>
+<p class="note">在<b>有界本地数据集</b>（Top-N 家族，节点数与展开深度均设上限）上交互浏览模型继承网络：
+搜索并选择底座模型、按需展开 1 跳 / 2 跳、按 Finetune / Adapter / Quantized / Merge 筛选边、
+点击节点查看名称 / 任务 / 下载量 / 创建时间及关系类型、支持拖拽缩放与重置视图。
+<b>这是代表性局部子图，不是全量网络</b>；结论限定在显式继承关系内。
+打开同目录下的 <code>family_explorer.html</code>（ECharts 已内嵌，<b>离线可用</b>）。</p>
+<p><a href="family_explorer.html" style="display:inline-block;background:#2563eb;color:#fff;
+text-decoration:none;padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600">
+▶ 打开模型家族探索器</a></p>
+
 <h2 id="limits">口径与限制（易混淆项）</h2>
 <div class="tablewrap">{table(
         [["下载热度 / 模型质量", "下载量只反映传播热度，<b>不等于质量</b>"],
@@ -1604,8 +1541,7 @@ Figure 7 右侧为<b>代表性局部子图</b>，不可解释为完整弱连通�
          ["component_size / 家族规模", "弱连通分量跨多跳，<b>不等于</b> 1 跳家族规模"],
          ["descendant_count_khop / 全量后代", f"只统计 ≤{reach} 跳，<b>是下界</b>"],
          ["maintenance_span_days / 更新频率", "lastModified − createdAt 是<b>维护跨度</b>，不是更新频率"],
-         ["本地单机 / 多节点集群", "local[N] 单机多核，<b>不构成</b>横向扩展结论"]]
-        + supp_dashboard()['limit_rows'],
+         ["本地单机 / 多节点集群", "local[N] 单机多核，<b>不构成</b>横向扩展结论"]],
         ["易混淆的两侧", "正确表述"])}</div>
 </div>"""
 

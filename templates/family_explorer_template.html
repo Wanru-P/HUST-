@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HF 模型家族探索器 · Model Family Explorer</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Microsoft YaHei",system-ui,-apple-system,sans-serif;
+background:#f8fafc;color:#111827;line-height:1.55}
+header.top{background:#fff;border-bottom:1px solid #e5e7eb;padding:14px 20px}
+h1{font-size:19px;margin:0 0 3px}
+.sub{color:#6b7280;font-size:12.5px}
+.layout{display:grid;grid-template-columns:310px 1fr 300px;gap:0;height:calc(100vh - 92px)}
+.panel{background:#fff;border-right:1px solid #e5e7eb;padding:14px 16px;overflow-y:auto}
+.panel.right{border-right:none;border-left:1px solid #e5e7eb}
+.canvas{position:relative;background:#fff}
+#chart{width:100%;height:100%}
+.sec{margin-bottom:16px}
+.sec h3{font-size:12.5px;color:#374151;margin:0 0 7px;text-transform:none;
+border-bottom:1px solid #f1f5f9;padding-bottom:4px}
+input[type=text],select{width:100%;padding:6px 9px;border:1px solid #d1d5db;border-radius:7px;
+font-size:12.5px;font-family:inherit}
+.famlist{max-height:230px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:7px}
+.famitem{padding:6px 9px;font-size:12px;cursor:pointer;border-bottom:1px solid #f3f4f6;
+display:flex;justify-content:space-between;gap:6px;align-items:center}
+.famitem:hover{background:#eff6ff}
+.famitem.active{background:#dbeafe;font-weight:600}
+.famitem .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font-size:10px;padding:1px 6px;border-radius:9px;color:#fff;flex:none}
+.b-star{background:#2563eb}.b-chain{background:#7c3aed}.b-merge{background:#059669}
+.b-mixed{background:#9ca3af}.b-unknown{background:#9ca3af}
+label.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;padding:2px 0;cursor:pointer}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.btn{display:inline-block;background:#2563eb;color:#fff;border:none;border-radius:7px;
+padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn.sec{background:#eef2f7;color:#374151}
+.btn:hover{filter:brightness(.96)}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.stat{font-size:12px;color:#374151;background:#f8fafc;border:1px solid #eef2f7;border-radius:7px;
+padding:8px 10px}
+.stat b{color:#2563eb}
+.warn{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 10px;
+font-size:11.5px;color:#9a3412;margin-top:8px}
+.detail dt{font-size:11px;color:#6b7280;margin-top:8px}
+.detail dd{font-size:12.5px;margin:1px 0 0;word-break:break-all}
+.muted{color:#9ca3af;font-size:12px}
+input[type=range]{width:100%}
+@media(max-width:980px){.layout{grid-template-columns:1fr;height:auto}
+.panel{max-height:none;border-right:none;border-bottom:1px solid #e5e7eb}
+.canvas{height:70vh}}
+</style>
+</head>
+<body>
+<header class="top">
+<h1>HF 模型家族探索器 · Model Family Explorer</h1>
+<div class="sub" id="metaLine">加载中…</div>
+</header>
+<div class="layout">
+  <div class="panel left">
+    <div class="sec">
+      <h3>搜索并选择底座模型</h3>
+      <input type="text" id="search" placeholder="输入模型名过滤，如 Qwen / FLUX / Llama">
+      <div class="famlist" id="famlist"></div>
+    </div>
+    <div class="sec">
+      <h3>典型家族快速切换</h3>
+      <div class="quick" id="quick"></div>
+    </div>
+    <div class="sec">
+      <h3>按关系类型筛选边</h3>
+      <label class="chk"><input type="checkbox" class="rel" value="finetune" checked>
+        <span class="dot" style="background:#2563eb"></span>Finetune</label>
+      <label class="chk"><input type="checkbox" class="rel" value="adapter" checked>
+        <span class="dot" style="background:#7c3aed"></span>Adapter</label>
+      <label class="chk"><input type="checkbox" class="rel" value="quantized" checked>
+        <span class="dot" style="background:#d97706"></span>Quantized</label>
+      <label class="chk"><input type="checkbox" class="rel" value="merge" checked>
+        <span class="dot" style="background:#059669"></span>Merge</label>
+    </div>
+    <div class="sec">
+      <h3>展开深度</h3>
+      <label class="chk"><input type="radio" name="depth" value="1" checked> 一跳（直接衍生）</label>
+      <label class="chk"><input type="radio" name="depth" value="2"> 两跳（按需展开，受数据上限约束）</label>
+    </div>
+    <div class="sec">
+      <h3>节点数量上限（大图保护）</h3>
+      <input type="range" id="maxnodes" min="20" max="600" value="200" step="20">
+      <div class="muted"><span id="maxnodesVal">200</span> 个节点</div>
+    </div>
+    <div class="sec">
+      <h3>视图</h3>
+      <button class="btn sec" id="resetView">重置视图</button>
+    </div>
+    <div class="sec">
+      <div class="stat" id="stats"></div>
+      <div class="warn" id="truncWarn" style="display:none"></div>
+    </div>
+  </div>
+  <div class="canvas"><div id="chart"></div></div>
+  <div class="panel right">
+    <div class="sec">
+      <h3>节点详情</h3>
+      <div id="detail" class="detail"><p class="muted">点击图中任意节点查看详情。</p></div>
+    </div>
+    <div class="sec">
+      <h3>图例</h3>
+      <p class="muted">中心大圆 = 底座模型；外圈 = 衍生模型；箭头方向 = 底座 → 衍生。
+      节点颜色按角色（底座/衍生），边颜色按关系类型。可拖拽节点、滚轮缩放、拖动平移。</p>
+    </div>
+  </div>
+</div>
+<script>/*__ECHARTS__*/</script>
+<script>
+const DATA = /*__DATA__*/;
+const REL_COLOR = {finetune:"#2563eb", adapter:"#7c3aed", quantized:"#d97706", merge:"#059669"};
+const REL_LABEL = {finetune:"Finetune", adapter:"Adapter", quantized:"Quantized", merge:"Merge"};
+const ROLE_COLOR = {base:"#111827", child:"#60a5fa", grandchild:"#a7f3d0"};
+const nodeMap = {}; DATA.nodes.forEach(n=>nodeMap[n.id]=n);
+const childrenOf = {}, parentsOf = {};
+DATA.edges.forEach(e=>{
+  (childrenOf[e.s]=childrenOf[e.s]||[]).push(e);
+  (parentsOf[e.t]=parentsOf[e.t]||[]).push(e);
+});
+let chart, currentBase=null;
+
+function badge(s){return '<span class="badge b-'+(s||'unknown')+'">'+({star:"星型",chain:"链型",merge:"合并型",mixed:"混合",unknown:"?"}[s]||s)+'</span>';}
+
+function initFamilies(){
+  const list=document.getElementById('famlist');
+  const sorted=[...DATA.families].sort((a,b)=>b.children_count-a.children_count);
+  sorted.forEach(f=>{
+    const d=document.createElement('div');
+    d.className='famitem'; d.dataset.id=f.id; d.dataset.name=f.id.toLowerCase();
+    d.innerHTML='<span class="nm" title="'+f.id+'">'+f.id+'</span>'+
+      '<span style="flex:none;color:#6b7280;font-size:11px">'+f.children_count+'</span>'+badge(f.structure);
+    d.onclick=()=>selectBase(f.id);
+    list.appendChild(d);
+  });
+  const quick=document.getElementById('quick');
+  DATA.families.filter(f=>f.is_case).forEach(f=>{
+    const b=document.createElement('button'); b.className='btn sec';
+    b.textContent=f.id.split('/').pop(); b.title=f.id;
+    b.onclick=()=>selectBase(f.id); quick.appendChild(b);
+  });
+  if(!quick.children.length){
+    DATA.families.slice(0,3).forEach(f=>{
+      const b=document.createElement('button'); b.className='btn sec';
+      b.textContent=f.id.split('/').pop(); b.title=f.id; b.onclick=()=>selectBase(f.id);
+      quick.appendChild(b);});
+  }
+}
+
+function checkedRelations(){
+  return new Set([...document.querySelectorAll('.rel')].filter(c=>c.checked).map(c=>c.value));
+}
+function currentDepth(){return +document.querySelector('input[name=depth]:checked').value;}
+function maxNodes(){return +document.getElementById('maxnodes').value;}
+
+function selectBase(id){
+  currentBase=id;
+  [...document.querySelectorAll('.famitem')].forEach(e=>e.classList.toggle('active',e.dataset.id===id));
+  render();
+}
+
+function computeSubgraph(base){
+  const rels=checkedRelations(), depth=currentDepth(), cap=maxNodes();
+  const nodes=new Set([base]); const links=[]; let truncated=false;
+  const direct=(childrenOf[base]||[]).filter(e=>rels.has(e.r));
+  direct.sort((a,b)=>(nodeMap[b.t]?.downloadsAllTime||0)-(nodeMap[a.t]?.downloadsAllTime||0));
+  let kept=direct.slice(0,cap);
+  if(direct.length>kept.length) truncated=true;
+  kept.forEach(e=>{nodes.add(e.t);links.push(e);});
+  if(depth===2){
+    for(const e of kept){
+      const gc=(childrenOf[e.t]||[]).filter(x=>rels.has(x.r));
+      gc.sort((a,b)=>(nodeMap[b.t]?.downloadsAllTime||0)-(nodeMap[a.t]?.downloadsAllTime||0));
+      const room=cap-nodes.size; if(room<=0){truncated=true;break;}
+      let g=gc.slice(0,Math.min(8,room));
+      if(gc.length>g.length) truncated=true;
+      g.forEach(x=>{nodes.add(x.t);links.push(x);});
+    }
+  }
+  return {nodes,links,truncated};
+}
+
+function layout(base,nodeSet,links){
+  const R1=280, R2=520;
+  const kids=links.filter(l=>l.s===base).map(l=>l.t);
+  const pos={}; pos[base]={x:0,y:0};
+  const n=kids.length||1;
+  kids.forEach((k,i)=>{
+    const a=-Math.PI/2 + 2*Math.PI*i/n;
+    pos[k]={x:R1*Math.cos(a), y:R1*Math.sin(a), _a:a};
+  });
+  const gkids=links.filter(l=>l.s!==base);
+  const byParent={}; gkids.forEach(l=>{(byParent[l.s]=byParent[l.s]||[]).push(l.t);});
+  Object.entries(byParent).forEach(([p,gs])=>{
+    const pa=pos[p]?pos[p]._a:0;
+    gs.forEach((g,j)=>{
+      if(pos[g])return;
+      const spread=(j-(gs.length-1)/2)*0.16;
+      const a=pa+spread;
+      pos[g]={x:R2*Math.cos(a), y:R2*Math.sin(a)};
+    });
+  });
+  return pos;
+}
+
+function render(){
+  const base=currentBase; if(!base)return;
+  const {nodes,links,truncated}=computeSubgraph(base);
+  const pos=layout(base,nodes,links);
+  const many=nodes.size>44;
+  const nodeData=[...nodes].map(id=>{
+    const role = id===base?'base':(parentsOf[id]&&parentsOf[id].some(e=>e.s===base)?'child':'grandchild');
+    const nd=nodeMap[id]||{};
+    const size = id===base?46:(role==='child'?20:13);
+    return {id, name:id, x:pos[id]?.x||0, y:pos[id]?.y||0, symbolSize:size,
+      itemStyle:{color:ROLE_COLOR[role]||'#60a5fa', borderColor:'#fff', borderWidth:1.5},
+      label:{show: id===base || !many, fontSize: id===base?12:9, position:'right',
+             formatter:p=>p.name.split('/').pop(), color:'#374151'},
+      _role:role};
+  });
+  const linkData=links.map(l=>({source:l.s,target:l.t,
+    lineStyle:{color:REL_COLOR[l.r]||'#9ca3af', width:1.1, curveness:0.08, opacity:0.75},
+    _rel:l.r}));
+  chart.setOption({
+    tooltip:{trigger:'item',formatter:p=>{
+      if(p.dataType==='edge')return REL_LABEL[p.data._rel]||'';
+      const nd=nodeMap[p.data.id]||{}; 
+      return '<b>'+p.data.id+'</b><br>任务: '+(nd.task||'unknown')+
+        '<br>downloads(30d): '+(nd.downloads||0).toLocaleString()+
+        '<br>downloadsAllTime: '+(nd.downloadsAllTime||0).toLocaleString()+
+        '<br>创建: '+(nd.created_at||'-');
+    }},
+    series:[{type:'graph', layout:'none', roam:true, draggable:true, animation:false,
+      data:nodeData, links:linkData,
+      edgeSymbol:['none','arrow'], edgeSymbolSize:6,
+      emphasis:{focus:'adjacency', label:{show:true}},
+      lineStyle:{color:'source'}}]
+  }, true);
+  const fam=DATA.families.find(f=>f.id===base);
+  document.getElementById('stats').innerHTML=
+    '当前底座：<b>'+base+'</b><br>显示节点 <b>'+nodes.size+'</b> · 显示边 <b>'+links.length+
+    '</b><br>该底座直接衍生（全量）<b>'+(fam?fam.children_count:'-')+'</b> · 最长链 <b>'+
+    (fam?fam.subtree_height:'-')+'</b> 跳 · '+badge(fam?fam.structure:'unknown');
+  const tw=document.getElementById('truncWarn');
+  if(truncated||DATA.meta.truncated){tw.style.display='block';
+    tw.textContent='⚠️ 已按节点上限/数据上限截断：当前为代表性局部子图，不是完整家族网络。';}
+  else{tw.style.display='none';}
+}
+
+function showDetail(id){
+  const nd=nodeMap[id]||{};
+  const roles=(nd.roles||[]).join('、');
+  const inc=(parentsOf[id]||[]).map(e=>REL_LABEL[e.r]+' ← '+e.s);
+  document.getElementById('detail').innerHTML=
+    '<dl><dt>模型</dt><dd>'+id+'</dd>'+
+    '<dt>任务 (pipeline_tag)</dt><dd>'+(nd.task||'unknown')+'</dd>'+
+    '<dt>downloads（近 30 天）</dt><dd>'+(nd.downloads||0).toLocaleString()+'</dd>'+
+    '<dt>downloadsAllTime</dt><dd>'+(nd.downloadsAllTime||0).toLocaleString()+'</dd>'+
+    '<dt>创建时间</dt><dd>'+(nd.created_at||'-')+'</dd>'+
+    '<dt>在数据集中角色</dt><dd>'+(roles||'-')+'</dd>'+
+    '<dt>入边（底座 → 本节点）</dt><dd>'+(inc.length?inc.join('<br>'):'（无 / 为当前底座）')+'</dd></dl>';
+}
+
+function boot(){
+  chart=echarts.init(document.getElementById('chart'));
+  chart.on('click',p=>{ if(p.dataType==='node') showDetail(p.data.id); });
+  const m=DATA.meta;
+  document.getElementById('metaLine').innerHTML=
+    '数据快照 <code>'+m.snapshot_sha.slice(0,8)+'</code> · 有界子图：节点 '+m.n_nodes+
+    ' / 边 '+m.n_edges+' · 上限 每底座 '+m.caps.cap_per_base+' 子节点、总节点 '+m.caps.max_nodes+
+    ' · <b>代表性局部子图，非全量网络</b>';
+  initFamilies();
+  document.getElementById('search').addEventListener('input',ev=>{
+    const q=ev.target.value.toLowerCase();
+    [...document.querySelectorAll('.famitem')].forEach(e=>{
+      e.style.display=e.dataset.name.includes(q)?'':'none';});
+  });
+  document.querySelectorAll('.rel').forEach(c=>c.addEventListener('change',render));
+  document.querySelectorAll('input[name=depth]').forEach(r=>r.addEventListener('change',render));
+  document.getElementById('maxnodes').addEventListener('input',ev=>{
+    document.getElementById('maxnodesVal').textContent=ev.target.value; render();});
+  document.getElementById('resetView').addEventListener('click',()=>{
+    chart.setOption({series:[{zoom:1,center:null}]}); render();});
+  const first=[...DATA.families].sort((a,b)=>b.children_count-a.children_count)[0];
+  if(first) selectBase(first.id);
+  window.addEventListener('resize',()=>chart.resize());
+}
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "n_nodes": 931066,
+  "n_strongly_connected_components": 931052,
+  "n_scc_size_gt1": 10,
+  "max_scc_size": 3,
+  "n_nodes_in_cycles": 24,
+  "cycle_node_share": 2.578e-05,
+  "n_self_loop_edges": 2060,
+  "condensation_edges": 917754,
+  "condensation_is_dag": true,
+  "note": "强连通分量按 Tarjan 迭代实现；size>1 的分量即真实有向环。自环(src==dst)是 size=1 的特殊环，单独计数。深度/高度均在**凝聚 DAG** 上计算，因此含环图也有严格定义。"
+}

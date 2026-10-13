@@ -23,6 +23,12 @@ build_manifest.py — 把全部正式结果收敛成**唯一**的结果清单（
     data_hubstats/gold/analysis/phase2_runs.json
     data_hubstats/_smoke/full_etl_run_report.json
     data_hubstats/gold/analysis/figure_index.json
+    data_hubstats/gold/analysis/family_ext_stats.json      增量：家族结构（Task A）
+    data_hubstats/gold/analysis/family_scc_summary.json    增量：环/SCC 摘要
+    data_hubstats/gold/analysis/family_multi_parent.csv    增量：多父节点
+    data_hubstats/gold/analysis/family_cases.json          增量：三个案例家族（Task B）
+    data_hubstats/gold/analysis/concentration_groups.json  增量：分组集中度（Task D）
+    data_hubstats/gold/analysis/figures_ext_index.json     增量：新增图表索引（Task E）
 
 输出：
     data_hubstats/gold/analysis/results_manifest.json
@@ -224,6 +230,67 @@ def main():
                   "family_note", "top10_by_n_models", "top10_by_downloads_total",
                   "top10_by_gini_downloads", "highest_base_relation_coverage"):
             put(f"rq5.{k}", rq5.get(k), f"rq5_summary.json:{k}")
+
+    # ---------- 7.5 增量完善：家族结构与分组集中度 ----------
+    # 说明：本块是「增量完善」新增的结果，不改动上面 RQ1–RQ5 的任何既有指标。
+    fam = load_json(os.path.join(ANALYSIS, "family_ext_stats.json"), "family_ext_stats")
+    if fam:
+        src = "family_ext_stats.json"
+        for k in ("n_models_total", "n_edges", "n_nodes_involved",
+                  "n_distinct_base_models", "n_distinct_derived_models",
+                  "n_multi_parent_models", "multi_parent_share_of_derived",
+                  "n_merge_edges", "relation_counts", "relation_shares",
+                  "max_children_count", "max_subtree_height", "max_root_depth",
+                  "mean_subtree_height_all_bases", "structure_class_counts_all_bases",
+                  "structure_class_counts_by_tier", "top_bases_by_children",
+                  "scope_note", "seconds", "engine"):
+            put(f"rq3_family.{k}", fam.get(k), f"{src}:{k}")
+    scc = load_json(os.path.join(ANALYSIS, "family_scc_summary.json"), "family_scc_summary")
+    if scc:
+        put("rq3_family.scc_summary", scc, "family_scc_summary.json")
+    mp = load_summary_csv("family_multi_parent.csv")
+    if mp:
+        put("rq3_family.multi_parent_rows", mp, "family_multi_parent.csv")
+    ts = load_summary_csv("family_task_structure.csv")
+    if ts:
+        put("rq3_family.task_structure_rows", ts, "family_task_structure.csv",
+            "按 pipeline_tag 汇总的家族结构（底座数/衍生数/中位出度/平均高度/merge 占比/多父占比）")
+    cases = load_json(os.path.join(ANALYSIS, "family_cases.json"), "family_cases")
+    if cases:
+        put("rq3_family.case_selection_rule", cases.get("case_selection_rule"),
+            "family_cases.json:case_selection_rule")
+        put("rq3_family.cases", cases.get("cases"), "family_cases.json:cases",
+            "三个代表性家族：star / chain / merge")
+        put("rq3_family.children_count_downloads_correlation",
+            cases.get("children_count_downloads_correlation"),
+            "family_cases.json:children_count_downloads_correlation",
+            "同一快照内 children_count 与下载量的秩相关；不作因果解释")
+        put("rq3_family.role_note", cases.get("role_note"), "family_cases.json:role_note")
+
+    cg = load_json(os.path.join(ANALYSIS, "concentration_groups.json"), "concentration_groups")
+    if cg:
+        put("rq2_groups.n_models_total", cg.get("n_models_total"),
+            "concentration_groups.json:n_models_total")
+        put("rq2_groups.calibers", cg.get("calibers"), "concentration_groups.json:calibers")
+        for grouping, by_caliber in (cg.get("groupings") or {}).items():
+            for caliber, block in (by_caliber or {}).items():
+                put(f"rq2_groups.{grouping}.{caliber}.theil_decomposition",
+                    block.get("theil_decomposition"),
+                    f"concentration_groups.json:groupings.{grouping}.{caliber}.theil_decomposition",
+                    "Theil T 的组间/组内分解（between_share 为组间占比）")
+                put(f"rq2_groups.{grouping}.{caliber}.n_groups", block.get("n_groups"),
+                    f"concentration_groups.json:groupings.{grouping}.{caliber}.n_groups")
+                put(f"rq2_groups.{grouping}.{caliber}.n_groups_ge_1000",
+                    block.get("n_groups_ge_1000"),
+                    f"concentration_groups.json:groupings.{grouping}.{caliber}.n_groups_ge_1000")
+                put(f"rq2_groups.{grouping}.{caliber}.per_group", block.get("per_group"),
+                    f"concentration_groups.json:groupings.{grouping}.{caliber}.per_group")
+
+    fext = load_json(os.path.join(ANALYSIS, "figures_ext_index.json"), "figures_ext_index")
+    if fext:
+        put("deliverables.figures_ext", fext.get("figures"), "figures_ext_index.json:figures")
+        put("deliverables.figures_ext_count", len(fext.get("figures") or []),
+            "figures_ext_index.json")
 
     # ---------- 8. Benchmark ----------
     rows = load_summary_csv("benchmark_all_summary.csv")

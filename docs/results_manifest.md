@@ -1,8 +1,8 @@
 # 结果清单（results_manifest）
 
-生成时间：2026-10-11T10:30:46.206847+00:00  
+生成时间：2026-10-13T11:59:55.299302+00:00  
 数据快照 commit：`2c1e195090bbcbe1f940cfdcb4ac25b76e48da70`  
-指标条数：182
+指标条数：237
 
 > 本文件是**唯一**的结果基准。报告、Dashboard、图注、LaTeX 素材、PPT 素材中的所有数字都必须能在此表找到，且不得与表中值冲突。
 
@@ -69,6 +69,8 @@
 | `data.unique_tags` | 424435 | `data_quality_report.json:n_unique_tags` |  |
 | `deliverables.figure_count` | 12 | `figure_index.json` |  |
 | `deliverables.figures` | [{"figure": "Figure 1", "file": "fig01_monthly_evolution.png", "title": "月度新增模型数（快照可见模型的创建时间分布）", "data_sources": ["gold/analysis/monthly_new_models.csv", "gold/analysis/summary_rq1.json"], "note":… | `figure_index.json:figures` |  |
+| `deliverables.figures_ext` | [{"figure": "Figure 13", "file": "fig13_family_structure_compare.png", "title": "三种典型家族结构对比（星/链/合并）", "data_sources": ["gold/analysis/family_cases.json", "silver/model_base_edges", "gold/analysis/f… | `figures_ext_index.json:figures` |  |
+| `deliverables.figures_ext_count` | 3 | `figures_ext_index.json` |  |
 | `env.HF_ENGINE` | spark | `full_etl_run_report.json:config` |  |
 | `env.HF_SHUFFLE_PARTITIONS` | 64 | `full_etl_run_report.json:config` |  |
 | `env.HF_SPARK_DRIVER_MEMORY` | 3g | `full_etl_run_report.json:config` |  |
@@ -130,6 +132,32 @@
 | `rq2.meta.method` | {"gini": "频数加权秩公式 G=2S/(n·total)-1，精确值，非采样近似", "topk": "按值降序取前 max(1,int(n·p)) 个模型；并列值整体同权，结果可复现", "lorenz": "频数聚合后的真实累计点，未抽样、未插值"} | `summary_rq2.json:method` |  |
 | `rq2.meta.metric_note` | downloads 为近 30 天窗口口径，downloadsAllTime 为历史累计口径，两者相差约 27 倍，任何集中度结论都必须声明所用口径，不可混用。 | `summary_rq2.json:metric_note` |  |
 | `rq2.meta.powerlaw_note` | 本分析只描述长尾形态（Lorenz 偏离、CCDF 双对数近似直线），**未**做严格幂律拟合与模型比较，因此不宣称已证明幂律分布。 | `summary_rq2.json:powerlaw_note` |  |
+| `rq2_groups.calibers` | ["downloads", "downloadsAllTime"] | `concentration_groups.json:calibers` |  |
+| `rq2_groups.created_year.downloads.n_groups` | 5 | `concentration_groups.json:groupings.created_year.downloads.n_groups` |  |
+| `rq2_groups.created_year.downloads.n_groups_ge_1000` | 5 | `concentration_groups.json:groupings.created_year.downloads.n_groups_ge_1000` |  |
+| `rq2_groups.created_year.downloads.per_group` | {"2022": {"n_models": 100392, "total_downloads": 924709435, "distinct_values": 2980, "zero_value_models": 36336, "zero_value_share": 0.361941, "gini": 0.998291, "top_1pct_share": 0.992198, "top_5pc… | `concentration_groups.json:groupings.created_year.downloads.per_group` |  |
+| `rq2_groups.created_year.downloads.theil_decomposition` | {"theil_total": 7.259273051615285, "theil_within": 6.736795341941718, "theil_between": 0.5224777096735665, "between_share": 0.0719738334621961, "groups": [{"group": "2022", "n": 64056, "n_zero": 36… | `concentration_groups.json:groupings.created_year.downloads.theil_decomposition` | Theil T 的组间/组内分解（between_share 为组间占比） |
+| `rq2_groups.created_year.downloadsAllTime.n_groups` | 5 | `concentration_groups.json:groupings.created_year.downloadsAllTime.n_groups` |  |
+| `rq2_groups.created_year.downloadsAllTime.n_groups_ge_1000` | 5 | `concentration_groups.json:groupings.created_year.downloadsAllTime.n_groups_ge_1000` |  |
+| `rq2_groups.created_year.downloadsAllTime.per_group` | {"2022": {"n_models": 100392, "total_downloads": 43152858003, "distinct_values": 11338, "zero_value_models": 34020, "zero_value_share": 0.338872, "gini": 0.997256, "top_1pct_share": 0.976618, "top_… | `concentration_groups.json:groupings.created_year.downloadsAllTime.per_group` |  |
+| `rq2_groups.created_year.downloadsAllTime.theil_decomposition` | {"theil_total": 7.656842418189406, "theil_within": 6.313836200810419, "theil_between": 1.3430062173789872, "between_share": 0.17539948506561592, "groups": [{"group": "2022", "n": 66372, "n_zero": 3… | `concentration_groups.json:groupings.created_year.downloadsAllTime.theil_decomposition` | Theil T 的组间/组内分解（between_share 为组间占比） |
+| `rq2_groups.has_lineage.downloads.n_groups` | 2 | `concentration_groups.json:groupings.has_lineage.downloads.n_groups` |  |
+| `rq2_groups.has_lineage.downloads.n_groups_ge_1000` | 2 | `concentration_groups.json:groupings.has_lineage.downloads.n_groups_ge_1000` |  |
+| `rq2_groups.has_lineage.downloads.per_group` | {"no": {"n_models": 2251922, "total_downloads": 1564952093, "distinct_values": 9544, "zero_value_models": 1259462, "zero_value_share": 0.559283, "gini": 0.997095, "top_1pct_share": 0.985332, "top_5… | `concentration_groups.json:groupings.has_lineage.downloads.per_group` |  |
+| `rq2_groups.has_lineage.downloads.theil_decomposition` | {"theil_total": 7.259273051615283, "theil_within": 7.259270578509938, "theil_between": 2.473105345135191e-06, "between_share": 3.406822318916483e-07, "groups": [{"group": "no", "n": 992460, "n_zero… | `concentration_groups.json:groupings.has_lineage.downloads.theil_decomposition` | Theil T 的组间/组内分解（between_share 为组间占比） |
+| `rq2_groups.has_lineage.downloadsAllTime.n_groups` | 2 | `concentration_groups.json:groupings.has_lineage.downloadsAllTime.n_groups` |  |
+| `rq2_groups.has_lineage.downloadsAllTime.n_groups_ge_1000` | 2 | `concentration_groups.json:groupings.has_lineage.downloadsAllTime.n_groups_ge_1000` |  |
+| `rq2_groups.has_lineage.downloadsAllTime.per_group` | {"no": {"n_models": 2251922, "total_downloads": 59957801038, "distinct_values": 33930, "zero_value_models": 1219229, "zero_value_share": 0.541417, "gini": 0.998932, "top_1pct_share": 0.993694, "top… | `concentration_groups.json:groupings.has_lineage.downloadsAllTime.per_group` |  |
+| `rq2_groups.has_lineage.downloadsAllTime.theil_decomposition` | {"theil_total": 7.656842418189413, "theil_within": 7.54743378524089, "theil_between": 0.10940863294852302, "between_share": 0.014289001519557783, "groups": [{"group": "no", "n": 1032693, "n_zero": … | `concentration_groups.json:groupings.has_lineage.downloadsAllTime.theil_decomposition` | Theil T 的组间/组内分解（between_share 为组间占比） |
+| `rq2_groups.n_models_total` | 3138954 | `concentration_groups.json:n_models_total` |  |
+| `rq2_groups.task.downloads.n_groups` | 57 | `concentration_groups.json:groupings.task.downloads.n_groups` |  |
+| `rq2_groups.task.downloads.n_groups_ge_1000` | 34 | `concentration_groups.json:groupings.task.downloads.n_groups_ge_1000` |  |
+| `rq2_groups.task.downloads.per_group` | {"any-to-any": {"n_models": 11658, "total_downloads": 27808339, "distinct_values": 549, "zero_value_models": 9421, "zero_value_share": 0.808115, "gini": 0.997215, "top_1pct_share": 0.988054, "top_5… | `concentration_groups.json:groupings.task.downloads.per_group` |  |
+| `rq2_groups.task.downloads.theil_decomposition` | {"theil_total": 7.259273051615281, "theil_within": 6.24795027816288, "theil_between": 1.0113227734524015, "between_share": 0.13931460715992344, "groups": [{"group": "text-generation", "n": 402394, … | `concentration_groups.json:groupings.task.downloads.theil_decomposition` | Theil T 的组间/组内分解（between_share 为组间占比） |
+| `rq2_groups.task.downloadsAllTime.n_groups` | 57 | `concentration_groups.json:groupings.task.downloadsAllTime.n_groups` |  |
+| `rq2_groups.task.downloadsAllTime.n_groups_ge_1000` | 34 | `concentration_groups.json:groupings.task.downloadsAllTime.n_groups_ge_1000` |  |
+| `rq2_groups.task.downloadsAllTime.per_group` | {"any-to-any": {"n_models": 11658, "total_downloads": 213905347, "distinct_values": 997, "zero_value_models": 9374, "zero_value_share": 0.804083, "gini": 0.996911, "top_1pct_share": 0.983613, "top_… | `concentration_groups.json:groupings.task.downloadsAllTime.per_group` |  |
+| `rq2_groups.task.downloadsAllTime.theil_decomposition` | {"theil_total": 7.656842418189409, "theil_within": 6.504018463975249, "theil_between": 1.1528239542141596, "between_share": 0.1505612746418209, "groups": [{"group": "fill-mask", "n": 18264, "n_zero… | `concentration_groups.json:groupings.task.downloadsAllTime.theil_decomposition` | Theil T 的组间/组内分解（between_share 为组间占比） |
 | `rq3.avg_children_count` | 10.4133 | `graph_stats.json:avg_children_count` |  |
 | `rq3.avg_descendant_count_khop` | 17.0759 | `graph_stats.json:avg_descendant_count_khop` |  |
 | `rq3.engine` | spark_native | `graph_stats.json:engine` |  |
@@ -151,6 +179,33 @@
 | `rq3.relation_counts` | {"finetune": 354320, "adapter": 329707, "quantized": 187784, "merge": 48028} | `graph_stats.json:relation_counts` |  |
 | `rq3.seconds` | 146.8 | `graph_stats.json:seconds` |  |
 | `rq3.top10_bases_by_children` | [{"base_model": "black-forest-labs/FLUX.1-dev", "children_count": 43419, "downloads": 661619, "downloadsAllTime": 34112217}, {"base_model": "Qwen/Qwen1.5-0.5B", "children_count": 32534, "downloads"… | `graph_stats.json:top10_bases_by_children` |  |
+| `rq3_family.case_selection_rule` | {"star": "children_count 最大的底座", "chain": "children_count>=100 中 subtree_height 最大者", "merge": "被判为 merge 且 children_count>=20 中 merge 出边数最多者"} | `family_cases.json:case_selection_rule` |  |
+| `rq3_family.cases` | [{"role": "star", "base_model": "black-forest-labs/FLUX.1-dev", "pipeline_tag": "text-to-image", "created_at": "2024-07-31T21:13:44.000Z", "children_count": 43419, "descendant_count_khop": 43682, "… | `family_cases.json:cases` | 三个代表性家族：star / chain / merge |
+| `rq3_family.children_count_downloads_correlation` | {"pearson": 0.05809199389423941, "spearman": 0.2021036285860482} | `family_cases.json:children_count_downloads_correlation` | 同一快照内 children_count 与下载量的秩相关；不作因果解释 |
+| `rq3_family.engine` | spark_native + python_graph | `family_ext_stats.json:engine` |  |
+| `rq3_family.max_children_count` | 43419 | `family_ext_stats.json:max_children_count` |  |
+| `rq3_family.max_root_depth` | 151 | `family_ext_stats.json:max_root_depth` |  |
+| `rq3_family.max_subtree_height` | 151 | `family_ext_stats.json:max_subtree_height` |  |
+| `rq3_family.mean_subtree_height_all_bases` | 2.3529 | `family_ext_stats.json:mean_subtree_height_all_bases` |  |
+| `rq3_family.multi_parent_rows` | [{"parents_count": "1", "n_models": "871985"}, {"parents_count": "2", "n_models": "8747"}, {"parents_count": "3", "n_models": "2555"}, {"parents_count": "4", "n_models": "1621"}, {"parents_count": … | `family_multi_parent.csv` |  |
+| `rq3_family.multi_parent_share_of_derived` | 0.016963 | `family_ext_stats.json:multi_parent_share_of_derived` |  |
+| `rq3_family.n_distinct_base_models` | 88333 | `family_ext_stats.json:n_distinct_base_models` |  |
+| `rq3_family.n_distinct_derived_models` | 887032 | `family_ext_stats.json:n_distinct_derived_models` |  |
+| `rq3_family.n_edges` | 919839 | `family_ext_stats.json:n_edges` |  |
+| `rq3_family.n_merge_edges` | 48028 | `family_ext_stats.json:n_merge_edges` |  |
+| `rq3_family.n_models_total` | 3138954 | `family_ext_stats.json:n_models_total` |  |
+| `rq3_family.n_multi_parent_models` | 15047 | `family_ext_stats.json:n_multi_parent_models` |  |
+| `rq3_family.n_nodes_involved` | 931066 | `family_ext_stats.json:n_nodes_involved` |  |
+| `rq3_family.relation_counts` | {"adapter": 329707, "merge": 48028, "finetune": 354320, "quantized": 187784} | `family_ext_stats.json:relation_counts` |  |
+| `rq3_family.relation_shares` | {"adapter": 0.35844, "merge": 0.052213, "finetune": 0.385198, "quantized": 0.204149} | `family_ext_stats.json:relation_shares` |  |
+| `rq3_family.role_note` | 星型底座以'被大量浅层复用'为主，链型底座以'被逐层继续衍生'为主，合并型底座以'被多父合并'为主；这些是**当前快照的结构差异**，不是因果机制，也不代表模型质量。 | `family_cases.json:role_note` |  |
+| `rq3_family.scc_summary` | {"n_nodes": 931066, "n_strongly_connected_components": 931052, "n_scc_size_gt1": 10, "max_scc_size": 3, "n_nodes_in_cycles": 24, "cycle_node_share": 2.578e-05, "n_self_loop_edges": 2060, "condensat… | `family_scc_summary.json` |  |
+| `rq3_family.scope_note` | 结论限定在**显式继承网络**内；base_models 缺失率 71.74%，无显式底座的模型不在图内。深度/高度为凝聚 DAG 上的最长路径，不等同于可达后代数。 | `family_ext_stats.json:scope_note` |  |
+| `rq3_family.seconds` | 194.3 | `family_ext_stats.json:seconds` |  |
+| `rq3_family.structure_class_counts_all_bases` | {"mixed": 78381, "merge": 8939, "star": 647, "chain": 366} | `family_ext_stats.json:structure_class_counts_all_bases` |  |
+| `rq3_family.structure_class_counts_by_tier` | {"all": {"mixed": 78381, "merge": 8939, "star": 647, "chain": 366}, "ge10": {"mixed": 3482, "merge": 1595, "star": 647, "chain": 257}, "ge100": {"star": 647, "chain": 169, "merge": 43, "mixed": 1}} | `family_ext_stats.json:structure_class_counts_by_tier` |  |
+| `rq3_family.task_structure_rows` | [{"task": "text-generation", "n_bases": "47521", "total_children": "522066", "median_children": "2.0", "avg_height": "3.1324887944277267", "merge_share": "0.09072839259062516", "multiparent_share":… | `family_task_structure.csv` | 按 pipeline_tag 汇总的家族结构（底座数/衍生数/中位出度/平均高度/merge 占比/多父占比） |
+| `rq3_family.top_bases_by_children` | [{"base_model": "black-forest-labs/FLUX.1-dev", "children_count": 43419, "subtree_height": 5, "structure": "star"}, {"base_model": "Qwen/Qwen1.5-0.5B", "children_count": 32534, "subtree_height": 3,… | `family_ext_stats.json:top_bases_by_children` |  |
 | `rq3_gf.budget_seconds` | 2400 | `graphframes_result.json:budget_seconds` |  |
 | `rq3_gf.isolated_models_not_in_graph` | 2207888 | `graphframes_result.json:isolated_models_not_in_graph` |  |
 | `rq3_gf.n_edges` | 919839 | `graphframes_result.json:n_edges` |  |

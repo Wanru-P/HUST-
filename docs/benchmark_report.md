@@ -1,6 +1,6 @@
 # Spark 扩展性实验（Phase 3，正式结果）
 
-- 生成时间：2026-10-11T12:19:59.035720+00:00
+- 生成时间：2026-10-13T12:01:29.447750+00:00
 - 数据快照：`cfahlgren1/hub-stats / models.parquet` @ commit `2c1e195090bbcbe1f940cfdcb4ac25b76e48da70`
 - 正式样本：快照内全部 3,138,954 个去重模型（源文件物理行 3,138,959，其中 5 个 id 在源数据中重复出现）
 - 全部数字来自唯一结果清单 `data_hubstats/gold/analysis/results_manifest.json`，不手抄、不估算

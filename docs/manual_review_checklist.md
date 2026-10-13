@@ -1,8 +1,8 @@
 # 人工语义复核清单（Manual Review Checklist）
 
 > 本文件由 `check_consistency.py` 生成，请勿手工编辑。
-> 生成时间：2026-10-11T11:51:15.657697+00:00
-> 配套自动检查：见 `data_hubstats/gold/analysis/consistency_check_result.json` 的 `n_checks` 字段（本清单生成前已完成 113 项）。
+> 生成时间：2026-10-13T12:01:58.633097+00:00
+> 配套自动检查：见 `data_hubstats/gold/analysis/consistency_check_result.json` 的 `n_checks` 字段（本清单生成前已完成 128 项）。
 
 本清单只列**机器无法判定**的语义问题。自动检查能覆盖的部分已由 E1–E5 完成；
 这里刻意**不使用关键词禁令**替代语义审核，避免「写了正确关键词、但结论仍错」的情况。

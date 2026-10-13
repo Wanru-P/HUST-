@@ -770,6 +770,101 @@ def main():
         check(f"{src} 未硬编码应由结果清单提供的头条数字（{len(watch)} 项）",
               not hits, "; ".join(hits[:5]))
 
+    # ==========================================================
+    # ---------- E6. 增量完善（Task A–F）交付物一致性 ----------
+    # ==========================================================
+    print("\n== E6. 增量完善（Task A–F）交付物 ==")
+    ext_dir = os.path.join(PROJECT_ROOT, "figures_ext")
+    ext_files = [f"fig{n}_{slug}.{e}"
+                 for n, slug in ((13, "family_structure_compare"),
+                                 (14, "family_depth_relation"),
+                                 (15, "download_derivative_heat"))
+                 for e in ("png", "pdf", "svg")]
+    miss_ext = [f for f in ext_files if not os.path.exists(os.path.join(ext_dir, f))]
+    check(f"figures_ext 新增 3 图 × 3 格式 = {len(ext_files)} 个文件齐备",
+          not miss_ext, ("缺失: " + str(miss_ext)) if miss_ext else "")
+
+    idx_ext = load_json_file(os.path.join(ANALYSIS, "figures_ext_index.json")) or {}
+    check("figures_ext_index.json 登记 3 张图且快照与清单一致",
+          len(idx_ext.get("figures") or []) == 3
+          and idx_ext.get("snapshot_sha") == mv(m, "meta.snapshot_commit"),
+          f"n={len(idx_ext.get('figures') or [])}")
+
+    check("新增图未混入 figure_index（原有 12 图守卫不受影响）",
+          all(("fig13" not in str(f) and "fig14" not in str(f) and "fig15" not in str(f))
+              for f in (mv(m, "deliverables.figures", []) or [])), "")
+
+    ht = read_text(os.path.join(PROJECT_ROOT, "family_explorer.html")) or ""
+    check("family_explorer.html 存在且占位符已全部替换、ECharts 已内嵌",
+          bool(ht) and "__DATA__" not in ht and "__ECHARTS__" not in ht and "echarts" in ht,
+          f"bytes={len(ht)}")
+
+    exp_data = load_json_file(os.path.join(ANALYSIS, "family_explorer_data.json")) or {}
+    check("family_explorer_data.json 结构完整且带截断标记",
+          all(k in exp_data for k in ("meta", "families", "nodes", "edges"))
+          and exp_data.get("meta", {}).get("truncated") is not None,
+          f"nodes={len(exp_data.get('nodes') or [])} edges={len(exp_data.get('edges') or [])}")
+
+    cases = mv(m, "rq3_family.cases", []) or []
+    check("三个案例家族齐备且角色恰为 star / chain / merge",
+          {c.get("role") for c in cases} == {"star", "chain", "merge"},
+          str([c.get("role") for c in cases]))
+
+    scc = mv(m, "rq3_family.scc_summary", {}) or {}
+    check("SCC 折叠后确为 DAG（含环图的最长路径处理有效）",
+          scc.get("condensation_is_dag") is True
+          and scc.get("n_self_loop_edges") is not None,
+          f"is_dag={scc.get('condensation_is_dag')} self_loops={scc.get('n_self_loop_edges')}")
+
+    tiers = mv(m, "rq3_family.structure_class_counts_by_tier", {}) or {}
+    check("结构分类三层计数齐备（all / ge10 / ge100）",
+          all(k in tiers for k in ("all", "ge10", "ge100")), str(sorted(tiers)))
+
+    # Theil 分解恒等式①：同一总体换分组方式，T_total 必须相同
+    t_vals = []
+    for g in ("task", "created_year", "has_lineage"):
+        d = mv(m, f"rq2_groups.{g}.downloads.theil_decomposition", {}) or {}
+        if d.get("theil_total"):
+            t_vals.append(round(float(d["theil_total"]), 6))
+    check("Theil 恒等式①：同一口径下不同分组的 T_total 完全相同",
+          len(t_vals) >= 2 and len(set(t_vals)) == 1, str(t_vals))
+
+    # Theil 分解恒等式②：T_total = T_within + T_between
+    d_t = mv(m, "rq2_groups.task.downloads.theil_decomposition", {}) or {}
+    ok_add = (d_t.get("theil_total") is not None
+              and abs(float(d_t["theil_total"])
+                      - (float(d_t["theil_within"]) + float(d_t["theil_between"]))) < 1e-9)
+    check("Theil 恒等式②：T_total = T_within + T_between",
+          ok_add, f"{d_t.get('theil_total')} vs "
+                  f"{d_t.get('theil_within')}+{d_t.get('theil_between')}")
+
+    # 两组下载口径必须独立（T_total 不同）
+    t_dl = (mv(m, "rq2_groups.task.downloads.theil_decomposition", {}) or {}).get("theil_total")
+    t_at = (mv(m, "rq2_groups.task.downloadsAllTime.theil_decomposition", {}) or {}).get("theil_total")
+    check("分组集中度的两种下载口径独立计算、未混用",
+          t_dl is not None and t_at is not None and t_dl != t_at, f"{t_dl} vs {t_at}")
+
+    docs_ext = ["family_structure_analysis.md", "family_cases.md",
+                "family_explorer_guide.md", "concentration_groups.md",
+                "incremental_acceptance.md"]
+    miss_doc = [d for d in docs_ext if not os.path.exists(os.path.join(DOCS, d))]
+    check("增量文档 5 份齐备", not miss_doc,
+          ("缺失: " + str(miss_doc)) if miss_doc else "")
+
+    dash = read_text(os.path.join(PROJECT_ROOT, "dashboard_final.html")) or ""
+    check("Dashboard 含探索器入口（导航链接 + 章节标题）",
+          "family_explorer.html" in dash and "模型家族探索器" in dash, "")
+
+    rpt = read_text(os.path.join(PROJECT_ROOT, "report_final.md")) or ""
+    check("最终报告含增量章节（家族结构 + Theil 分组分解）",
+          "模型家族结构" in rpt and "Theil" in rpt, "")
+
+    check("结果清单已登记增量指标（rq3_family.* 与 rq2_groups.*）",
+          any(k.startswith("rq3_family.") for k in m)
+          and any(k.startswith("rq2_groups.") for k in m),
+          f"rq3_family={sum(1 for k in m if k.startswith('rq3_family.'))} "
+          f"rq2_groups={sum(1 for k in m if k.startswith('rq2_groups.'))}")
+
     # 人工语义复核清单（E5 明确要求：语义问题不靠关键词禁令）
     path = write_manual_checklist(len(RESULTS))
     check("人工语义复核清单已生成", os.path.exists(path),

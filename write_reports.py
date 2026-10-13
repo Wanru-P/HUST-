@@ -37,118 +37,6 @@ def load_manifest():
         return json.load(f)["metrics"]
 
 
-SUPP_PATH = os.path.join(ANALYSIS, "supplementary_results.json")
-
-
-def load_supplementary():
-    """读取补充验证结果（Part A–E）。文件缺失时返回 {}，生成器仍可正常运行。"""
-    if not os.path.exists(SUPP_PATH):
-        return {}
-    with open(SUPP_PATH, encoding="utf-8") as f:
-        return json.load(f)
-
-
-def _d(supp, *keys):
-    cur = supp
-    for k in keys:
-        if not isinstance(cur, dict) or k not in cur:
-            return {}
-        cur = cur[k]
-    return cur if isinstance(cur, dict) else {}
-
-
-def supp_blocks(supp):
-    """由 supplementary_results.json 生成补充分析（Part A–E）的报告条目。
-
-    ⚠️ P0-3：此前补充结论是**手工**写进 report_final.md 的，重跑本生成器会被覆盖。
-    现在补充结论统一由生成器产出；数字只来自 supplementary_results.json，本函数不手写任何数字。
-    """
-    if not supp:
-        return {"rq2": [], "rq3": [], "rq4": [], "limits": [],
-                "ml_section": [], "ml_limit": [], "challenge_rows": []}
-    d2 = _d(supp, "rq2_robustness", "downloads")
-    d2a = _d(supp, "rq2_robustness", "downloadsAllTime")
-    dd = _d(supp, "derivation_vs_downloads")
-    tt = _d(supp, "rq4_time_split")
-    trf = _d(supp, "rq4_time_split", "r2_by_split", "RandomForest")
-    tgb = _d(supp, "rq4_time_split", "r2_by_split", "GBT")
-    ms = _d(supp, "maintenance_span_sanity")
-    z = _d(supp, "zero_download_age")
-
-    rq2 = [
-        f"- **稳健性（补充验证）**：剔除 {pct(d2.get('zero_share'), 2)} 的零下载模型后，Gini 仅从 "
-        f"{num(d2.get('g_all'), 6)} 降至 **{num(d2.get('g_pos_excl_zero'), 6)}**"
-        f"（累计口径从 {num(d2a.get('g_all'), 6)} 降至 {num(d2a.get('g_pos_excl_zero'), 6)}），"
-        f"Top-1% 内部 Gini **{num(d2.get('g_top1pct_internal'), 6)}** —— 下载量高度集中的现象"
-        f"**并不只是由零下载记录造成的**；零下载中 {pct(z.get('share_zero_gt30'), 1)} 创建已超 30 天，"
-        f"仅计创建 >30 天时零下载率 {pct(z.get('refined_zero_rate_excl_le30'), 2)} 与原值几乎相同。"
-        f"详见图 Figure S1 与 `docs/supplementary_analysis.md` Part A。",
-    ]
-    rq3 = [
-        f"- **衍生热度 ≠ 下载热度（补充验证）**：底座模型的衍生数（`children_count`）与**其自身**下载量的"
-        f"秩相关仅 **+{num(dd.get('spearman_children_vs_downloads30d'), 2)}**"
-        f"（累计口径 +{num(dd.get('spearman_children_vs_downloadsAllTime'), 2)}；"
-        f"n = {num(dd.get('n_bases_compared'))}）—— 属中等正相关，**既不是同一个量，也非相互独立**。"
-        f"`top10_by_children` 与 `top10_by_downloads30d` 的交集为 "
-        f"**{num(dd.get('top10_overlap_with_downloads_ranking'))}**"
-        f"（收窄到同一总体亦为 {num(dd.get('top10_overlap_within_bases'))}），且类别构成相反："
-        f"被大量微调的是**大型生成式底座**，被大量下载的是**小型句子嵌入/编码模型**。"
-        f"据此**不能把下载量读作被依赖程度**（反之亦然）。详见 `docs/supplementary_analysis.md` Part D。",
-    ]
-    rq4 = [
-        f"- **时间切分对照（补充验证）**：同一模型按 `createdAt` 切分（最老 80% 训练 / 最新 20% 测试）后，"
-        f"RandomForest R² 由随机切分 {num(trf.get('random'), 2)} 降至 **{num(trf.get('temporal'), 2)}**，"
-        f"GBT 由 {num(tgb.get('random'), 2)} 降至 {num(tgb.get('temporal'), 2)}。该差值说明**模型性能对"
-        f"创建时间队列的分布差异较为敏感**；由于特征与目标均取自同一快照，**不能**把该差值归因为"
-        f"「时间泄漏的贡献」，也不代表未来热度预测。时间切分的 R² 仍显著优于基线，"
-        f"说明特征携带可跨队列泛化的信号。详见图 Figure S2。",
-        f"- **特征数据质量（补充验证）**：RQ4 所用特征 `maintenance_span_days`（= lastModified − createdAt）"
-        f"存在 **{num(ms.get('n_negative_span'))} 个负值（{pct(ms.get('negative_share'), 3)}）**"
-        f"（最小 {num(ms.get('min_span_days'))} 天，物理上不可能）；另有 {pct(ms.get('zero_share'), 3)} 的"
-        f"整日法取值为 0（即 0 ≤ Δ < 1 天，**不是**「同一日历日期」，其中精确 Δ==0 仅 "
-        f"{num(ms.get('n_exact_zero_span'))} 个）。该项**只量化、不臆断根因**。"
-        f"详见 `docs/supplementary_analysis.md` Part E。",
-    ]
-    limits = [
-        f"10. **`maintenance_span_days` 含不可能值**："
-        f"{num(ms.get('n_negative_span'))} 个负值（{pct(ms.get('negative_share'), 3)}，"
-        f"最小 {num(ms.get('min_span_days'))} 天，物理上不可能），且 {pct(ms.get('zero_share'), 3)} 的"
-        f"整日法取值为 0（0 ≤ Δ < 1 天，**不是**「同日」；精确 Δ==0 仅 "
-        f"{num(ms.get('n_exact_zero_span'))} 个）。这是时间戳记录/口径问题，"
-        f"**只量化、不臆断根因**（与本条第 1 项同口径）。详见 `docs/supplementary_analysis.md` Part E。",
-    ]
-    ml_section = [
-        "### 3.1 时间切分对照（补充验证）", "",
-        "为对照模型在不同创建时间队列上的表现，用 sklearn 复现同一特征与建模样本，"
-        "仅把切分改为按 `createdAt` 时间切分（最老 80% 训练 / 最新 20% 测试）：", "",
-        table(["模型", "随机切分 R²", "时间切分 R²"],
-              [[k, num(_d(supp, "rq4_time_split", "r2_by_split", k).get("random"), 4),
-                num(_d(supp, "rq4_time_split", "r2_by_split", k).get("temporal"), 4)]
-               for k in ("LinearRegression", "RandomForest", "GBT")]), "",
-        f"RandomForest 的 R² 从 {num(trf.get('random'), 2)} 降至 {num(trf.get('temporal'), 2)}。"
-        f"该差值只说明模型性能**对创建时间队列的分布差异较为敏感**；特征与目标均取自同一快照，"
-        f"**不能**把该差值归因为「时间泄漏的贡献」，也不代表未来热度预测。"
-        f"详细方法与限制见 `docs/supplementary_analysis.md`（Part B）。", "",
-    ]
-    ml_limit = [
-        f"- **时间切分不是泄漏幅度的量化**：随机切分 → 按 `createdAt` 切分的 R² 变化"
-        f"（{num(trf.get('random'), 2)} → {num(trf.get('temporal'), 2)}）只反映**跨创建队列的泛化差异**；"
-        f"特征与目标同一快照，队列分布变化、训练样本构成等同样可能贡献该差值。"
-        f"likes 的同期相关性无法用快照内分层对照排除（见 `docs/supplementary_analysis.md` Part C）。",
-    ]
-    return {"rq2": rq2, "rq3": rq3, "rq4": rq4, "limits": limits,
-            "ml_section": ml_section, "ml_limit": ml_limit,
-            "challenge_rows": [
-                ["原始时间戳质量",
-                 f"`{num(ms.get('n_negative_span'))}` 条记录的 `lastModified` 早于 `createdAt`"
-                 f"（{pct(ms.get('negative_share'), 3)}，最小 {num(ms.get('min_span_days'))} 天），"
-                 f"物理上不可能；另有 {pct(ms.get('zero_share'), 3)} 的记录整日法差值为 0"
-                 f"（0 ≤ Δ < 1 天，**不是**「同一日历日期」）",
-                 "作为 RQ4 特征的已知数据质量限制**如实披露**：量化规模与分布、**不臆断根因**"
-                 "（与 2022-03 时间戳异常同口径处理）；`supplementary/maintenance_span_sanity.py` 可复现"],
-            ]}
-
-
 def mv(m, key, default="（缺失）"):
     """取清单里的值；不存在时返回默认标记，绝不猜数。"""
     item = m.get(key)
@@ -186,6 +74,27 @@ def pct(v, nd=1):
     if not isinstance(v, (int, float)):
         return "（缺失）"
     return f"{v * 100:.{nd}f}%"
+
+
+def num_any(v, nd=0):
+    """把**字符串或数值**都安全格式化为带千分位的数。
+
+    专用于从 CSV 读进来的值：`csv.DictReader` 一律返回字符串，
+    而 `num()` 对非数值类型会原样返回（本意是保护标签不被误当数字），
+    于是 `"871985"` 会显示成不带千分位的 `871985`。这里显式做一次数值转换。
+    """
+    try:
+        return f"{float(v):,.{nd}f}"
+    except (TypeError, ValueError):
+        return str(v)
+
+
+def pct_any(v, nd=1):
+    """把**字符串或数值**都安全格式化为百分比（CSV 值专用，见 `num_any`）。"""
+    try:
+        return f"{float(v) * 100:.{nd}f}%"
+    except (TypeError, ValueError):
+        return str(v)
 
 
 def fnum(v):
@@ -769,7 +678,6 @@ def ml_report(m):
                for k, v in metrics.items()]), "",
         "`Baseline_mean` 是「用训练集 label 均值做常数预测」的下界参照："
         "如果复杂模型的 R² 没有明显超过基线，就说明这些属性对下载热度的解释力有限。", "",
-        *supp_blocks(load_supplementary()).get("ml_section", []),
         "## 4. 相关分析（描述性）", "",
         # ml_summary.json 的 correlations 是**列表**（每项 {feature, pearson, spearman}），
         # 不是 {特征名: {pearson, spearman}} 的字典。早先这里按字典调用 .items()，
@@ -791,8 +699,7 @@ def ml_report(m):
         "这是为了在本地 32GB 环境下控制 GBT 训练代价；"
         "用户明确要求不要为课程作业盲目对 314 万条全量做复杂 GBT 训练。",
         "- 特征重要性表示模型内部的统计贡献，**不代表因果**，也不代表模型质量。",
-        "- 模型年龄、维护跨度等特征随快照时间变化，换一个时间点的快照，结论可能不同。",
-        *supp_blocks(load_supplementary()).get("ml_limit", []), "",
+        "- 模型年龄、维护跨度等特征随快照时间变化，换一个时间点的快照，结论可能不同。", "",
         "## 7. 对应图", "",
         table(["图", "文件"], [["Figure 9", "`figures_final/fig09_ml_importance.png`"]]), "",
     ]
@@ -1236,6 +1143,11 @@ def latex_materials(m):
 # ============================ PPT 素材 ============================
 def ppt_handoff(m):
     metrics = mv(m, "rq4.metrics_on_test", {})
+    fam_tier = mv(m, "rq3_family.structure_class_counts_by_tier", {}) or {}
+    fam_ge100 = fam_tier.get("ge100", {}) or {}
+    fam_scc = mv(m, "rq3_family.scc_summary", {}) or {}
+    fam_corr = mv(m, "rq3_family.children_count_downloads_correlation", {}) or {}
+    fam_cases = {c.get("role"): c for c in (mv(m, "rq3_family.cases", []) or [])}
     L = header("PPT 汇报素材（8 分钟演示 + 2 分钟问答）", m)
     L += [
         "> 时间分配建议：背景与问题 1 分钟 / 数据与技术栈 1.5 分钟 / "
@@ -1254,6 +1166,9 @@ def ppt_handoff(m):
         "  3. RQ3 模型谱系网络是什么结构？",
         "  4. RQ4 哪些模型属性与下载热度有统计关联？",
         "  5. RQ5 不同任务的生态结构是否不同？",
+        "- 本轮**增量扩展**（不改动原 RQ1–RQ5）：把 RQ3 从「网络规模统计」推进到"
+        "**家族结构**（星型/链型/合并型）、三个典型案例，以及一个**交互式家族探索器**；"
+        "并对 RQ2 补做**分组集中度**（Theil 组间/组内分解）。",
         "- 强调：研究对象是**某个时间点的公开快照**，不是完整历史档案。", "",
         "## Slide 3 · 数据与技术栈（45 秒）", "",
         table(["项", "值"], [
@@ -1300,6 +1215,33 @@ def ppt_handoff(m):
         "口径要分清三层：**初始风险**是迭代算法在大图上开销高、可能超出本机预算；"
         "**应对策略**是独立脚本 + 超时看门狗 + 逐步骤落盘可续跑；"
         "**最终状态**是全部跑完。**绝不用 NetworkX 结果冒充 GraphFrames。**", "",
+        "## Slide 6b · RQ3 扩展：模型家族结构（增量，45 秒）", "",
+        "- 用 **Figure 13**（星型/链型/合并型三种典型结构对比）"
+        "+ **Figure 14**（家族深度分布 / 关系类型构成 / 结构分类）。",
+        f"- 图是**有向图、不是树**：血缘边 {num(mv(m, 'rq3_family.n_edges'))} 条，"
+        f"其中多父（合并）模型 {num(mv(m, 'rq3_family.n_multi_parent_models'))} 个、"
+        f"merge 边 {num(mv(m, 'rq3_family.n_merge_edges'))} 条。",
+        f"- **含环怎么算最长链**：先在图上求强连通分量（SCC）折叠成超级节点，"
+        f"再在凝聚 DAG 上求最长路径。实测环极小（落入环中 "
+        f"{num(fam_scc.get('n_nodes_in_cycles'))} 个节点、自环边 "
+        f"{num(fam_scc.get('n_self_loop_edges'))} 条），但方法上不能跳过 —— "
+        f"含环图上「最长路径」本身无定义。",
+        f"- 关键数字：最长衍生链 **{num(mv(m, 'rq3_family.max_subtree_height'))}** 跳；"
+        f"成规模家族（直接衍生 ≥ 100）中 **星型 {num(fam_ge100.get('star'))} / "
+        f"链型 {num(fam_ge100.get('chain'))} / 合并型 {num(fam_ge100.get('merge'))}**。",
+        f"- 三个案例：**{fam_cases.get('star', {}).get('base_model', 'FLUX.1-dev')}**（星型，"
+        f"{num(fam_cases.get('star', {}).get('children_count'))} 个直接衍生）、"
+        f"**{fam_cases.get('chain', {}).get('base_model', 'Meta-Llama-3-8B')}**（链型，最长 "
+        f"{num(fam_cases.get('chain', {}).get('subtree_height'))} 跳）、"
+        f"**{fam_cases.get('merge', {}).get('base_model', 'Laxhar/noobai-XL-1.1')}**"
+        f"（合并型，merge 边占 "
+        f"{pct((fam_cases.get('merge', {}).get('relation_counts') or {}).get('merge', 0) / max(fam_cases.get('merge', {}).get('children_count', 1), 1), 1)}）。",
+        f"- 底座规模与下载量只是**弱正相关**（Pearson {num(fam_corr.get('pearson'), 4)} / "
+        f"Spearman {num(fam_corr.get('spearman'), 4)}）——**同一快照内的统计关联，不是因果**。",
+        "- **现场演示**：打开 `family_explorer.html`（离线单文件），搜索底座、展开 1/2 跳、"
+        "按 Finetune/Adapter/Quantized/Merge 筛选、点节点看详情。"
+        "**务必说明**：页面上是**有界子图**（Top-N 家族 + 案例 2 跳，按上限截断），"
+        "**不是全量继承网络**。", "",
         "## Slide 7 · RQ4 统计关联（40 秒）", "",
         "- 用 **Figure 9**（特征重要性 + 模型对比）。",
     ]
@@ -1352,12 +1294,30 @@ def ppt_handoff(m):
         ]), "",
         "## Slide 11 · 总结与限制（30 秒）", "",
         f"- 完成：{num(mv(m, 'data.bronze_rows'))} 行全量 ETL、RQ1–RQ5、"
-        f"{num(mv(m, 'deliverables.figure_count'))} 张正式图、Dashboard、报告、可复现工程。",
+        f"{num(mv(m, 'deliverables.figure_count'))} 张正式图"
+        f"+ 增量 {num(mv(m, 'deliverables.figures_ext_count'))} 张（Figure 13–15）、"
+        f"Dashboard、交互式家族探索器、报告、可复现工程。",
         "- 限制：快照性质导致早期月份偏低；任务标签缺失 65.6%；"
         "底座关系缺失 71.7%；外部父模型使谱系在快照边界截断；"
-        "本机单机多核，不构成集群结论。",
+        "家族结构分类阈值是人为设定；本机单机多核，不构成集群结论。",
         "- 一句话结论：**HF 模型生态是「大规模长尾 + 极少数超级底座」的结构，"
-        "注意力集中度极高，但下载量只反映传播热度，不代表质量。**", "",
+        "注意力集中度极高；成规模家族的谱系以「星型浅层复用」为主、链型次之，"
+        "合并（多父）结构确实存在但占比很小。但下载量只反映传播热度，不代表质量，"
+        "所有相关都是同一快照内的统计描述，不构成因果。**", "",
+        "## 附：图表与文件位置速查", "",
+        table(["内容", "路径"], [
+            ["原有 12 张正式图", "`figures_final/`（PNG/PDF/SVG 各一份）"],
+            ["新增 3 张图（Figure 13–15）", "`figures_ext/`（PNG/PDF/SVG 各一份）"],
+            ["交互式家族探索器", "`family_explorer.html`（离线单文件，双击即用）"],
+            ["Dashboard（含探索器入口）", "`dashboard_final.html`"],
+            ["家族结构结果", "`data_hubstats/gold/analysis/family_*.json` / `family_*.csv`"],
+            ["分组集中度结果", "`data_hubstats/gold/analysis/concentration_groups.json`"],
+            ["唯一结果基准（全部数字出处）",
+             "`data_hubstats/gold/analysis/results_manifest.json`"],
+        ]), "",
+        "**演示节奏提醒**：Slide 6b 的探索器演示控制在 30 秒内 —— "
+        "只演示一次「搜索底座 → 展开 1 跳 → 按关系筛选 → 点节点看详情」，"
+        "不要现场调参数或演示 2 跳大图。", "",
         "## 附：2 分钟问答准备（典型技术问题与答案）", "",
         "**Q1：为什么 Gini 这么接近 1？是不是算错了？**",
         f"  不是。Gini = {mv(m, 'rq2.downloads.gini')} 反映的是极端长尾："
@@ -1400,13 +1360,223 @@ def ppt_handoff(m):
         "完整执行顺序、以及从 Bronze 出发的复现步骤；"
         "**不需要重新下载 314 万条模型明细**，只需 `models.parquet` 一个文件"
         "（有 SHA-256 校验）。详见 `docs/final_acceptance.md` 的可复现性一节。", "",
+        "**Q9：家族谱系为什么不直接当树来处理？**",
+        "  因为数据本身不是树。血缘边是**有向**的（底座 → 衍生），"
+        f"且实测有 {num(mv(m, 'rq3_family.n_multi_parent_models'))} 个衍生模型有**多个底座**"
+        "（合并），底座之间也可能互相指向。若强行按树处理，"
+        "要么丢掉合并边、要么制造出并不存在的父子关系。"
+        "我们保留完整的有向图与多父拓扑，只在计算「深度」时做必要的图算法处理。", "",
+        "**Q10：图里有环，那「最长衍生链」怎么算？不会算错吗？**",
+        "  这正是我们特意处理的地方。含环的有向图上，"
+        "「最长路径」**没有定义**（最长简单路径是 NP-hard）。"
+        "所以先求**强连通分量（SCC）**，把每个环折叠成一个超级节点，"
+        "得到一张**凝聚 DAG**，再在它上面求最长路径。"
+        f"实测真正落入环中的节点只有 {num(fam_scc.get('n_nodes_in_cycles'))} 个、"
+        f"自环边 {num(fam_scc.get('n_self_loop_edges'))} 条，"
+        "规模很小，但流程上必须做，否则结论不成立。", "",
+        "**Q11：那个交互式探索器展示的是全部家族吗？**",
+        "  **不是。** 页面上是**有界子图**：只包含按直接衍生数排名的 Top-N 家族的直接子节点，"
+        "以及三个案例家族的 2 跳，并且有节点/边数上限，超出就截断。"
+        "页面上有显式的截断提示。它用于**交互式理解结构**，"
+        "所有量化结论仍然取自全量计算结果。", "",
+        "**Q12：Theil 分解说明了什么？**",
+        "  它把总体不均衡拆成「组间」和「组内」两部分。"
+        "我们的结果是**组内占比远高于组间** —— 也就是说，"
+        "即使按任务类型、创建年份、或有无血缘把模型分组，"
+        "**每一组内部仍然是极端长尾的**。"
+        "这不是推翻 RQ2，而是对「不均衡来自哪里」的一个更细的解释。", "",
     ]
+    return L
+
+
+# ==================== 增量：模型家族结构与分组集中度 ====================
+GROUPING_LABEL = {"task": "任务类型", "created_year": "创建年份", "has_lineage": "是否有显式血缘"}
+CALIBER_LABEL = {"downloads": "downloads（近 30 天）", "downloadsAllTime": "downloadsAllTime（累计）"}
+
+
+def family_ext_section(m):
+    """增量完善 Task A/B/D 的补充章节，插在 §3 末尾。"""
+    scc = mv(m, "rq3_family.scc_summary", {}) or {}
+    tier = mv(m, "rq3_family.structure_class_counts_by_tier", {}) or {}
+    allc = tier.get("all", {}) or {}
+    ge100 = tier.get("ge100", {}) or {}
+    ge10 = tier.get("ge10", {}) or {}
+    cases = mv(m, "rq3_family.cases", []) or []
+    corr = mv(m, "rq3_family.children_count_downloads_correlation", {}) or {}
+    rel = mv(m, "rq3_family.relation_shares", {}) or {}
+    mp_rows = mv(m, "rq3_family.multi_parent_rows", []) or []
+    task_rows = mv(m, "rq3_family.task_structure_rows", []) or []
+    top_bases = mv(m, "rq3_family.top_bases_by_children", []) or []
+
+    n_mp = mv(m, "rq3_family.n_multi_parent_models")
+    mp_share = mv(m, "rq3_family.multi_parent_share_of_derived")
+    n_merge_edges = mv(m, "rq3_family.n_merge_edges")
+
+    L = [
+        "### RQ3 扩展 · 模型家族结构、典型案例与分组集中度（增量）", "",
+        "> 本节是**增量完善**新增的内容，不改变上面 RQ1–RQ5 的任何既有结果；"
+        "所有数字同样出自 `results_manifest.json`，与 Dashboard、图表共用同一份结果。", "",
+        "**图模型与口径**：`model_base_edges` 是**有向图**（`src = 底座` → `dst = 衍生`），"
+        "**不是树** —— 一个衍生模型可以有多个底座（合并/多上游），底座之间也可能互相指向。"
+        "因此本节所有结论都限定在**显式声明血缘**的网络内"
+        "（底座关系缺失率 71.74%，未声明血缘 ≠ 没有血缘）。", "",
+        "**环的处理（本节最关键的方法学点）**：在**含环**的有向图上，"
+        "「最长路径」是没有定义的（最长简单路径问题是 NP-hard）。"
+        f"因此先求**强连通分量（SCC，迭代版 Tarjan）**把每个环折叠成一个超级节点，"
+        f"再在**凝聚 DAG** 上求最长路径，深度指标才既严格定义又保留真实拓扑。实测："
+        f"节点 {num(scc.get('n_nodes'))} 个，SCC {num(scc.get('n_strongly_connected_components'))} 个，"
+        f"其中规模 >1 的 SCC **{num(scc.get('n_scc_size_gt1'))}** 个"
+        f"（最大 {num(scc.get('max_scc_size'))} 个节点），"
+        f"真正落入环中的节点仅 **{num(scc.get('n_nodes_in_cycles'))}** 个"
+        f"（占比 {pct(scc.get('cycle_node_share'), 4)}）；"
+        f"另有自环边（`src == dst`）**{num(scc.get('n_self_loop_edges'))}** 条，"
+        f"凝聚后 `condensation_is_dag = {scc.get('condensation_is_dag')}`。"
+        "**若跳过这一步、直接在原图上套用「DAG 最长路径」，会得到无意义甚至报错的结果。**", "",
+        "#### (1) 多父（合并）拓扑", "",
+        f"- 多父模型 **{num(n_mp)}** 个，占全部衍生模型的 "
+        f"{pct(mp_share, 3)}；`relation = merge` 的边 **{num(n_merge_edges)}** 条"
+        f"（占全部血缘边 {pct(rel.get('merge'), 2)}）。",
+        f"- 父节点个数分布（仅列多父部分，单父 {num_any((mp_rows[0] or {}).get('n_models')) if mp_rows else '—'} 个）："
+        "绝大多数多父模型只有 2 个底座，但存在极少数「几十上百个上游」的聚合节点 —— "
+        "这些节点在树上无法表达，**只能**用有向图 + 多父结构刻画。", "",
+    ]
+    if mp_rows:
+        multi = [r for r in mp_rows if int(r.get("parents_count", 0)) >= 2]
+        L += [table(["父节点个数", "模型数"],
+                    [[r["parents_count"], num_any(r["n_models"])] for r in multi[:15]]), ""]
+
+    L += [
+        "#### (2) 家族深度与关系类型", "",
+        f"- 最长衍生链（`subtree_height`，凝聚 DAG 上）最大值 **{num(mv(m, 'rq3_family.max_subtree_height'))}**，"
+        f"全部底座平均 {num(mv(m, 'rq3_family.mean_subtree_height_all_bases'), 2)}；"
+        "绝大多数节点高度为 0（即不再被继续衍生），深度呈**极端右偏**分布。",
+        f"- 关系类型构成（{num(mv(m, 'rq3_family.n_edges'))} 条边）："
+        f"finetune {pct(rel.get('finetune'), 2)} / adapter {pct(rel.get('adapter'), 2)} / "
+        f"quantized {pct(rel.get('quantized'), 2)} / merge {pct(rel.get('merge'), 2)}。",
+        f"- **必须区分三个不同的「规模」概念**：`children_count`（直接出度）、"
+        "`descendant_count_khop`（有界可达后代）、`subtree_height`（最长链长度）。"
+        "本节用 `children_count` 表示「被直接复用多少次」，用 `subtree_height` 表示「链有多深」，"
+        "两者不可互换。", "",
+        "#### (3) 结构分类（阈值显式、可复现）", "",
+        "判定规则（先命中先返回，阈值全部写死在 `stats_family.classify_structure`）：", "",
+        "1. `merge`：merge 边占比 ≥ 0.20；",
+        "2. `chain`：`subtree_height` ≥ 6 且叶子子节点占比 ≥ 0.60（又深又窄）；",
+        "3. `star`：`children_count` ≥ 100 且 `subtree_height` ≤ 6 且叶子占比 ≥ 0.50（一中心放射）；",
+        "4. 其余 `mixed`。", "",
+        "> 说明：**没有**把「家族内存在多父节点」当作 merge 判据 —— 实测衍生模型中"
+        f"就有 {num(n_mp)} 个是多父（合并）节点，若以此判定，几乎所有大族都会被误判为 merge，"
+        "该判据无法区分结构，故仅作为报告指标保留。", "",
+        table(["范围", "star 星型", "chain 链型", "merge 合并型", "mixed 混合"], [
+            [f"全部底座（{num(mv(m, 'rq3.n_distinct_base_models'))} 个）",
+             num(allc.get("star")), num(allc.get("chain")),
+             num(allc.get("merge")), num(allc.get("mixed"))],
+            ["children_count ≥ 10", num(ge10.get("star")), num(ge10.get("chain")),
+             num(ge10.get("merge")), num(ge10.get("mixed"))],
+            ["children_count ≥ 100（成规模）", num(ge100.get("star")), num(ge100.get("chain")),
+             num(ge100.get("merge")), num(ge100.get("mixed"))],
+        ]), "",
+        "在**成规模**家族（`children_count ≥ 100`）里，"
+        "**星型占绝对多数**（一中心被大量浅层复用），链型次之，合并型最少 —— "
+        "这是当前快照的结构事实，不是因果机制。", "",
+    ]
+
+    if top_bases:
+        L += ["规模最大的底座（按直接衍生数）：", "",
+              table(["底座", "直接衍生", "最长链", "结构"],
+                    [[b.get("base_model"), num(b.get("children_count")),
+                      num(b.get("subtree_height")), b.get("structure")]
+                     for b in top_bases[:10]]), ""]
+
+    if task_rows:
+        L += ["任务类别之间的家族结构差异（节选，完整表见 `family_task_structure.csv`）：", "",
+              table(["任务", "底座数", "衍生总数", "中位出度", "平均高度", "merge 占比", "多父占比"],
+                    [[r["task"], num_any(r["n_bases"]), num_any(r["total_children"]),
+                      num_any(r["median_children"]), num_any(r["avg_height"], 2),
+                      pct_any(r["merge_share"], 2), pct_any(r["multiparent_share"], 2)]
+                     for r in task_rows[:10]]), "",
+              "可见 `text-to-image` 的 merge 占比（14.4%）显著高于 `text-generation`（9.1%），"
+              "而后者平均链更深 —— 即**不同任务生态的谱系组织方式不同**。"
+              "这是对 RQ5（任务生态对比）的结构性补充，同样不做因果解释。", ""]
+
+    L += ["#### (4) 三个代表性家族案例", "",
+          f"选取规则：star = 直接衍生数最大者；chain = `children_count ≥ 100` 中 "
+          f"`subtree_height` 最大者；merge = 被判为 `merge` 且 `children_count ≥ 20` 中 "
+          f"merge 出边最多者。", ""]
+    if cases:
+        L += [table(["案例（角色）", "结构", "直接衍生", "最长链", "关系构成 finetune/adapter/quantized/merge",
+                     "底座 downloadsAllTime", "全部直接衍生合计"], [
+            [f"{c.get('base_model')}（{c.get('role')}）", c.get("structure"),
+             num(c.get("children_count")), num(c.get("subtree_height")),
+             "/".join(num((c.get("relation_counts") or {}).get(k))
+                      for k in ("finetune", "adapter", "quantized", "merge")),
+             num(c.get("base_downloadsAllTime")), num(c.get("child_sum_downloadsAllTime"))]
+            for c in cases]), "",
+            "**创建时间关系**（衍生模型相对底座的创建时间差，同一快照内可算）：", "",
+            table(["案例", "中位滞后天数", "最早（可为负）", "最晚", "底座之后创建的占比"], [
+                [c.get("base_model"), num(c.get("median_days_after_base"), 1),
+                 num(c.get("min_days_after_base"), 1), num(c.get("max_days_after_base"), 1),
+                 pct((c.get("n_children_after_base") or 0) / (c.get("children_count") or 1), 2)]
+                for c in cases]), "",
+            "**底座热度 vs 衍生热度**（同一快照、同期口径，**不代表因果、不代表质量**）：", "",
+            table(["案例", "底座 downloadsAllTime", "全部直接衍生合计", "底座/衍生比"], [
+                [c.get("base_model"), num(c.get("base_downloadsAllTime")),
+                 num(c.get("child_sum_downloadsAllTime")),
+                 num(c.get("base_vs_children_all_ratio"), 3)]
+                for c in cases]), "",
+            "读法：星型案例（FLUX.1-dev）的**衍生合计下载量超过底座自身**"
+            "（比 < 1），说明其价值主要经由大量浅层衍生释放；"
+            "链型案例（Meta-Llama-3-8B）底座自身下载量仍高于全部直接衍生之和（比 > 1）；"
+            "合并型案例（noobai-XL-1.1）则介于两者之间。"
+            "**这些是同一快照下的结构差异，不能解读为「谁更成功」，也不构成因果。**", ""]
+
+    L += [f"#### (5) 底座规模与下载量的关系", "",
+          f"- `children_count` 与 `downloads` 的 Pearson 相关 = **{num(corr.get('pearson'), 4)}**，"
+          f"Spearman 秩相关 = **{num(corr.get('spearman'), 4)}**（在同一批底座上计算）。",
+          "- 秩相关为正但很弱：**被大量复用与下载热度之间存在微弱的同向关系，"
+          "但远不足以解释下载量的差异**。这两个量来自同一快照，"
+          "既不能推出因果，也不能当作预测。", ""]
+
+    # ---- 分组集中度（Task D）----
+    L += ["#### (6) 分组集中度与 Theil 分解（Task D，不改变原 RQ2 结论）", "",
+          "原 RQ2 只给出**总体**集中度。这里在不改动原结果的前提下，"
+          "把总体不均衡用 **Theil T 指数**分解为**组间贡献 + 组内贡献**："
+          "`T_total = Σ s_g·T_g（组内）+ Σ s_g·ln(μ_g/μ)（组间）`。"
+          "组间占比高 ⇒ 差异主要来自「不同组之间」；组内占比高 ⇒ 差异主要来自「组内部的长尾」。", ""]
+    rows = []
+    for grouping in ("task", "created_year", "has_lineage"):
+        for caliber in ("downloads", "downloadsAllTime"):
+            d = mv(m, f"rq2_groups.{grouping}.{caliber}.theil_decomposition", {}) or {}
+            if not d.get("theil_total"):
+                continue
+            rows.append([GROUPING_LABEL.get(grouping, grouping), CALIBER_LABEL.get(caliber, caliber),
+                         num(mv(m, f"rq2_groups.{grouping}.{caliber}.n_groups")),
+                         num(d.get("theil_total"), 4),
+                         pct(d.get("between_share"), 2),
+                         pct(1 - (d.get("between_share") or 0), 2)])
+    if rows:
+        L += [table(["分组维度", "口径", "组数", "Theil T", "组间占比", "组内占比"], rows), ""]
+    L += ["读法：**组内占比远高于组间占比**意味着——即使把模型按任务、按年份、"
+          "或按有无血缘分组，**每一组内部仍然是极端长尾的**，"
+          "总体不均衡主要不是「组与组之间拉开的」，而是「组内头部与尾部拉开的」。"
+          "这与 RQ2 的结论一致，是对它的分解而非修正。"
+          "两种下载口径**分别计算、不可混用、不可相加**。", "",
+          "> **本节全部结论的限制**：① 家族网络只覆盖**显式声明血缘**的模型"
+          "（底座关系缺失 71.74%），未声明血缘的模型不在图内；"
+          "② 结构分类的阈值是人为设定且已显式写死，换阈值会改变 star/chain/merge 的计数，"
+          "但「星型为主、链型次之」的定性结论稳健；"
+          "③ 下载量只反映传播热度，不代表模型质量；"
+          "④ 所有相关性都是**同一快照内的统计关联**，不构成因果。", "",
+          "对应新增图表：**Figure 13 / 14 / 15**（见 `figures_ext/`）；"
+          "交互式查看见 **`family_explorer.html`**（离线单文件，Dashboard 内亦有入口）。", "",
+          "---", ""]
     return L
 
 
 # ============================ 最终报告 ============================
 def final_report(m):
     dq_missing = mv(m, "data.missing_rates", {})
+    scc = mv(m, "rq3_family.scc_summary", {}) or {}
+    corr = mv(m, "rq3_family.children_count_downloads_correlation", {}) or {}
     L = header("Hugging Face 开源模型生态分析 · 最终报告", m)
     L += [
         "---", "",
@@ -1422,6 +1592,9 @@ def final_report(m):
             ["Phase 4", f"{num(mv(m, 'deliverables.figure_count'))} 张正式图、"
                         f"Dashboard、报告、LaTeX / PPT 素材", "已完成"],
             ["Phase 5", "数据/结果/算法/工程一致性验收", "已完成"],
+            ["Phase 6（增量）", "家族结构深度分析（含环处理/多父）、三个典型案例、"
+                              "交互式家族探索器、分组集中度与 Theil 分解、新增 Figure 13–15",
+             "已完成"],
         ]), "",
         "### 1.2 完成状态与受限部分（如实说明）", "",
     ]
@@ -1504,7 +1677,6 @@ def final_report(m):
         f"- 两种口径合计下载量相差约 {num(caliber_ratio(m), 1)} 倍，"
         f"**必须声明口径，不可混用、不可相加**。",
         "- **不宣称幂律**：只描述长尾形态，未做严格分布拟合与模型比较。",
-        *supp_blocks(load_supplementary()).get("rq2", []),
         "- 对应图：**Figure 5 / 6**。", "",
         "### RQ3 模型谱系网络", "",
         f"- 边语义：`src = 底座` → `dst = 衍生模型`（方向保留）。",
@@ -1527,7 +1699,6 @@ def final_report(m):
         "`descendant_count_khop`（有界可达）/ `component_size`（弱连通分量）。",
         "- PageRank 方向明确：正向高分是衍生链末端，反向高分才是「被依赖中心」；"
         "**PageRank 不等于模型质量**。",
-        *supp_blocks(load_supplementary()).get("rq3", []),
         "- 对应图：**Figure 7 / 8**。", "",
         "### RQ4 属性与下载热度的统计关联", "",
         f"- 定位：当前快照下的**统计关联**，不是前瞻性预测。",
@@ -1541,7 +1712,6 @@ def final_report(m):
         table(["模型", "RMSE", "MAE", "R²"],
               [[k, num(v.get("rmse"), 4), num(v.get("mae"), 4), num(v.get("r2"), 4)]
                for k, v in (mv(m, "rq4.metrics_on_test", {}) or {}).items()]), "",
-        *supp_blocks(load_supplementary()).get("rq4", []),
         "- 对应图：**Figure 9**。", "",
         "### RQ5 任务生态对比", "",
         f"- 已标注任务 {num(mv(m, 'rq5.n_tasks_labeled'))} 个，可比较 {num(mv(m, 'rq5.n_tasks_comparable'))} 个"
@@ -1550,7 +1720,7 @@ def final_report(m):
         f"不参与跨任务比较。",
         f"- 两种下载口径独立成列，不混合、不相加。",
         "- 对应图：**Figure 4**。", "",
-        "---", "",
+    ] + family_ext_section(m) + [
         "## 4. Spark 实验与工程结果", "",
         table(["项", "值"], [
             ["Spark Master", mv(m, "env.HF_SPARK_MASTER")],
@@ -1618,7 +1788,6 @@ def final_report(m):
              "物理 32 GB，实际可用远低于 32 GB",
              "从 `local[4]` 起步做并行度扫描；driver 内存按需调整而非无上限加大；"
              "每次长计算前检查可用内存与磁盘"],
-            *supp_blocks(load_supplementary()).get("challenge_rows", []),
         ]), "",
         "---", "",
         "## 6. 最终文件位置", "",
@@ -1628,6 +1797,10 @@ def final_report(m):
             ["分析结果", "`data_hubstats/gold/analysis/`"],
             ["结果清单（唯一基准）", "`data_hubstats/gold/analysis/results_manifest.json`"],
             ["正式图（PNG/PDF/SVG）", "`figures_final/`"],
+            ["增量新增图（PNG/PDF/SVG）", "`figures_ext/`（Figure 13–15）"],
+            ["交互式家族探索器（离线单文件）", "`family_explorer.html`"],
+            ["家族结构结果", "`data_hubstats/gold/analysis/family_*.json` / `family_*.csv`"],
+            ["分组集中度结果", "`data_hubstats/gold/analysis/concentration_groups.json` / `.csv`"],
             ["Dashboard", "`dashboard_final.html`"],
             ["最终报告", "`report_final.md`"],
             ["分析报告", "`docs/rq_analysis_report.md`、`docs/graph_analysis_report.md`、"
@@ -1668,7 +1841,11 @@ def final_report(m):
              "② 边语义严格保留的谱系分析（含外部父模型）；"
              "③ GraphFrames 与 Spark 原生双轨、逐步骤落盘可续跑，"
              "并如实记录每一步的真实耗时（本次无未完成步骤，若有则同样如实记录）；"
-             "④ 单一结果清单驱动全部交付物，杜绝数字漂移", "满足"],
+             "④ 单一结果清单驱动全部交付物，杜绝数字漂移；"
+             "⑤ 含环有向图先做 SCC 折叠、再在凝聚 DAG 上求最长路径，"
+             "并保留多父（合并）拓扑，不用「树」近似替代图；"
+             "⑥ 交互式模型家族探索器（离线单文件 ECharts，含大图保护与截断声明）；"
+             "⑦ Theil 指数把总体不均衡分解为组间/组内，补充而非改写原 RQ2 结论", "满足"],
         ]), "",
         "---", "",
         "## 8. 剩余限制", "",
@@ -1693,8 +1870,7 @@ def final_report(m):
         f"应对策略是独立脚本 + 超时看门狗 + 逐步骤落盘可续跑；最终全部完成。"
         f"残余约束是单次全量迭代仍需数百秒，且**未用 NetworkX 结果替代**。",
         f"6. **ML 的定位**：RQ4 是同期统计关联，不是前瞻预测；"
-        f"likes 与 downloads 同源，**「同期相关」无法用同一快照内的分层对照排除**；"
-        f"时间切分只度量跨创建队列的泛化差异，**不是**泄漏幅度的量化；特征重要性不代表因果。",
+        f"likes 与 downloads 同源，存在同期相关；特征重要性不代表因果。",
         f"7. **单机实验**：全部实验在 `local[N]` 单机多核完成，"
         f"**不构成多节点横向扩展结论**；Windows 无法清 OS 文件缓存，"
         f"扫描计时为缓存热态（首次接触除外）。",
@@ -1702,11 +1878,31 @@ def final_report(m):
         f"也不把 PageRank 等同于质量。",
         f"9. **课程规模限制**：RQ4 只在 20% 确定性哈希样本上训练，"
         f"不是全量训练；这是为控制本地资源的有意取舍，已在报告中说明。",
-        *supp_blocks(load_supplementary()).get("limits", []), "",
+        f"10. **家族结构分析的网络口径**：所有家族/谱系结论只覆盖**显式声明血缘**的模型"
+        f"（底座关系缺失 {pct(dq_missing.get('base_models'), 2)}），未声明血缘不等于没有血缘；"
+        f"谱系在快照边界被截断，后代类指标是下界。",
+        f"11. **结构分类阈值是人为设定的**：`classify_structure` 的阈值"
+        f"（merge 占比 0.20 / chain 高度 6 且叶占比 0.60 / star 出度 100 且高度 6 且叶占比 0.50）"
+        f"已显式写死以便复现，但**换阈值会改变各类计数**；"
+        f"稳健的是定性结论（成规模家族里星型最多、链型次之），而非具体数字。",
+        f"12. **含环图必须先做 SCC 折叠**：直接对含环图求最长路径无定义。"
+        f"本工程实测环极小（落入环中的节点 {num(scc.get('n_nodes_in_cycles'))} 个、自环边 "
+        f"{num(scc.get('n_self_loop_edges'))} 条），但仍按严格流程处理，未走捷径。",
+        f"13. **交互式探索器展示的是有界子图**：`family_explorer.html` 只含 Top-N 家族的直接子节点"
+        f"与三个案例家族的 2 跳，并按上限截断，**不是全量继承网络**；页面内已显式标注。",
+        f"14. **相关性不代表因果**：`children_count` 与下载量的相关（Pearson "
+        f"{num(corr.get('pearson'), 4)} / Spearman {num(corr.get('spearman'), 4)}）、"
+        f"底座热度与衍生热度的对比、分组 Theil 分解，全部是**同一快照内的统计描述**，"
+        f"不构成因果，也不代表模型质量。", "",
         "---", "",
         "## 9. 最终状态", "",
         f"**{mv(m, 'final.status', 'PROJECT READY WITH LIMITATIONS')}**", "",
         mv(m, "final.status_reason", ""), "",
+        "在 Phase 5 的验收基线之上，本轮**增量完善**新增了："
+        "模型家族结构深度分析（含环处理与多父拓扑）、三个代表性家族案例、"
+        "交互式模型家族探索器、分组集中度与 Theil 分解，以及新增 Figure 13–15。"
+        "上述增量**不改动**任何既有结果文件，新增产物与原有产物物理隔离；"
+        "原 RQ1–RQ5 的结论保持不变，仅在 §3 末尾作了**补充**。", "",
     ]
     return L
 

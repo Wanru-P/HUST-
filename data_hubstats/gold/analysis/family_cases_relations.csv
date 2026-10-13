@@ -1,0 +1,13 @@
+role,base_model,relation,n_edges
+star,black-forest-labs/FLUX.1-dev,adapter,42702
+star,black-forest-labs/FLUX.1-dev,merge,10
+star,black-forest-labs/FLUX.1-dev,finetune,613
+star,black-forest-labs/FLUX.1-dev,quantized,94
+chain,meta-llama/Meta-Llama-3-8B,adapter,738
+chain,meta-llama/Meta-Llama-3-8B,merge,89
+chain,meta-llama/Meta-Llama-3-8B,finetune,613
+chain,meta-llama/Meta-Llama-3-8B,quantized,284
+merge,Laxhar/noobai-XL-1.1,adapter,8
+merge,Laxhar/noobai-XL-1.1,merge,304
+merge,Laxhar/noobai-XL-1.1,finetune,224
+merge,Laxhar/noobai-XL-1.1,quantized,3

@@ -1,0 +1,403 @@
+{
+  "generated_at": "2026-10-13T11:28:58.744115+00:00",
+  "snapshot_sha": "2c1e195090bbcbe1f940cfdcb4ac25b76e48da70",
+  "case_selection_rule": {
+    "star": "children_count 最大的底座",
+    "chain": "children_count>=100 中 subtree_height 最大者",
+    "merge": "被判为 merge 且 children_count>=20 中 merge 出边数最多者"
+  },
+  "cases": [
+    {
+      "role": "star",
+      "base_model": "black-forest-labs/FLUX.1-dev",
+      "pipeline_tag": "text-to-image",
+      "created_at": "2024-07-31T21:13:44.000Z",
+      "children_count": 43419,
+      "descendant_count_khop": 43682,
+      "subtree_height": 5,
+      "structure": "star",
+      "relation_counts": {
+        "adapter": 42702,
+        "merge": 10,
+        "finetune": 613,
+        "quantized": 94
+      },
+      "child_sum_downloads": 1394098,
+      "child_sum_downloadsAllTime": 46643574,
+      "child_median_downloadsAllTime": 72,
+      "base_downloads": 661619,
+      "base_downloadsAllTime": 34112217,
+      "base_vs_children_downloads_ratio": 0.474586,
+      "base_vs_children_all_ratio": 0.731338,
+      "median_days_after_base": 223.1,
+      "min_days_after_base": -612.8,
+      "max_days_after_base": 800.4,
+      "n_children_after_base": 43408,
+      "top_children": [
+        {
+          "child": "ByteDance/Hyper-SD",
+          "relation": "adapter",
+          "downloadsAllTime": 4642736
+        },
+        {
+          "child": "city96/FLUX.1-dev-gguf",
+          "relation": "quantized",
+          "downloadsAllTime": 3503765
+        },
+        {
+          "child": "Shakker-Labs/FLUX.1-dev-LoRA-AntiBlur",
+          "relation": "adapter",
+          "downloadsAllTime": 3415546
+        },
+        {
+          "child": "XLabs-AI/flux-RealismLora",
+          "relation": "adapter",
+          "downloadsAllTime": 2863695
+        },
+        {
+          "child": "xey/sldr_flux_nsfw_v2-studio",
+          "relation": "adapter",
+          "downloadsAllTime": 1053480
+        },
+        {
+          "child": "Shakker-Labs/AWPortrait-FL",
+          "relation": "finetune",
+          "downloadsAllTime": 1043788
+        },
+        {
+          "child": "alimama-creative/FLUX.1-Turbo-Alpha",
+          "relation": "finetune",
+          "downloadsAllTime": 810470
+        },
+        {
+          "child": "InstantX/FLUX.1-dev-Controlnet-Union",
+          "relation": "finetune",
+          "downloadsAllTime": 712860
+        },
+        {
+          "child": "ali-vilab/In-Context-LoRA",
+          "relation": "adapter",
+          "downloadsAllTime": 696034
+        },
+        {
+          "child": "black-forest-labs/FLUX.1-Krea-dev",
+          "relation": "finetune",
+          "downloadsAllTime": 571107
+        },
+        {
+          "child": "Shakker-Labs/FLUX.1-dev-ControlNet-Union-Pro-2.0",
+          "relation": "finetune",
+          "downloadsAllTime": 533371
+        },
+        {
+          "child": "lllyasviel/FLUX.1-dev-gguf",
+          "relation": "quantized",
+          "downloadsAllTime": 519237
+        },
+        {
+          "child": "Shakker-Labs/FLUX.1-dev-LoRA-add-details",
+          "relation": "adapter",
+          "downloadsAllTime": 491206
+        },
+        {
+          "child": "Shakker-Labs/FLUX.1-dev-ControlNet-Union-Pro",
+          "relation": "finetune",
+          "downloadsAllTime": 489806
+        },
+        {
+          "child": "lexa862/NSFWmodel",
+          "relation": "adapter",
+          "downloadsAllTime": 459940
+        },
+        {
+          "child": "Jonjew/GetphatFLUXRealityNSFW",
+          "relation": "adapter",
+          "downloadsAllTime": 451301
+        },
+        {
+          "child": "alimama-creative/FLUX.1-dev-Controlnet-Inpainting-Beta",
+          "relation": "finetune",
+          "downloadsAllTime": 432236
+        },
+        {
+          "child": "kudzueye/Boreal",
+          "relation": "adapter",
+          "downloadsAllTime": 404598
+        },
+        {
+          "child": "Jovie/Midjourney",
+          "relation": "adapter",
+          "downloadsAllTime": 382473
+        },
+        {
+          "child": "gpustack/FLUX.1-lite-GGUF",
+          "relation": "quantized",
+          "downloadsAllTime": 350027
+        }
+      ]
+    },
+    {
+      "role": "chain",
+      "base_model": "meta-llama/Meta-Llama-3-8B",
+      "pipeline_tag": "text-generation",
+      "created_at": "2024-04-17T09:35:16.000Z",
+      "children_count": 1724,
+      "descendant_count_khop": 8784,
+      "subtree_height": 151,
+      "structure": "chain",
+      "relation_counts": {
+        "adapter": 738,
+        "merge": 89,
+        "finetune": 613,
+        "quantized": 284
+      },
+      "child_sum_downloads": 206165,
+      "child_sum_downloadsAllTime": 14253888,
+      "child_median_downloadsAllTime": 52,
+      "base_downloads": 194155,
+      "base_downloadsAllTime": 47200733,
+      "base_vs_children_downloads_ratio": 0.941746,
+      "base_vs_children_all_ratio": 3.311429,
+      "median_days_after_base": 142.6,
+      "min_days_after_base": -153.6,
+      "max_days_after_base": 902.1,
+      "n_children_after_base": 1722,
+      "top_children": [
+        {
+          "child": "unsloth/llama-3-8b-bnb-4bit",
+          "relation": "quantized",
+          "downloadsAllTime": 4970415
+        },
+        {
+          "child": "MLP-KTLim/llama-3-Korean-Bllossom-8B",
+          "relation": "finetune",
+          "downloadsAllTime": 2161222
+        },
+        {
+          "child": "DeepMount00/Llama-3-8b-Ita",
+          "relation": "finetune",
+          "downloadsAllTime": 1134703
+        },
+        {
+          "child": "aaditya/Llama3-OpenBioLLM-8B",
+          "relation": "finetune",
+          "downloadsAllTime": 628967
+        },
+        {
+          "child": "openchat/openchat-3.6-8b-20240522",
+          "relation": "finetune",
+          "downloadsAllTime": 494667
+        },
+        {
+          "child": "dphn/dolphin-2.9-llama3-8b",
+          "relation": "finetune",
+          "downloadsAllTime": 417902
+        },
+        {
+          "child": "winninghealth/WiNGPT2-Llama-3-8B-Chat",
+          "relation": "finetune",
+          "downloadsAllTime": 352592
+        },
+        {
+          "child": "jondurbin/bagel-8b-v1.0",
+          "relation": "finetune",
+          "downloadsAllTime": 262240
+        },
+        {
+          "child": "dphn/dolphin-2.9.1-llama-3-8b",
+          "relation": "finetune",
+          "downloadsAllTime": 247590
+        },
+        {
+          "child": "winninghealth/WiNGPT2-Llama-3-8B-Base",
+          "relation": "finetune",
+          "downloadsAllTime": 218088
+        },
+        {
+          "child": "QuantFactory/Meta-Llama-3-8B-GGUF",
+          "relation": "quantized",
+          "downloadsAllTime": 212953
+        },
+        {
+          "child": "Magpie-Align/Llama-3-8B-Magpie-Align-SFT-v0.3",
+          "relation": "finetune",
+          "downloadsAllTime": 202784
+        },
+        {
+          "child": "dfurman/Llama-3-8B-Orpo-v0.1",
+          "relation": "finetune",
+          "downloadsAllTime": 178751
+        },
+        {
+          "child": "jondurbin/airoboros-70b-3.3",
+          "relation": "finetune",
+          "downloadsAllTime": 165849
+        },
+        {
+          "child": "jondurbin/airoboros-dpo-70b-3.3",
+          "relation": "finetune",
+          "downloadsAllTime": 164672
+        },
+        {
+          "child": "Weyaxi/Einstein-v6.1-Llama3-8B",
+          "relation": "finetune",
+          "downloadsAllTime": 152041
+        },
+        {
+          "child": "dphn/dolphin-2.9-llama3-8b-gguf",
+          "relation": "quantized",
+          "downloadsAllTime": 149280
+        },
+        {
+          "child": "johnsnowlabs/JSL-MedLlama-3-8B-v2.0",
+          "relation": "finetune",
+          "downloadsAllTime": 109081
+        },
+        {
+          "child": "ruslanmv/Medical-Llama3-8B",
+          "relation": "finetune",
+          "downloadsAllTime": 82798
+        },
+        {
+          "child": "rinna/llama-3-youko-8b",
+          "relation": "finetune",
+          "downloadsAllTime": 75137
+        }
+      ]
+    },
+    {
+      "role": "merge",
+      "base_model": "Laxhar/noobai-XL-1.1",
+      "pipeline_tag": "text-to-image",
+      "created_at": "2024-11-21T13:43:47.000Z",
+      "children_count": 539,
+      "descendant_count_khop": 548,
+      "subtree_height": 2,
+      "structure": "merge",
+      "relation_counts": {
+        "adapter": 8,
+        "merge": 304,
+        "finetune": 224,
+        "quantized": 3
+      },
+      "child_sum_downloads": 295167,
+      "child_sum_downloadsAllTime": 5963852,
+      "child_median_downloadsAllTime": 52,
+      "base_downloads": 191805,
+      "base_downloadsAllTime": 982138,
+      "base_vs_children_downloads_ratio": 0.649819,
+      "base_vs_children_all_ratio": 0.164682,
+      "median_days_after_base": 176.6,
+      "min_days_after_base": -0.8,
+      "max_days_after_base": 679.4,
+      "n_children_after_base": 538,
+      "top_children": [
+        {
+          "child": "John6666/nova-furry-xl-il-v120-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 1774916
+        },
+        {
+          "child": "John6666/janku-v5-nsfw-trained-noobai-rou-wei-illustrious-xl-v50-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 1772935
+        },
+        {
+          "child": "John6666/prefect-illustrious-xl-v3-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 1745220
+        },
+        {
+          "child": "John6666/nova-anime-xl-il-v80-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 181579
+        },
+        {
+          "child": "John6666/mala-illustriousxl-v20-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 80153
+        },
+        {
+          "child": "John6666/nova-reality-xl-illustrious-v40-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 75265
+        },
+        {
+          "child": "John6666/smooth-mix-noobai-illustrious-pony-illustrious2-noobai-v2-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 49932
+        },
+        {
+          "child": "John6666/ntr-mix-illustrious-xl-noob-xl-v777-sdxl",
+          "relation": "finetune",
+          "downloadsAllTime": 26825
+        },
+        {
+          "child": "John6666/perfect-rsb-mix-noobai-anime-sfw-nsfw-v211-sdxl",
+          "relation": "finetune",
+          "downloadsAllTime": 24099
+        },
+        {
+          "child": "John6666/ntr-mix-illustrious-xl-noob-xl-xiii-sdxl",
+          "relation": "finetune",
+          "downloadsAllTime": 23350
+        },
+        {
+          "child": "ChenkinLab/ChenkinNoob-XL-V0.1",
+          "relation": "finetune",
+          "downloadsAllTime": 19235
+        },
+        {
+          "child": "John6666/anai-aleido-spell-v10-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 10221
+        },
+        {
+          "child": "John6666/noobrealistic-material-v10-sdxl",
+          "relation": "finetune",
+          "downloadsAllTime": 9359
+        },
+        {
+          "child": "John6666/obsession-illustriousxl-v31-sdxl",
+          "relation": "finetune",
+          "downloadsAllTime": 7884
+        },
+        {
+          "child": "John6666/ramthrusts-nsfw-red-shift-mix-v199-sdxl",
+          "relation": "finetune",
+          "downloadsAllTime": 7710
+        },
+        {
+          "child": "John6666/nova-mature-xl-v30-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 7528
+        },
+        {
+          "child": "John6666/nova-kemono-xl-v50-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 7449
+        },
+        {
+          "child": "John6666/nova-anime-xl-il-v90-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 6578
+        },
+        {
+          "child": "John6666/oops-all-toons-nai-v10-toonitup-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 5991
+        },
+        {
+          "child": "John6666/nova-anime-xl-il-v120-sdxl",
+          "relation": "merge",
+          "downloadsAllTime": 5694
+        }
+      ]
+    }
+  ],
+  "children_count_downloads_correlation": {
+    "pearson": 0.05809199389423941,
+    "spearman": 0.2021036285860482
+  },
+  "role_note": "星型底座以'被大量浅层复用'为主，链型底座以'被逐层继续衍生'为主，合并型底座以'被多父合并'为主；这些是**当前快照的结构差异**，不是因果机制，也不代表模型质量。"
+}

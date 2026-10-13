@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-10-11T11:51:15.693364+00:00",
-  "n_checks": 114,
+  "generated_at": "2026-10-13T12:01:58.672328+00:00",
+  "n_checks": 129,
   "n_failed": 0,
   "results": [
     {
       "check": "交付物存在：report_final.md",
       "ok": true,
-      "detail": "9118 字符"
+      "detail": "16708 字符"
     },
     {
       "check": "交付物存在：dashboard_final.html",
       "ok": true,
-      "detail": "19438 字符"
+      "detail": "20012 字符"
     },
     {
       "check": "交付物存在：docs/latex_report_materials.md",
@@ -21,7 +21,7 @@
     {
       "check": "交付物存在：docs/ppt_handoff.md",
       "ok": true,
-      "detail": "5186 字符"
+      "detail": "7416 字符"
     },
     {
       "check": "交付物存在：docs/rq_analysis_report.md",
@@ -567,6 +567,81 @@
       "check": "write_reports.py 未硬编码应由结果清单提供的头条数字（10 项）",
       "ok": true,
       "detail": ""
+    },
+    {
+      "check": "figures_ext 新增 3 图 × 3 格式 = 9 个文件齐备",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "figures_ext_index.json 登记 3 张图且快照与清单一致",
+      "ok": true,
+      "detail": "n=3"
+    },
+    {
+      "check": "新增图未混入 figure_index（原有 12 图守卫不受影响）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "family_explorer.html 存在且占位符已全部替换、ECharts 已内嵌",
+      "ok": true,
+      "detail": "bytes=2322512"
+    },
+    {
+      "check": "family_explorer_data.json 结构完整且带截断标记",
+      "ok": true,
+      "detail": "nodes=4908 edges=4873"
+    },
+    {
+      "check": "三个案例家族齐备且角色恰为 star / chain / merge",
+      "ok": true,
+      "detail": "['star', 'chain', 'merge']"
+    },
+    {
+      "check": "SCC 折叠后确为 DAG（含环图的最长路径处理有效）",
+      "ok": true,
+      "detail": "is_dag=True self_loops=2060"
+    },
+    {
+      "check": "结构分类三层计数齐备（all / ge10 / ge100）",
+      "ok": true,
+      "detail": "['all', 'ge10', 'ge100']"
+    },
+    {
+      "check": "Theil 恒等式①：同一口径下不同分组的 T_total 完全相同",
+      "ok": true,
+      "detail": "[7.259273, 7.259273, 7.259273]"
+    },
+    {
+      "check": "Theil 恒等式②：T_total = T_within + T_between",
+      "ok": true,
+      "detail": "7.259273051615281 vs 6.24795027816288+1.0113227734524015"
+    },
+    {
+      "check": "分组集中度的两种下载口径独立计算、未混用",
+      "ok": true,
+      "detail": "7.259273051615281 vs 7.656842418189409"
+    },
+    {
+      "check": "增量文档 5 份齐备",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "Dashboard 含探索器入口（导航链接 + 章节标题）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "最终报告含增量章节（家族结构 + Theil 分组分解）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "结果清单已登记增量指标（rq3_family.* 与 rq2_groups.*）",
+      "ok": true,
+      "detail": "rq3_family=27 rq2_groups=26"
     },
     {
       "check": "人工语义复核清单已生成",
