@@ -157,7 +157,7 @@ $PY test_algorithms.py               # 纯 Python 算法等价性（不需要 Sp
 $PY test_spark_contracts.py          # Spark 侧契约（A–H 组，需真实数据）
 
 # ⑧ Phase 4：12 张正式图 + Dashboard + 图目录
-$PY make_figures.py                  # -> figures_final/ 与 dashboard_final.html
+$PY make_figures.py                  # -> figures_final/、figures_report/、figures_supplementary/ 与 dashboard_final.html
 $PY make_bench_figures.py            # 仅重绘 Figure 10–12（委托给 make_figures）
 
 # ⑨ 结果清单 + 报告 + 一致性检查（顺序不可颠倒）
@@ -239,6 +239,7 @@ hf_eco_analysis/
 ├── figures/                 旧 Demo 图（只读保留）
 ├── figures_final/           Fig01–Fig12（PNG 300dpi + PDF + SVG）
 ├── figures_ext/             增量新增图 Fig13–Fig15（PNG 300dpi + PDF + SVG，独立目录）
+├── figures_report/          A4 单栏报告专用版 Figure 7（fig07a 全局谱系统计卡 / fig07b 代表家族子图）
 ├── figures_supplementary/   补充材料图（旧版 Figure 7，不属正式图，不进 figure_index）
 ├── dashboard_final.html     离线看板（打开时**不运行 Spark**）
 ├── dashboard_standalone.html 单文件看板（图片 base64 内嵌，可单独分享）
@@ -273,7 +274,7 @@ hf_eco_analysis/
 | `stats_utils.py` | 集中度/分位数/选样的**单一口径**实现 |
 | `test_algorithms.py` | 纯 Python 算法等价性测试 |
 | `test_spark_contracts.py` | Spark 侧数据契约测试（A–H 组） |
-| `make_figures.py` | 12 张正式图 + 补充材料图 + Dashboard + 图目录 |
+| `make_figures.py` | 12 张正式图 + 报告版图（`figures_report/`）+ 补充材料图 + Dashboard + 图目录 |
 | `make_bench_figures.py` | 仅重绘 Figure 10–12（委托 `make_figures`） |
 | `check_figure_quality.py` | 图表**排版**检查：重渲染全部正式图并检测文字重叠/越界（不落盘、不改交付图） |
 | `build_manifest.py` | 汇总所有结果为唯一清单，并**推导**最终状态 |
@@ -388,6 +389,11 @@ Top-k 用显式排名定义（按值降序取前 `max(1, int(n·p))` 个模型�
 同类问题还有：ML 的四张表是 `df.write.csv()` 写出的**目录**（`part-*.csv` + `_SUCCESS`），
 **不是**单个 `.csv` 文件，用 `pd.read_csv(目录)` 会失败并静默跳过 Figure 9 的 (a) 面板。
 `make_figures.py` 因此新增 `read_spark_csv()` 逐 part 合并。
+
+**守卫的边界**：该守卫只覆盖 `figures_final/` 的 12 张正式图。`figures_report/`（A4 单栏报告专用版 Figure 7）
+与 `figures_supplementary/`（旧版 Figure 7，补充材料）由 `save_report()` / `SUPP_DIR` 分别写出，
+**不计入 `FIG_INDEX`**，也不参与缺图报错；`figures_ext/`（增量 Figure 13–15）同理，
+由 `figures_ext_index.json` 单独登记。三者都属于「派生/补充输出」，缺失只影响对应交付包，不影响正式 12 图的完整性判定。
 
 ---
 

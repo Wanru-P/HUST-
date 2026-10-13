@@ -27,7 +27,5 @@ data_hubstats/_smoke/
 # Legacy outputs and generated local-only files
 _backup_pre_refinement_*/
 figures/
-figures_report/
-figures_supplementary/
 dashboard.html
 report.md
