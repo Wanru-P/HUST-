@@ -1,0 +1,11 @@
+﻿label,org,n_edges,n_active_bases,edges_per_active_base,n_models_in_snapshot,share_of_all_edges
+Qwen,Qwen,168477,301,559.724,468,0.183159
+Llama(meta-llama),meta-llama,34301,53,647.189,70,0.03729
+Gemma/BERT等(google),google,71201,378,188.362,1136,0.077406
+google-bert,google-bert,13840,12,1153.333,15,0.015046
+Mistral,mistralai,14987,60,249.783,77,0.016293
+DeepSeek,deepseek-ai,9081,82,110.744,105,0.009872
+StableDiffusion(stabilityai),stabilityai,14524,74,196.27,117,0.01579
+FLUX(black-forest-labs),black-forest-labs,45401,20,2270.05,38,0.049358
+GPT(openai),openai,15096,24,629.0,39,0.016412
+Microsoft(phi),microsoft,18624,278,66.993,544,0.020247

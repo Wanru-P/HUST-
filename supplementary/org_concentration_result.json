@@ -1,0 +1,277 @@
+{
+  "terminology": {
+    "grouping_field": "author",
+    "grouping_unit": "发布账号（同时包含个人账号与机构账号，不称「组织」）",
+    "grouping_unit_en": "publishing account",
+    "internal_key_note": "JSON/CSV 中沿用历史键名 org/account，语义均为发布账号",
+    "prefix_note": "血缘「系」= 底座模型 id 的官方发布账号前缀（org 段），不是真实架构类型归因"
+  },
+  "n_models": 3138954,
+  "n_accounts": 629974,
+  "n_orgs": 629974,
+  "author_missing_share": 0.0,
+  "zero_download_share": 0.43542945,
+  "gini_model_downloads": 0.995355,
+  "gini_org_downloads": 0.998707,
+  "gini_model_downloadsAllTime": 0.998117,
+  "gini_org_downloadsAllTime": 0.999305,
+  "theil": {
+    "total": 7.259273,
+    "between": 4.802455,
+    "within": 2.456818,
+    "between_share": 0.661561,
+    "within_share": 0.338439,
+    "note": "在正下载模型上按发布账号分组计算；本实验选择只在正下载模型上计算 Theil，零值占比单独报告（标准 Theil T 允许经 0·ln0=0 的极限约定纳入零值）。"
+  },
+  "tag_count_proxy": {
+    "corr_type": "Pearson 简单线性相关（不是模型特征重要性，也不构成因果或代理判定）",
+    "corr_tagcount_logdownloads": 0.334186,
+    "corr_orgsize_logdownloads": 0.386294,
+    "corr_tagcount_orgsize": 0.095624,
+    "corr_tagcount_logdownloads_within_org": 0.172209
+  },
+  "top20_orgs_by_downloads": [
+    {
+      "account": "sentence-transformers",
+      "n_models": 127,
+      "downloads": 322104631,
+      "downloadsAllTime": 7404217755,
+      "tag_mean": 18.929
+    },
+    {
+      "account": "Qwen",
+      "n_models": 468,
+      "downloads": 268501311,
+      "downloadsAllTime": 3770327742,
+      "tag_mean": 13.703
+    },
+    {
+      "account": "BAAI",
+      "n_models": 180,
+      "downloads": 144000097,
+      "downloadsAllTime": 1961636340,
+      "tag_mean": 10.206
+    },
+    {
+      "account": "google",
+      "n_models": 1136,
+      "downloads": 135994272,
+      "downloadsAllTime": 2859340472,
+      "tag_mean": 18.783
+    },
+    {
+      "account": "cross-encoder",
+      "n_models": 37,
+      "downloads": 94265211,
+      "downloadsAllTime": 900368374,
+      "tag_mean": 18.432
+    },
+    {
+      "account": "Comfy-Org",
+      "n_models": 89,
+      "downloads": 78984317,
+      "downloadsAllTime": 441819029,
+      "tag_mean": 5.989
+    },
+    {
+      "account": "facebook",
+      "n_models": 2361,
+      "downloads": 59170228,
+      "downloadsAllTime": 2801484311,
+      "tag_mean": 12.47
+    },
+    {
+      "account": "unsloth",
+      "n_models": 1464,
+      "downloads": 58064987,
+      "downloadsAllTime": 533346504,
+      "tag_mean": 17.822
+    },
+    {
+      "account": "openai",
+      "n_models": 39,
+      "downloads": 58034007,
+      "downloadsAllTime": 3128987780,
+      "tag_mean": 32.308
+    },
+    {
+      "account": "timm",
+      "n_models": 1813,
+      "downloads": 49335235,
+      "downloadsAllTime": 2352186935,
+      "tag_mean": 9.372
+    },
+    {
+      "account": "google-bert",
+      "n_models": 15,
+      "downloads": 47815456,
+      "downloadsAllTime": 4309566032,
+      "tag_mean": 28.067
+    },
+    {
+      "account": "mradermacher",
+      "n_models": 71112,
+      "downloads": 43596237,
+      "downloadsAllTime": 324470307,
+      "tag_mean": 12.599
+    },
+    {
+      "account": "nvidia",
+      "n_models": 955,
+      "downloads": 39008297,
+      "downloadsAllTime": 506643371,
+      "tag_mean": 13.003
+    },
+    {
+      "account": "jonatasgrosman",
+      "n_models": 1265,
+      "downloads": 38142838,
+      "downloadsAllTime": 1886152774,
+      "tag_mean": 9.191
+    },
+    {
+      "account": "lmstudio-community",
+      "n_models": 750,
+      "downloads": 37888037,
+      "downloadsAllTime": 327764662,
+      "tag_mean": 12.38
+    },
+    {
+      "account": "microsoft",
+      "n_models": 544,
+      "downloads": 36689897,
+      "downloadsAllTime": 2316007721,
+      "tag_mean": 12.32
+    },
+    {
+      "account": "OpenMed",
+      "n_models": 2277,
+      "downloads": 36544329,
+      "downloadsAllTime": 467562852,
+      "tag_mean": 16.844
+    },
+    {
+      "account": "amazon",
+      "n_models": 45,
+      "downloads": 31735673,
+      "downloadsAllTime": 796463530,
+      "tag_mean": 19.111
+    },
+    {
+      "account": "FacebookAI",
+      "n_models": 19,
+      "downloads": 30497032,
+      "downloadsAllTime": 2851931606,
+      "tag_mean": 51.474
+    },
+    {
+      "account": "intfloat",
+      "n_models": 20,
+      "downloads": 29815534,
+      "downloadsAllTime": 457816712,
+      "tag_mean": 34.55
+    }
+  ],
+  "top20_orgs_by_n_models": [
+    {
+      "account": "mradermacher",
+      "n_models": 71112,
+      "downloads": 43596237
+    },
+    {
+      "account": "RichardErkhov",
+      "n_models": 26277,
+      "downloads": 6279060
+    },
+    {
+      "account": "Krabat",
+      "n_models": 12206,
+      "downloads": 35769
+    },
+    {
+      "account": "xueyj",
+      "n_models": 11984,
+      "downloads": 26837
+    },
+    {
+      "account": "Muapi",
+      "n_models": 9429,
+      "downloads": 271500
+    },
+    {
+      "account": "alphaedge-ai",
+      "n_models": 7044,
+      "downloads": 164777
+    },
+    {
+      "account": "SALUTEASD",
+      "n_models": 7022,
+      "downloads": 18428
+    },
+    {
+      "account": "John6666",
+      "n_models": 6445,
+      "downloads": 751756
+    },
+    {
+      "account": "mlx-community",
+      "n_models": 5664,
+      "downloads": 8978699
+    },
+    {
+      "account": "downtown1",
+      "n_models": 5160,
+      "downloads": 22477
+    },
+    {
+      "account": "introspection-auditing",
+      "n_models": 5136,
+      "downloads": 8762
+    },
+    {
+      "account": "manbull",
+      "n_models": 5108,
+      "downloads": 18218
+    },
+    {
+      "account": "tensorblock",
+      "n_models": 4947,
+      "downloads": 375074
+    },
+    {
+      "account": "LarryAIDraw",
+      "n_models": 4833,
+      "downloads": 0
+    },
+    {
+      "account": "dogssss",
+      "n_models": 4742,
+      "downloads": 27978
+    },
+    {
+      "account": "tronsdds",
+      "n_models": 4536,
+      "downloads": 9529
+    },
+    {
+      "account": "rejjiex",
+      "n_models": 4498,
+      "downloads": 12948
+    },
+    {
+      "account": "jerseyjerry",
+      "n_models": 4482,
+      "downloads": 15346
+    },
+    {
+      "account": "linger2334",
+      "n_models": 4291,
+      "downloads": 8755
+    },
+    {
+      "account": "johngreendr1",
+      "n_models": 4237,
+      "downloads": 30860
+    }
+  ]
+}

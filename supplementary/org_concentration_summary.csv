@@ -1,0 +1,37 @@
+﻿metric,value
+n_models,3138954
+n_accounts,629974
+n_orgs,629974
+author_missing_share,0.0
+zero_download_share,0.43542945
+gini_model_downloads,0.995355
+gini_org_downloads,0.998707
+gini_model_downloadsAllTime,0.998117
+gini_org_downloadsAllTime,0.999305
+theil.total,7.259273
+theil.between,4.802455
+theil.within,2.456818
+theil.between_share,0.661561
+theil.within_share,0.338439
+theil.note,在正下载模型上按发布账号分组计算；本实验选择只在正下载模型上计算 Theil，零值占比单独报告（标准 Theil T 允许经 0·ln0=0 的极限约定纳入零值）。
+tag_count_proxy.corr_type,Pearson 简单线性相关（不是模型特征重要性，也不构成因果或代理判定）
+tag_count_proxy.corr_tagcount_logdownloads,0.334186
+tag_count_proxy.corr_orgsize_logdownloads,0.386294
+tag_count_proxy.corr_tagcount_orgsize,0.095624
+tag_count_proxy.corr_tagcount_logdownloads_within_org,0.172209
+config.non_blank_rate,0.4923014
+config.non_blank_rule,config 为字符串且 strip 后不属于 ''/'null'/'None'/'{}' 即计为非空
+config.non_blank_rate_caveat,非空率不等于可识别架构信息的比例；抽样中仍有大量 <无 model_type>。
+config.non_blank_rows,1545314
+config.blank_rows,1593645
+config.model_type_sample_n,313896
+lineage.n_models_raw,3138959
+lineage.n_models,3138954
+lineage.n_id_dups_removed,5
+lineage.n_edges,919839
+lineage.n_edges_official,919839
+lineage.official_edges_expected,919839
+lineage.official_edges_match,True
+lineage.n_distinct_bases,88333
+lineage.qwen_over_meta_llama_edges,4.912
+lineage.note,"「系」按底座 id 的官方发布账号前缀（org 段）归并，不是真实架构类型归因；衍生活跃度 = 以该前缀下模型为底座、在正式去重口径（919,839 条）下的被引用边数。config 仅做按当前非空规则的可用率与抽样 model_type 统计。"

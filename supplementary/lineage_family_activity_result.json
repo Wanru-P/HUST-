@@ -1,0 +1,324 @@
+{
+  "n_models_raw": 3138959,
+  "n_models": 3138954,
+  "n_id_dups_removed": 5,
+  "n_edges": 919839,
+  "n_edges_official": 919839,
+  "official_edges_expected": 919839,
+  "official_edges_match": true,
+  "dedup": {
+    "steps": [
+      "按模型 id 去重（drop_duplicates(subset=['id'])）",
+      "逐行展开 baseModels 构建 (base, derived) 有向边",
+      "按 (base, derived) 对去重（drop_duplicates(subset=['base','derived'])）"
+    ],
+    "id_dups_removed": 5,
+    "n_edges_raw": 919843,
+    "n_edges_after_id_dedup": 919839,
+    "n_edges_removed_by_id_dedup": 4,
+    "n_edges_before_pair_dedup": 919839,
+    "n_pair_dups_removed": 0,
+    "pair_dedup_checked": true,
+    "n_edges_after_dedup": 919839,
+    "n_edges_undeduped": 919843,
+    "reduction_breakdown": "919,843（未去重） - 4（id 去重） - 0（(base, derived) 对去重）= 919,839",
+    "undeduped_note": "未去重口径（919,843）仅作稳健性对照，不作为正式结果。"
+  },
+  "n_distinct_bases": 88333,
+  "qwen_over_meta_llama_edges": 4.912,
+  "config": {
+    "non_blank_rate": 0.4923014,
+    "non_blank_rule": "config 为字符串且 strip 后不属于 ''/'null'/'None'/'{}' 即计为非空",
+    "non_blank_rate_caveat": "非空率不等于可识别架构信息的比例；抽样中仍有大量 <无 model_type>。",
+    "non_blank_rows": 1545314,
+    "blank_rows": 1593645,
+    "model_type_sample_n": 313896,
+    "model_type_top10": [
+      {
+        "model_type": "<无 model_type>",
+        "n": 202075
+      },
+      {
+        "model_type": "llama",
+        "n": 20081
+      },
+      {
+        "model_type": "qwen2",
+        "n": 10007
+      },
+      {
+        "model_type": "bert",
+        "n": 9293
+      },
+      {
+        "model_type": "qwen3",
+        "n": 6131
+      },
+      {
+        "model_type": "mistral",
+        "n": 4811
+      },
+      {
+        "model_type": "gpt2",
+        "n": 4524
+      },
+      {
+        "model_type": "distilbert",
+        "n": 4120
+      },
+      {
+        "model_type": "roberta",
+        "n": 3545
+      },
+      {
+        "model_type": "t5",
+        "n": 3230
+      }
+    ]
+  },
+  "family_activity_top20": [
+    {
+      "family": "Qwen",
+      "n_edges": 168477,
+      "n_active_bases": 301,
+      "edges_per_active_base": 559.724,
+      "n_models_in_snapshot": 468,
+      "share_of_all_edges": 0.183159
+    },
+    {
+      "family": "unsloth",
+      "n_edges": 78935,
+      "n_active_bases": 710,
+      "edges_per_active_base": 111.176,
+      "n_models_in_snapshot": 1464,
+      "share_of_all_edges": 0.085814
+    },
+    {
+      "family": "google",
+      "n_edges": 71201,
+      "n_active_bases": 378,
+      "edges_per_active_base": 188.362,
+      "n_models_in_snapshot": 1136,
+      "share_of_all_edges": 0.077406
+    },
+    {
+      "family": "black-forest-labs",
+      "n_edges": 45401,
+      "n_active_bases": 20,
+      "edges_per_active_base": 2270.05,
+      "n_models_in_snapshot": 38,
+      "share_of_all_edges": 0.049358
+    },
+    {
+      "family": "meta-llama",
+      "n_edges": 34301,
+      "n_active_bases": 53,
+      "edges_per_active_base": 647.189,
+      "n_models_in_snapshot": 70,
+      "share_of_all_edges": 0.03729
+    },
+    {
+      "family": "microsoft",
+      "n_edges": 18624,
+      "n_active_bases": 278,
+      "edges_per_active_base": 66.993,
+      "n_models_in_snapshot": 544,
+      "share_of_all_edges": 0.020247
+    },
+    {
+      "family": "facebook",
+      "n_edges": 16877,
+      "n_active_bases": 533,
+      "edges_per_active_base": 31.664,
+      "n_models_in_snapshot": 2361,
+      "share_of_all_edges": 0.018348
+    },
+    {
+      "family": "distilbert",
+      "n_edges": 16790,
+      "n_active_bases": 9,
+      "edges_per_active_base": 1865.556,
+      "n_models_in_snapshot": 9,
+      "share_of_all_edges": 0.018253
+    },
+    {
+      "family": "openai",
+      "n_edges": 15096,
+      "n_active_bases": 24,
+      "edges_per_active_base": 629.0,
+      "n_models_in_snapshot": 39,
+      "share_of_all_edges": 0.016412
+    },
+    {
+      "family": "mistralai",
+      "n_edges": 14987,
+      "n_active_bases": 60,
+      "edges_per_active_base": 249.783,
+      "n_models_in_snapshot": 77,
+      "share_of_all_edges": 0.016293
+    },
+    {
+      "family": "stabilityai",
+      "n_edges": 14524,
+      "n_active_bases": 74,
+      "edges_per_active_base": 196.27,
+      "n_models_in_snapshot": 117,
+      "share_of_all_edges": 0.01579
+    },
+    {
+      "family": "google-bert",
+      "n_edges": 13840,
+      "n_active_bases": 12,
+      "edges_per_active_base": 1153.333,
+      "n_models_in_snapshot": 15,
+      "share_of_all_edges": 0.015046
+    },
+    {
+      "family": "lerobot",
+      "n_edges": 9191,
+      "n_active_bases": 35,
+      "edges_per_active_base": 262.6,
+      "n_models_in_snapshot": 70,
+      "share_of_all_edges": 0.009992
+    },
+    {
+      "family": "deepseek-ai",
+      "n_edges": 9081,
+      "n_active_bases": 82,
+      "edges_per_active_base": 110.744,
+      "n_models_in_snapshot": 105,
+      "share_of_all_edges": 0.009872
+    },
+    {
+      "family": "FacebookAI",
+      "n_edges": 8729,
+      "n_active_bases": 19,
+      "edges_per_active_base": 459.421,
+      "n_models_in_snapshot": 19,
+      "share_of_all_edges": 0.00949
+    },
+    {
+      "family": "NousResearch",
+      "n_edges": 7555,
+      "n_active_bases": 74,
+      "edges_per_active_base": 102.095,
+      "n_models_in_snapshot": 126,
+      "share_of_all_edges": 0.008213
+    },
+    {
+      "family": "Helsinki-NLP",
+      "n_edges": 6930,
+      "n_active_bases": 1551,
+      "edges_per_active_base": 4.468,
+      "n_models_in_snapshot": 1563,
+      "share_of_all_edges": 0.007534
+    },
+    {
+      "family": "nvidia",
+      "n_edges": 5670,
+      "n_active_bases": 382,
+      "edges_per_active_base": 14.843,
+      "n_models_in_snapshot": 955,
+      "share_of_all_edges": 0.006164
+    },
+    {
+      "family": "openai-community",
+      "n_edges": 5111,
+      "n_active_bases": 7,
+      "edges_per_active_base": 730.143,
+      "n_models_in_snapshot": 7,
+      "share_of_all_edges": 0.005556
+    },
+    {
+      "family": "HuggingFaceTB",
+      "n_edges": 4666,
+      "n_active_bases": 62,
+      "edges_per_active_base": 75.258,
+      "n_models_in_snapshot": 84,
+      "share_of_all_edges": 0.005073
+    }
+  ],
+  "head_to_head": {
+    "Qwen": {
+      "org": "Qwen",
+      "n_edges": 168477,
+      "n_active_bases": 301,
+      "edges_per_active_base": 559.724,
+      "n_models_in_snapshot": 468,
+      "share_of_all_edges": 0.183159
+    },
+    "Llama(meta-llama)": {
+      "org": "meta-llama",
+      "n_edges": 34301,
+      "n_active_bases": 53,
+      "edges_per_active_base": 647.189,
+      "n_models_in_snapshot": 70,
+      "share_of_all_edges": 0.03729
+    },
+    "Gemma/BERT等(google)": {
+      "org": "google",
+      "n_edges": 71201,
+      "n_active_bases": 378,
+      "edges_per_active_base": 188.362,
+      "n_models_in_snapshot": 1136,
+      "share_of_all_edges": 0.077406
+    },
+    "google-bert": {
+      "org": "google-bert",
+      "n_edges": 13840,
+      "n_active_bases": 12,
+      "edges_per_active_base": 1153.333,
+      "n_models_in_snapshot": 15,
+      "share_of_all_edges": 0.015046
+    },
+    "Mistral": {
+      "org": "mistralai",
+      "n_edges": 14987,
+      "n_active_bases": 60,
+      "edges_per_active_base": 249.783,
+      "n_models_in_snapshot": 77,
+      "share_of_all_edges": 0.016293
+    },
+    "DeepSeek": {
+      "org": "deepseek-ai",
+      "n_edges": 9081,
+      "n_active_bases": 82,
+      "edges_per_active_base": 110.744,
+      "n_models_in_snapshot": 105,
+      "share_of_all_edges": 0.009872
+    },
+    "StableDiffusion(stabilityai)": {
+      "org": "stabilityai",
+      "n_edges": 14524,
+      "n_active_bases": 74,
+      "edges_per_active_base": 196.27,
+      "n_models_in_snapshot": 117,
+      "share_of_all_edges": 0.01579
+    },
+    "FLUX(black-forest-labs)": {
+      "org": "black-forest-labs",
+      "n_edges": 45401,
+      "n_active_bases": 20,
+      "edges_per_active_base": 2270.05,
+      "n_models_in_snapshot": 38,
+      "share_of_all_edges": 0.049358
+    },
+    "GPT(openai)": {
+      "org": "openai",
+      "n_edges": 15096,
+      "n_active_bases": 24,
+      "edges_per_active_base": 629.0,
+      "n_models_in_snapshot": 39,
+      "share_of_all_edges": 0.016412
+    },
+    "Microsoft(phi)": {
+      "org": "microsoft",
+      "n_edges": 18624,
+      "n_active_bases": 278,
+      "edges_per_active_base": 66.993,
+      "n_models_in_snapshot": 544,
+      "share_of_all_edges": 0.020247
+    }
+  },
+  "note": "「系」按底座 id 的官方发布账号前缀（org 段）归并，不是真实架构类型归因；衍生活跃度 = 以该前缀下模型为底座、在正式去重口径（919,839 条）下的被引用边数。config 仅做按当前非空规则的可用率与抽样 model_type 统计。"
+}
