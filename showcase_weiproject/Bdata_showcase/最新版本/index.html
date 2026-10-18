@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开源人工智能模型生态的数据分析 · 答辩展示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf9f5; --bg2:#f3efe6; --card:#ffffff; --card2:#f7f4ee;
+  --ink:#1f1e1d; --ink2:#5b564d; --ink3:#8f897d;
+  --line:#e7e2d7; --line2:#efece4;
+  --accent:#d97757; --accentDark:#b9553a; --accentSoft:#f5e5dd;
+  --green:#4f7d5c; --blue:#5b7da8; --gold:#c09a4b;
+  --serif:"Noto Serif SC","Source Han Serif SC","STZhongsong","STSong","SimSun",Georgia,"Times New Roman",serif;
+  --sans:"Noto Sans SC","Source Han Sans SC","PingFang SC","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","JetBrains Mono",Consolas,"Courier New",monospace;
+}
+html,body{height:100%}
+body{background:var(--bg);font-family:var(--sans);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--accentSoft);color:var(--accentDark)}
+#deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
+#stage{position:relative;width:1280px;height:720px;flex:none;transform-origin:center center;overflow:hidden;background:var(--bg);box-shadow:0 18px 60px rgba(31,30,29,.16);border:1px solid var(--line)}
+#track{display:flex;height:100%;transition:transform .72s cubic-bezier(.77,0,.18,1);will-change:transform}
+.slide{flex:0 0 100%;width:1280px;height:720px;position:relative;overflow:hidden;background:var(--bg)}
+.slide-inner{position:relative;z-index:2;height:100%;padding:38px 50px 20px;display:flex;flex-direction:column}
+.s-head{margin-bottom:16px;flex:0 0 auto}
+.kicker{font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--accentDark);font-weight:600;display:flex;align-items:center;gap:12px}
+.kicker::before{content:"";width:30px;height:2px;background:var(--accent)}
+.s-title{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1.12;letter-spacing:-.01em;color:var(--ink);margin-top:8px}
+.s-title .accent{color:var(--accentDark)}
+.s-sub{font-size:15.5px;color:var(--ink2);margin-top:10px;max-width:1000px;line-height:1.5}
+.rule{width:52px;height:4px;background:var(--accent);border-radius:2px;margin-top:14px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:0;align-items:stretch}
+.cols-21{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;flex:1;min-height:0;align-items:stretch}
+.cols-12{display:grid;grid-template-columns:1fr 1.2fr;gap:22px;flex:1;min-height:0;align-items:stretch}
+.cols-13{display:grid;grid-template-columns:1fr 1.55fr;gap:22px;flex:1;min-height:0;align-items:stretch}
+.cols-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;flex:1;min-height:0;align-items:stretch}
+.cols-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;flex:1;min-height:0;align-items:stretch}
+.cols-5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;flex:1;min-height:0;align-items:stretch}
+.col{min-height:0;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:0 2px 6px rgba(31,30,29,.04);min-height:0;position:relative;overflow:hidden}
+.card.tint{background:var(--card2);border-color:var(--line2)}
+.card .lbl{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accentDark);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-weight:600}
+.card .lbl::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--accent)}
+.card p{font-size:16px;line-height:1.62;color:var(--ink2)}
+.card p b{color:var(--ink);font-weight:600}
+.tick{list-style:none;display:flex;flex-direction:column;gap:9px}
+.tick li{position:relative;padding-left:20px;font-size:16px;line-height:1.58;color:var(--ink2)}
+.tick li::before{content:"";position:absolute;left:2px;top:8px;width:8px;height:8px;border-radius:2px;background:var(--accent)}
+.tick b{color:var(--ink);font-weight:600}
+.tag{font-family:var(--mono);font-size:12px;background:var(--card2);border:1px solid var(--line2);border-radius:6px;padding:1px 6px;color:var(--ink2);white-space:nowrap}
+.fig{position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;cursor:zoom-in;overflow:hidden}
+.fig img{width:100%;object-fit:contain;max-height:215px;display:block;border-radius:7px;transition:transform .25s ease}
+.fig.big img{max-height:350px}
+.fig:hover img{transform:scale(1.02)}
+.zoom{position:absolute;top:9px;right:9px;width:28px;height:28px;border-radius:50%;background:rgba(31,30,29,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transition:opacity .2s;backdrop-filter:blur(3px);z-index:2}
+.fig:hover .zoom{opacity:1}
+.figcap{font-size:13px;color:var(--ink3);margin-top:5px;line-height:1.4;text-align:center}
+.figcap b{color:var(--ink2);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:auto;padding-top:10px;flex:0 0 auto}
+.stats.c2{grid-template-columns:repeat(2,1fr)}
+.stats.c3{grid-template-columns:repeat(3,1fr)}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);opacity:.85}
+.stat .v{font-family:var(--serif);font-weight:600;font-size:36px;line-height:1;color:var(--ink)}
+.stat .v.accent{color:var(--accentDark)}
+.stat .v.green{color:var(--green)} .stat .v.blue{color:var(--blue)} .stat .v.gold{color:var(--gold)}
+.stat .k{font-size:12px;color:var(--ink3);margin-top:6px;line-height:1.35}
+.agenda{list-style:none;display:flex;flex-direction:column;gap:2px;flex:1;justify-content:center}
+.agenda li{display:flex;align-items:center;gap:18px;padding:11px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:all .22s ease;border-radius:11px}
+.agenda li:hover{padding-left:26px;background:var(--card2)}
+.agenda li .n{font-family:var(--serif);font-size:27px;color:var(--accent);font-weight:600;min-width:52px}
+.agenda li .t{font-family:var(--serif);font-size:21px;color:var(--ink);font-weight:500}
+.agenda li .d{margin-left:auto;font-size:13px;color:var(--ink3);font-family:var(--mono);text-align:right}
+.divider{background:radial-gradient(700px 420px at 88% 14%,#f0e3d5 0%,transparent 55%),linear-gradient(135deg,#faf9f5 0%,#f4eee4 100%)}
+.divider .slide-inner{justify-content:center}
+.divider .d-num{position:absolute;right:48px;bottom:-18px;font-family:var(--serif);font-weight:700;font-size:240px;line-height:.8;color:var(--accentSoft);z-index:1;user-select:none}
+.divider .d-tag{font-family:var(--mono);font-size:14px;letter-spacing:.3em;text-transform:uppercase;color:var(--accentDark)}
+.divider h2{font-family:var(--serif);font-weight:600;font-size:54px;line-height:1.08;color:var(--ink);margin-top:14px;letter-spacing:-.01em}
+.divider h2 .accent{color:var(--accentDark)}
+.divider .d-kws{display:flex;gap:11px;margin-top:26px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:14px;color:var(--ink2)}
+.chip .i{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.chip.dark{background:var(--ink);color:#f4f1ea;border-color:var(--ink)}
+.chip.dark .i{color:var(--accentSoft)}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:grid;grid-template-columns:126px 1fr 66px;align-items:center;gap:12px}
+.bar-lbl{font-size:13px;color:var(--ink2);text-align:right;line-height:1.3}
+.bar{height:13px;background:var(--line2);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;width:0;background:var(--accent);border-radius:6px;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.slide.on .bar-fill{width:var(--w)}
+.bar-fill.b-green{background:var(--green)} .bar-fill.b-blue{background:var(--blue)} .bar-fill.b-gold{background:var(--gold)}
+.bar-v{font-family:var(--mono);font-size:13px;color:var(--ink2);text-align:right}
+.pipe{display:flex;gap:8px;flex-wrap:wrap}
+.pipe span{background:var(--accentSoft);color:var(--accentDark);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13.5px;font-weight:600}
+.pipe span:nth-child(2){background:#e8efe6;color:var(--green)}
+.pipe span:nth-child(3){background:#e7ecf3;color:var(--blue)}
+.pipe span:nth-child(4){background:#f1ead8;color:var(--gold)}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:9px}
+.tab{padding:7px 17px;border-radius:999px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:14px;color:var(--ink2);transition:all .2s;font-family:var(--sans)}
+.tab:hover{border-color:var(--accent);color:var(--accentDark)}
+.tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tabpane{display:none}
+.tabpane.active{display:block;animation:paneIn .3s ease}
+@keyframes paneIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accentDark));z-index:120;width:0;transition:width .25s ease}
+#topbar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:90;pointer-events:none}
+#topbar .brand{font-family:var(--serif);font-weight:600;font-size:14px;letter-spacing:.02em;display:flex;align-items:center;gap:10px;color:var(--ink2)}
+#topbar .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block}
+#topbar .counter{font-family:var(--mono);font-size:13px;color:var(--ink3);letter-spacing:.05em}
+#dots{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:95}
+.dot{width:8px;height:8px;border-radius:50%;background:#6b675f;cursor:pointer;transition:all .25s ease;border:none;padding:0}
+.dot:hover{background:#a8a299}
+.dot.active{background:var(--accent);width:24px;border-radius:5px}
+#nav{position:fixed;bottom:16px;right:24px;display:flex;gap:10px;z-index:95}
+.navbtn{width:48px;height:48px;border-radius:50%;border:1px solid #3a3733;background:rgba(31,30,29,.72);color:#eae6de;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)}
+.navbtn:hover{background:var(--accentDark);border-color:var(--accentDark);color:#fff}
+.navbtn:disabled{opacity:.25;cursor:default}
+.navbtn svg{width:20px;height:20px}
+#lightbox{position:fixed;inset:0;background:rgba(24,23,22,.92);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;padding:40px;backdrop-filter:blur(3px)}
+#lightbox.open{display:flex;animation:lbIn .22s ease}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+#lightbox img{max-width:94vw;max-height:80vh;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+#lightbox .lb-cap{color:#f4f1ea;margin-top:18px;font-size:15px;max-width:84vw;text-align:center;line-height:1.6}
+#lightbox .lb-close{position:absolute;top:18px;right:36px;color:#fff;font-size:44px;line-height:1;cursor:pointer;opacity:.8;transition:opacity .2s}
+#lightbox .lb-close:hover{opacity:1}
+/* 封面 */
+.cover{background:radial-gradient(880px 520px at 82% 22%,#f0e2d3 0%,transparent 60%),var(--bg)}
+.cover .slide-inner{justify-content:space-between}
+.cover-top{display:flex;align-items:center;justify-content:space-between;width:100%}
+.cover-brand{font-family:var(--serif);font-weight:600;font-size:16px;color:var(--ink2);display:flex;align-items:center;gap:11px}
+.cover-brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;box-shadow:0 0 0 4px var(--accentSoft)}
+.cover-edition{font-family:var(--mono);font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3)}
+.cover-hero{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;max-width:1040px}
+.cover-index{position:absolute;top:-0.14em;right:-0.02em;font-family:var(--serif);font-weight:700;font-size:250px;line-height:.72;color:var(--accentSoft);z-index:0;user-select:none;letter-spacing:-.04em;pointer-events:none}
+.cover-title{position:relative;z-index:1;font-family:var(--serif);font-weight:700;font-size:64px;line-height:1.08;letter-spacing:-.02em;color:var(--ink)}
+.cover-title .em{color:var(--accentDark)}
+.cover-rule{position:relative;z-index:1;width:68px;height:5px;background:var(--accent);border-radius:2px;margin-top:24px}
+.cover-sub{position:relative;z-index:1;font-family:var(--serif);font-size:20px;color:var(--ink2);margin-top:18px;font-weight:400;max-width:600px}
+.cover-foot{display:flex;align-items:center;flex-wrap:wrap;row-gap:11px;width:100%;border-top:1px solid var(--line);padding-top:18px}
+.cover-foot .m{font-size:14px;color:var(--ink3);display:flex;gap:8px;align-items:center;position:relative;padding-right:22px;margin-right:22px}
+.cover-foot .m::after{content:"";position:absolute;right:0;top:50%;transform:translateY(-50%);width:1px;height:15px;background:var(--line)}
+.cover-foot .m:last-of-type::after{display:none}
+.cover-foot .m b{color:var(--ink);font-weight:600}
+.cover-hint{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--ink3);letter-spacing:.06em;display:flex;align-items:center;gap:10px}
+.cover-hint .arrow{display:inline-flex;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+.net-bg{position:absolute;inset:0;z-index:1;width:100%;height:100%}
+
+/* 尾页 */
+.end{background:radial-gradient(820px 500px at 20% 74%,#efe2d4 0%,transparent 58%),var(--bg)}
+.end .slide-inner{justify-content:center;align-items:center;text-align:center}
+.end-tag{font-family:var(--mono);font-size:14px;letter-spacing:.3em;text-transform:uppercase;color:var(--accentDark)}
+.end-title{font-family:var(--serif);font-weight:700;font-size:112px;line-height:1;color:var(--ink);letter-spacing:-.02em;margin-top:18px}
+.end-title .em{color:var(--accentDark)}
+.end-line{width:68px;height:6px;background:var(--accent);border-radius:3px;margin:28px auto}
+.end-note{max-width:680px;margin:24px auto 0;font-size:16px;color:var(--ink2);line-height:1.7}
+.end-note b{color:var(--ink);font-weight:600}
+.end-meta{margin-top:30px;display:flex;gap:11px;flex-wrap:wrap;justify-content:center}
+.end-meta .m{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 18px;font-size:14px;color:var(--ink2)}
+.end-meta .m b{color:var(--ink);font-weight:600}
+
+/* 创新 / 收获 / 挑战 布局 */
+.feat{display:flex;flex-direction:column;gap:13px}
+.feat-item{display:flex;gap:16px;align-items:flex-start;background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:15px 18px;transition:transform .2s ease,box-shadow .2s ease}
+.feat-item:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,30,29,.06)}
+.feat-item .fn{font-family:var(--serif);font-weight:700;font-size:32px;line-height:1;color:var(--accent);min-width:46px}
+.feat-item .ft{font-size:15.5px;color:var(--ink);font-weight:600;line-height:1.35}
+.feat-item .fd{font-size:13.5px;color:var(--ink2);line-height:1.5;margin-top:5px}
+.challenges{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.challenge{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:13px;padding:15px 17px}
+.challenge.c-green{border-left-color:var(--green)}
+.challenge.c-blue{border-left-color:var(--blue)}
+.challenge.c-gold{border-left-color:var(--gold)}
+.challenge .ct{font-size:15.5px;font-weight:600;color:var(--ink);margin-bottom:7px}
+.challenge p{font-size:13.5px;color:var(--ink2);line-height:1.55}
+/* 更多排版形式 */
+.fig.hero img{max-height:510px}
+.timeline{list-style:none;display:flex;flex-direction:column;gap:16px;position:relative;padding-left:26px;height:100%;justify-content:center}
+.timeline::before{content:"";position:absolute;left:7px;top:10px;bottom:10px;width:2px;background:var(--line)}
+.timeline li{position:relative;font-size:15px;line-height:1.55;color:var(--ink2)}
+.timeline li::before{content:"";position:absolute;left:-26px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accentSoft)}
+.timeline b{color:var(--ink);font-weight:600}
+.hero-num{font-family:var(--serif);font-weight:700;font-size:120px;line-height:.92;color:var(--accentDark);letter-spacing:-.03em}
+.hero-num .u{font-size:20px;color:var(--ink3);font-family:var(--mono);letter-spacing:.12em;margin-top:14px;font-weight:400}
+.statline{display:flex;border:1px solid var(--line);border-radius:15px;overflow:hidden;flex:1;min-height:0}
+.statline .sl{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:14px;background:var(--card);border-right:1px solid var(--line)}
+.statline .sl:last-child{border-right:none}
+.statline .sl .v{font-family:var(--serif);font-weight:700;font-size:42px;line-height:1;color:var(--accentDark)}
+.statline .sl .v.ink{color:var(--ink)}
+.statline .sl .k{font-size:13px;color:var(--ink3);text-align:center;line-height:1.3}
+.bento{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:14px;flex:1;min-height:0}
+.bento .tile{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px 20px;overflow:hidden;display:flex;flex-direction:column}
+.bento .tile.tint{background:var(--card2);border-color:var(--line2)}
+.bento .tile.wide{grid-column:span 2}
+.bento .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accentDark);margin-bottom:9px;display:flex;align-items:center;gap:8px;font-weight:600}
+.bento .lbl::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--accent)}
+.bento p{font-size:15px;line-height:1.6;color:var(--ink2)}
+.bento .tick{list-style:none;display:flex;flex-direction:column;gap:8px}
+.bento .tick li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.5;color:var(--ink2)}
+.bento .tick li::before{content:"";position:absolute;left:2px;top:8px;width:8px;height:8px;border-radius:2px;background:var(--accent)}
+.bento b{color:var(--ink);font-weight:600}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .68s cubic-bezier(.16,1,.3,1),transform .68s cubic-bezier(.16,1,.3,1)}
+.slide.on .reveal{opacity:1;transform:none}
+.reveal.d1{transition-delay:.05s}.reveal.d2{transition-delay:.13s}.reveal.d3{transition-delay:.21s}
+.reveal.d4{transition-delay:.29s}.reveal.d5{transition-delay:.37s}.reveal.d6{transition-delay:.45s}.reveal.d7{transition-delay:.53s}
+</style>
+
+</head>
+<body>
+<div id="progress"></div>
+<div id="topbar">
+  <div class="brand"><span class="dot"></span>开源模型生态 · 数据分析</div>
+  <div class="counter" id="counter">1 / 28</div>
+</div>
+<div id="dots"></div>
+<div id="nav">
+  <button class="navbtn" id="prevBtn" aria-label="上一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <button class="navbtn" id="nextBtn" aria-label="下一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg></button>
+</div>
+<div id="lightbox">
+  <div class="lb-close" id="lbClose">&times;</div>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+<main id="deck"><div id="stage"><div id="track">
+<!-- 1 封面 -->
+<section class="slide cover">
+  <canvas class="net-bg"></canvas>
+  <div class="slide-inner">
+    <div class="cover-top reveal d1">
+      <div class="cover-brand"><span class="dot"></span>开源人工智能模型生态 · 数据分析</div>
+      <div class="cover-edition">答辩展示 · 2026</div>
+    </div>
+    <div class="cover-hero">
+      <div class="cover-index reveal d2">01</div>
+      <h1 class="cover-title reveal d3">开源人工智能模型生态的<br><span class="em">数据分析</span></h1>
+      <div class="cover-rule reveal d4"></div>
+      <p class="cover-sub reveal d4">基于 Hugging Face 公开快照的演化 · 注意力集中 · 谱系分析</p>
+    </div>
+    <div class="cover-foot reveal d5">
+      <span class="m">班级 <b>＿＿＿＿</b></span>
+      <span class="m">成员 <b>彭婉茹 · 尹佳锐 · 魏小童 · 郝佳瑞 · 和姝珂</b></span>
+      <span class="m">指导教师 <b>＿＿＿＿</b></span>
+      <span class="m">日期 <b>＿＿＿＿</b></span>
+      <div class="cover-hint"><span class="arrow">→</span> 方向键 / 滚轮 / 空格 翻页</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 目录 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">Contents</div>
+      <h2 class="s-title">目录</h2>
+    </div>
+    <ol class="agenda">
+      <li data-goto="2"><span class="n">01</span><span class="t">前置知识：模型是怎么来的</span><span class="d">架构 · 权重 · 四种继承</span></li>
+      <li data-goto="3"><span class="n">02</span><span class="t">选题与五个研究问题</span><span class="d">演化 · 注意力 · 谱系 · 关联 · 任务</span></li>
+      <li data-goto="4"><span class="n">03</span><span class="t">数据与环境（三层 + 4V）</span><span class="d">Bronze → Silver → Gold</span></li>
+      <li data-goto="6"><span class="n">04</span><span class="t">测试环境与性能实验</span><span class="d">PySpark · GraphFrames · 扩展性</span></li>
+      <li data-goto="8"><span class="n">05</span><span class="t">数据集特征说明</span><span class="d">规模 · 字段 · 陷阱</span></li>
+      <li data-goto="11"><span class="n">06</span><span class="t">RQ1–RQ5 五个研究问题</span><span class="d">分十页逐题展开</span></li>
+      <li data-goto="22"><span class="n">07</span><span class="t">稳健性与总体结论</span><span class="d">九根轴 · 稳健性判定</span></li>
+      <li data-goto="24"><span class="n">08</span><span class="t">创新点 · 收获 · 挑战</span><span class="d">四点新意 · 三点收获 · 四大挑战</span></li>
+      <li data-goto="26"><span class="n">09</span><span class="t">未来打算</span><span class="d">四个方向 · 工程补强</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 3 前置知识 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">01 · 前置知识</div>
+      <h2 class="s-title">模型是<span class="accent">怎么来的</span></h2>
+    </div>
+    <div class="cols-12">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">模型 = 架构 + 权重</div>
+          <p><b>架构</b>是设计好的骨架，决定网络有多少层、每层多少连接、信息怎么从输入流到输出；<b>权重</b>是训练中学到的数字，一开始是随机的。</p>
+        </div>
+        <div class="card">
+          <div class="lbl">训练过程</div>
+          <ol class="timeline">
+            <li>给一个输入 → 得一个答案 → 与正确答案比误差</li>
+            <li>误差沿网络<b>反向传播</b>，一层层调整权重</li>
+            <li>重复很多次，权重才慢慢调到能给出正确答案</li>
+            <li>层数、参数越多，能表达的东西越复杂 → <b>大模型</b></li>
+          </ol>
+        </div>
+        <div class="card tint">
+          <div class="lbl">训练贵，但架构与权重可被继承</div>
+          <div class="pipe" style="margin-bottom:12px"><span>微调</span><span>适配器</span><span>量化</span><span>模型合并</span></div>
+          <p>在已训练模型上做小规模调整，只改一小部分权重，得到适应新场景的新模型——所以模型之间存在<b>继承链条</b>。</p>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <figure class="fig big" data-cap="模型基础科普：用一张图说清「架构决定层数与连接、权重由训练得到、四种继承方式」三件事。">
+          <span class="zoom">⤢</span><img src="模型基础科普图.png" alt="模型基础科普">
+        </figure>
+        <div class="figcap"><b>主图</b> · 架构、权重、训练与四种继承</div>
+        <div class="card">
+          <div class="lbl">模型生态的五种特性</div>
+          <ul class="tick">
+            <li><b>继承</b> 一个模型从另一个模型派生</li>
+            <li><b>变异</b> 同一底座经不同方向调整，长成不同能力</li>
+            <li><b>消亡</b> 模型下架、不再公开可见</li>
+            <li><b>竞争</b> 用户注意力有限，下载量是一种度量</li>
+            <li><b>资源稀缺</b> 能训练基础模型的组织与算力有限</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 4 选题与动机 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">02 · Motivation</div>
+      <h2 class="s-title">选题与<span class="accent">五个研究问题</span></h2>
+      <p class="s-sub">把「模型生态」从印象式判断，变成可量化、可复核的数据结论——覆盖时间、注意力、结构三个维度。</p>
+    </div>
+    <div class="cols-5 reveal d1">
+      <div class="card"><div class="lbl">RQ1</div><p><b>演化</b>：模型按什么节奏出现？哪类增长最快？</p></div>
+      <div class="card"><div class="lbl">RQ2</div><p><b>注意力</b>：下载有多集中？尾巴有多长？</p></div>
+      <div class="card"><div class="lbl">RQ3</div><p><b>谱系</b>：继承关系形成什么结构？谁是主要底座？</p></div>
+      <div class="card"><div class="lbl">RQ4</div><p><b>关联</b>：哪些属性和下载热度有关？</p></div>
+      <div class="card"><div class="lbl">RQ5</div><p><b>任务</b>：不同任务的生态结构一样吗？</p></div>
+    </div>
+    <div class="cols reveal d2" style="margin-top:18px">
+      <div class="card">
+        <div class="lbl">为什么要做</div>
+        <p>开源模型数量在短时间内<b>爆发式增长</b>，且大量模型是在别人底座上继续训练出来的；但「谁在被使用、谁在被继承、生态是否健康」缺少统一的量化描述。</p>
+      </div>
+      <div class="card tint">
+        <div class="lbl">意义</div>
+        <p>对使用者看清注意力分布、避免只看头部；对平台与研究者看清谱系集中度与任务差异；方法上形成一套可复用的<b>「分层 + 精确口径 + 单一结果清单」</b>分析流程。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5a 数据分层（三层 + 4V） -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">03 · Data &amp; Pipeline</div>
+      <h2 class="s-title">数据从哪里来，<span class="accent">为什么分三层</span></h2>
+    </div>
+    <div class="cols">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">三层：不是好看，是为了控制成本</div>
+          <ul class="tick">
+            <li><b>Bronze</b> 原始数据，一个字节不改，随时回到源头</li>
+            <li><b>Silver</b> 清洗后可用：统一格式、去重、加溯源列</li>
+            <li><b>Gold</b> 分析结果：能直接出结论、画图的表</li>
+            <li>五个 RQ 全部只在 Gold 层做，不再扫原始数据</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="lbl">Silver 三张表</div>
+          <ul class="tick">
+            <li>模型主表 <b>3,138,954</b> 行 × 16 列</li>
+            <li>标签长表 <b>2,062 万</b> 行 × 2 列（一对多展开）</li>
+            <li>血缘边表 <b>919,839</b> 行 × 3 列（底座 / 衍生 / 关系）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div class="card tint">
+          <div class="lbl">4V 定位（不夸大）</div>
+          <ul class="tick">
+            <li><b>Volume</b> 1.49 GB、314 万行，中等规模</li>
+            <li><b>Variety</b> 数值 + 嵌套结构 + 数组，标签必须拆开</li>
+            <li><b>Velocity</b> 滚动更新快照 + 近 30 天窗口计数</li>
+            <li><b>Veracity</b> 任务缺失 65.55%、血缘缺失 71.74%，显式报告</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="lbl">关键说明</div>
+          <p>真正的开销不在数据体积，而在<b>数据之间的关系</b>：92 万对继承关系就是一张 93 万节点、92 万条边的网络，迭代图算法有巨大的固定开销（20 个节点跑一次连通分量就要 46 秒）。</p>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="1.49">0</div><div class="k">原始文件（GB）</div></div>
+      <div class="stat"><div class="v accent" data-count="3138954">0</div><div class="k">去重后模型数</div></div>
+      <div class="stat"><div class="v" data-count="56">0</div><div class="k">时间跨度（月）</div></div>
+      <div class="stat"><div class="v accent" data-count="919839">0</div><div class="k">血缘边（条）</div></div>
+    </div>
+  </div>
+</section>
+<!-- 5b 三层数据流转（架构图） -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">03 · Data &amp; Pipeline</div>
+      <h2 class="s-title">Bronze → Silver → <span class="accent">Gold</span></h2>
+      <p class="s-sub">三层数据流转：源数据 20 个顶层字段（11 采用 + 9 未采用）→ Silver 三表 → Gold 派生字段与结果表。</p>
+    </div>
+    <div class="cols-12">
+      <div class="col reveal d1">
+        <figure class="fig hero" data-cap="Bronze → Silver → Gold 完整数据流转：列出源数据全部 20 个顶层字段（11 采用 + 9 未采用）、Silver 三表、Gold 派生字段与结果表，及两层之间的处理动作。">
+          <span class="zoom">⤢</span><img src="架构图_三层数据流转.png" alt="三层数据流转">
+        </figure>
+        <div class="figcap"><b>主图</b> · Bronze → Silver → Gold 五栏结构</div>
+      </div>
+      <div class="col reveal d2">
+        <div class="card">
+          <div class="lbl">为什么不是「一张表到底」</div>
+          <p>原始数据是<b>半结构化</b>的：字段含嵌套结构（血缘底座）与数组（标签）。直接分析会反复解析、重复扫描；分成三层后，清洗只在 Bronze→Silver 做一次，五个 RQ 全部只读 Gold。</p>
+        </div>
+        <div class="card tint">
+          <div class="lbl">口径纪律</div>
+          <ul class="tick">
+            <li>缺失值（任务 65.55%、血缘 71.74%）<b>不推断、不填补</b></li>
+            <li>时区统一锁定 <b>UTC</b>，避免 23 点记录跨月</li>
+            <li>抽样统一用<b>哈希取模</b>，禁用「取前 N 行」</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 6a 运行环境 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">04 · Environment</div>
+      <h2 class="s-title">测试环境：<span class="accent">单机多核的 Spark</span></h2>
+    </div>
+    <div class="cols-12">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">运行环境</div>
+          <ul class="tick">
+            <li>操作系统 <b>Windows 11</b> · JVM <b>OpenJDK 17</b> · Python 3.11（conda 环境 hf_eco）</li>
+            <li>计算引擎 <b>PySpark 4.2.0</b>，本地六核并行（<span class="tag">local[6]</span>），driver 内存 <b>3 GB</b></li>
+            <li>图计算 <b>GraphFrames</b>（底层 GraphX）· 机器学习 <b>MLlib</b> · 存储列式 parquet</li>
+            <li>全量清洗 <b>142.8 秒</b>（端到端）· 图迭代 6 步合计约 <b>22 分钟</b></li>
+          </ul>
+        </div>
+        <div class="card tint">
+          <div class="lbl">重要说明</div>
+          <p>全部在<b>单机多核</b>完成，结论不构成集群范围；无法清空系统文件缓存，除首次读取外均为缓存热态计时。</p>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <figure class="fig hero" data-cap="运行环境层次：Spark 分布式大数据引擎把数据切成多片、分给多个核/多台机器同时算，中间结果尽量放内存；本项目实际单机多线程，未用集群。">
+          <span class="zoom">⤢</span><img src="环境层次图_运行环境.png" alt="运行环境层次图">
+        </figure>
+        <div class="figcap"><b>主图</b> · 运行环境层次</div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="6">0</div><div class="k">本地并行核数</div></div>
+      <div class="stat"><div class="v accent" data-count="3">0</div><div class="k">driver 内存（GB）</div></div>
+      <div class="stat"><div class="v" data-count="142.8">0</div><div class="k">全量清洗（秒）</div></div>
+      <div class="stat"><div class="v accent" data-count="22">0</div><div class="k">图迭代 6 步（分钟）</div></div>
+    </div>
+  </div>
+</section>
+<!-- 6b 性能实验 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">04 · Performance</div>
+      <h2 class="s-title">性能实验：<span class="accent">规模 · 分区 · 算子</span></h2>
+    </div>
+    <div class="cols">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">三个结论</div>
+          <ul class="tick">
+            <li>耗时随规模<b>单调增长</b>（哈希阈值嵌套子集 10% ⊂ 25% ⊂ 50% ⊂ 100%）</li>
+            <li>分区数存在<b>最优点</b>，不是越多越好（16 / 32 / 64）</li>
+            <li><b>shuffle 类算子</b>开销最大——「大数据处理」最直接的证据</li>
+          </ul>
+        </div>
+        <div class="card tint">
+          <div class="lbl">怎么测</div>
+          <p>321 次计时执行 · 107 个测量组合，用来验证这套流程换更大数据量时的开销走向。</p>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><figure class="fig" data-cap="执行时间 vs 数据规模：同一哈希阈值嵌套子集，时间随规模单调增长。"><span class="zoom">⤢</span><img src="EXPfig10_scale_runtime.png" alt="耗时 vs 规模"></figure><div class="figcap">耗时随规模</div></div>
+          <div><figure class="fig" data-cap="shuffle 分区数 vs 性能：分区数存在最优点而非越多越好。"><span class="zoom">⤢</span><img src="EXPfig11_partitions_perf.png" alt="分区数 vs 性能"></figure><div class="figcap">分区最优点</div></div>
+          <div style="grid-column:span 2"><figure class="fig" data-cap="算子耗时与 shuffle 量对照：shuffle 类算子开销最大。"><span class="zoom">⤢</span><img src="EXPfig12_operator_comparison.png" alt="算子耗时对比"></figure><div class="figcap">shuffle 开销</div></div>
+        </div>
+        <div class="stats c3 reveal d3">
+          <div class="stat"><div class="v" data-count="321">0</div><div class="k">计时执行次数</div></div>
+          <div class="stat"><div class="v accent" data-count="107">0</div><div class="k">测量组合</div></div>
+          <div class="stat"><div class="v" data-count="3">0</div><div class="k">结论维度</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7a 数据集：来源与字段 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">05 · Dataset</div>
+      <h2 class="s-title">数据集：<span class="accent">来源与字段</span></h2>
+    </div>
+    <div class="bento reveal d1">
+      <div class="tile wide">
+        <div class="lbl">来源与规模</div>
+        <p>Hugging Face 公开数据集 <b>hub-stats</b> 固定版本快照，SHA-256 校验一致。文件 <b>1.49 GB</b>、<b>3,138,959</b> 行；去重后 <b>3,138,954</b> 个模型；跨度 <b>2022-03 至 2026-10</b>，共 <b>56</b> 个月。</p>
+      </div>
+      <div class="tile">
+        <div class="lbl">字段与派生数据</div>
+        <ul class="tick">
+          <li>源数据 20 个顶层字段 → 按契约取 <b>11 列</b></li>
+          <li>标签长表 <b>2,062 万</b> 行 · 血缘边表 <b>919,839</b> 条</li>
+          <li>分层 <b>Bronze → Silver → Gold</b></li>
+        </ul>
+      </div>
+      <div class="tile wide">
+        <div class="lbl">Gold 层结构（7 张统计表 + 1 张宽表）</div>
+        <ul class="tick">
+          <li>月度表 ×3：任务 / 库 / 标签的当月新增模型数</li>
+          <li><b>download_distribution</b> · <b>model_family_stats</b> · <b>model_lifecycle</b> · <b>model_adoption_features</b></li>
+          <li><b>models_enriched</b> 宽表：主表 + 全部派生字段，唯一入口</li>
+        </ul>
+      </div>
+      <div class="tile tint">
+        <div class="lbl">技术栈</div>
+        <p>都在 Spark 生态内：<b>Spark SQL</b> 清洗统计、<b>GraphX</b> 图算法、<b>MLlib</b> 机器学习，列式文件落地。</p>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="20">0</div><div class="k">源数据顶层字段</div></div>
+      <div class="stat"><div class="v accent" data-count="11">0</div><div class="k">按契约采用列</div></div>
+      <div class="stat"><div class="v" data-count="20620000">0</div><div class="k">标签长表行数</div></div>
+      <div class="stat"><div class="v accent" data-count="919839">0</div><div class="k">血缘边（条）</div></div>
+    </div>
+  </div>
+</section>
+<!-- 7b 数据集：陷阱与缺失口径 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">05 · Dataset</div>
+      <h2 class="s-title">数据集：<span class="accent">陷阱与缺失口径</span></h2>
+    </div>
+    <div class="cols">
+      <div class="col reveal d1">
+        <div class="card tint">
+          <div class="lbl">两个数据陷阱</div>
+          <ul class="tick">
+            <li>行组 0 是趋势榜单样本 → 禁用「取前 N 行」，统一<b>哈希取模抽样</b></li>
+            <li>时间为带时区标记的 UTC 字符串 → 必须<b>锁定时区</b>，否则 23 点记录跨月</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="lbl">缺失值口径</div>
+          <p>任务标签缺失 <b>65.55%</b>、血缘缺失 <b>71.74%</b>：一律<b>不推断、不填补</b>，显式报告并写进每条结论的成立条件。</p>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div class="card">
+          <div class="lbl">为什么必须显式报告</div>
+          <ul class="tick">
+            <li>按任务统计时，<b>65.55%</b> 的 unknown 恒不参与比较，只单独报告</li>
+            <li>血缘缺失意味着<b>谱系分析只在已声明部分</b>成立</li>
+            <li>每个引用数字都必须带<b>阈值与限定条件</b>（如「50 个可比」需样本 ≥ 200）</li>
+          </ul>
+        </div>
+        <div class="card tint">
+          <div class="lbl">一句话</div>
+          <p>数据质量问题的处理原则：<b>不推断、不填补，显式计数，写清成立条件</b>——这也是整份报告「可复核」的底线。</p>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v accent" data-count="65.55">0</div><div class="k">任务标签缺失率（%）</div></div>
+      <div class="stat"><div class="v" data-count="71.74">0</div><div class="k">血缘缺失率（%）</div></div>
+      <div class="stat"><div class="v accent" data-count="2">0</div><div class="k">数据陷阱</div></div>
+      <div class="stat"><div class="v" data-count="1">0</div><div class="k">统一口径原则</div></div>
+    </div>
+  </div>
+</section>
+<!-- 8 章节过渡 · 研究问题 -->
+<section class="slide divider">
+  <div class="d-num">02</div>
+  <div class="slide-inner">
+    <div class="d-tag reveal d1">Part 02 · 五个研究问题</div>
+    <h2 class="reveal d2">五个<span class="accent">研究问题</span></h2>
+    <div class="d-kws reveal d3">
+      <span class="chip dark"><span class="i">RQ1</span>演化</span>
+      <span class="chip dark"><span class="i">RQ2</span>注意力</span>
+      <span class="chip dark"><span class="i">RQ3</span>谱系</span>
+      <span class="chip dark"><span class="i">RQ4</span>关联</span>
+      <span class="chip dark"><span class="i">RQ5</span>任务</span>
+    </div>
+  </div>
+</section>
+
+<!-- 9a RQ1 演化 · 方法 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">06 · RQ1 · Evolution</div>
+      <h2 class="s-title">演化：<span class="accent">模型是怎么涌现的</span></h2>
+    </div>
+    <div class="cols-12">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">研究问题 · 数据 · 方法</div>
+          <p><b>问题</b>：快照里仍可见的模型，按什么节奏出现？哪几类增长最明显？</p>
+          <p><b>数据</b>：Gold 层三张月度统计表（任务 / 库 / 标签）+ 宽表（创建月份）。</p>
+          <p><b>方法</b>：按月分组计数；标签数组先展开成长表、只保留前 15；首月做「单日占比 + 日内时间戳数」双重检验。</p>
+        </div>
+        <div class="card tint">
+          <div class="lbl">问题与解决</div>
+          <ul class="tick">
+            <li>时区不统一会让 23 点记录跨月 → <b>锁定 UTC</b></li>
+            <li>快照截止 10-10，2026-10 是不完整月 → <b>单独标注</b>，不与其他月比</li>
+            <li>首月数据异常偏大 → <b>只报告现象，不推断原因</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <figure class="fig hero" data-cap="月度新增模型数：峰值月 2024-09（125,030 个）与不完整月 2026-10；首月 2022-03 有 90.7% 集中在最早一天，已标注为「已观测现象、根因未确认」。">
+          <span class="zoom">⤢</span><img src="RQ1fig01_monthly_evolution.png" alt="月度新增模型数">
+        </figure>
+        <div class="figcap"><b>主图</b> · 月度新增曲线，标注峰值月与不完整月</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 9b RQ1 演化 · 结论 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">06 · RQ1 · Findings</div>
+      <h2 class="s-title">演化：<span class="accent">结论与发现</span></h2>
+    </div>
+    <div class="cols-13">
+      <div class="col reveal d1">
+        <div class="card tint">
+          <div class="lbl">结论与发现</div>
+          <ul class="tick">
+            <li>峰值 <b>2024-09</b> 新增 <b>125,030</b>；2022 年 10 万 → 2025 年 <b>110 万</b>（近 11 倍）</li>
+            <li>机器人 <b>14 → 35,032</b>；图文多模态 <b>1,807 → 35,802</b>；文生图 <b>62,312</b></li>
+            <li>库：lerobot <b>0 → 29,050</b>；transformers 份额 <b>42% → 25.4%</b>（多库分工）</li>
+            <li>任务标签缺失份额 <b>49.6% → 69.0%</b>（近年按任务结论更不可靠）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><figure class="fig" data-cap="任务构成演化（堆叠面积图）：各任务占每月新增比例变化；unknown 占 65.55%。"><span class="zoom">⤢</span><img src="RQ1fig02_task_growth.png" alt="任务构成演化"></figure><div class="figcap">任务构成</div></div>
+          <div><figure class="fig" data-cap="各库新增占比变化：transformers 份额 42% → 25.4%，从「一个库包打天下」到多库分工。"><span class="zoom">⤢</span><img src="RQ1fig21_library_share.png" alt="库份额"></figure><div class="figcap">库份额</div></div>
+          <div><figure class="fig" data-cap="任务标签缺失占比随时间上升（49.6% → 69.0%）。"><span class="zoom">⤢</span><img src="RQ1fig22_task_missing.png" alt="任务缺失"></figure><div class="figcap">标签缺失</div></div>
+          <div><figure class="fig" data-cap="任务增长动画（race）：机器人、图文多模态、文生图等任务随时间扩张。"><span class="zoom">⤢</span><img src="RQ1anim_task_race.gif" alt="任务增长动画"></figure><div class="figcap">任务增长动画</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="56">0</div><div class="k">时间跨度（月）</div></div>
+      <div class="stat"><div class="v accent" data-count="125030">0</div><div class="k">峰值月新增（2024-09）</div></div>
+      <div class="stat"><div class="v" data-count="1100000">0</div><div class="k">2025 年累计新增</div></div>
+      <div class="stat"><div class="v accent" data-count="69">0</div><div class="k">近期标签缺失份额（%）</div></div>
+    </div>
+  </div>
+</section>
+<!-- 10a RQ2 注意力 · 方法 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">07 · RQ2 · Attention</div>
+      <h2 class="s-title">注意力：<span class="accent">如何度量集中度</span></h2>
+    </div>
+    <div class="cols-12">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">研究问题 · 数据 · 方法</div>
+          <p><b>问题</b>：下载注意力有多集中？尾巴有多长、代表什么？</p>
+          <p><b>数据</b>：Gold 层两列下载量（近 30 天 / 历史累计）→ Lorenz 点 + 集中度指标。</p>
+          <p><b>方法</b>：先<b>归类</b>成频数表（14,894 种取值）再排序，名次用「档起始名次 + 组内序号」还原；三种独立公式互验（偏差 1e-16 量级）。</p>
+        </div>
+        <div class="card tint">
+          <div class="lbl">问题与解决</div>
+          <ul class="tick">
+            <li>314 万行全局排序被压到<b>单分区串行</b> → 先聚合成小表再排序，与旧实现<b>对拍等价</b></li>
+            <li>两种下载口径合计相差 <b>27 倍</b> → 分列报告，可混用、不可相加</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <figure class="fig hero" data-cap="下载量 Lorenz 曲线（双口径）：横轴模型累计占比、纵轴下载量累计占比；由频数聚合后的真实累计点构成，未抽样、未插值；Gini 用频数加权秩公式精确计算。">
+          <span class="zoom">⤢</span><img src="RQ2fig05_lorenz.png" alt="Lorenz 曲线">
+        </figure>
+        <div class="figcap"><b>主图</b> · Lorenz 曲线（双口径，未抽样未插值）</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 10b RQ2 注意力 · 结论 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">07 · RQ2 · Findings</div>
+      <h2 class="s-title">注意力：<span class="accent">集中与长尾</span></h2>
+    </div>
+    <div class="cols-13">
+      <div class="col reveal d1">
+        <div class="card tint">
+          <div class="lbl">结论与发现（三步分析链）</div>
+          <ul class="tick">
+            <li>近 30 天 Gini <b>0.995355</b>，前 1% 拿走 <b>97.13%</b>，零下载 <b>43.54%</b>；累计口径 <b>0.998117</b>、前 1% 98.70%</li>
+            <li>剔零后仍 <b>0.991773</b>；前 1% 内部 <b>0.936576</b>（集中分层存在）</li>
+            <li>零下载中 <b>97.19%</b> 创建超 30 天（非新模型窗口问题）</li>
+            <li>泰尔组内占比 <b>86%–100%</b>；下载第二的句子嵌入模型与被继承最多的底座<b>不是同一批</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><figure class="fig" data-cap="互补累积分布 P(X≥x) 双对数图：只描述长尾形态，未做幂律拟合，故不宣称幂律。"><span class="zoom">⤢</span><img src="RQ2fig06_ccdf_longtail.png" alt="CCDF 长尾"></figure><div class="figcap">长尾 CCDF</div></div>
+          <div><figure class="fig" data-cap="Theil 组间/组内分解：按任务 86.07%、年份 92.80%、有无血缘 100%，组内占比极高。"><span class="zoom">⤢</span><img src="RQ2fig16_theil_decomposition.png" alt="泰尔分解"></figure><div class="figcap">泰尔分解</div></div>
+          <div><figure class="fig" data-cap="Gini 稳健性：剔零后仅从 0.9954 降到 0.9918；头部 1% 内部仍有 0.937——集中是分层的。"><span class="zoom">⤢</span><img src="RQ2figS1_rq2_gini_robustness.png" alt="Gini 稳健性"></figure><div class="figcap">Gini 稳健性</div></div>
+          <div><figure class="fig" data-cap="两种下载口径对比：近 30 天窗口 vs 历史累计，两者合计相差 27 倍，分列报告、不可相加。"><span class="zoom">⤢</span><img src="RQ2fig23_window_compare.png" alt="口径对比"></figure><div class="figcap">双口径对比</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v accent" data-count="0.995355">0</div><div class="k">近 30 天 Gini 系数</div></div>
+      <div class="stat"><div class="v" data-count="97.13">0</div><div class="k">前 1% 拿走下载量（%）</div></div>
+      <div class="stat"><div class="v" data-count="43.54">0</div><div class="k">零下载模型占比（%）</div></div>
+      <div class="stat"><div class="v accent" data-count="0.991773">0</div><div class="k">剔除零下载后 Gini</div></div>
+    </div>
+  </div>
+</section>
+<!-- 11a RQ3 谱系 · 方法 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">08 · RQ3 · Lineage</div>
+      <h2 class="s-title">谱系：<span class="accent">如何刻画继承网络</span></h2>
+    </div>
+    <div class="cols-13">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">研究问题 · 数据 · 方法</div>
+          <p><b>问题</b>：继承关系形成什么结构？谁是主要底座？家族长什么样？</p>
+          <p><b>数据</b>：Silver 血缘边表（底座 / 衍生 / 关系类型）+ Gold 下载热度 + GraphFrames 迭代结果。</p>
+          <p><b>方法</b>：嵌套结构抽取展开成多行；节点取<b>并集去重</b>；双轨制（Spark 原生精确 + GraphFrames 迭代）；含环图先折叠环再求最长链。</p>
+        </div>
+        <div class="card tint">
+          <div class="lbl">问题与解决（五个麻烦）</div>
+          <ul class="tick">
+            <li>底座编号藏在嵌套数组 → <b>抽取后展开</b></li>
+            <li>节点数相加会重复（975,365 vs 去重 931,066）→ <b>取并集</b></li>
+            <li>自环 2,060、外部底座边 14,838 → <b>全部保留、显式计数</b></li>
+            <li>93 万节点迭代可能跑不完 → <b>双轨制 + 2400 秒看门狗 + 断点续跑</b></li>
+            <li>有环图上「最长链」无定义 → <b>先折叠环再求最长路径</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <figure class="fig hero" data-cap="三种典型家族结构对比（星 / 链 / 合并）：成规模家族（直接衍生 > 100）里星型 647、链型 169、合并型 43；谱系以「一个中心被大量浅层复用」的星型为主。">
+          <span class="zoom">⤢</span><img src="RQ3fig13_family_structure_compare.png" alt="家族结构对比">
+        </figure>
+        <div class="figcap"><b>主图</b> · 星 / 链 / 合并三种结构对比</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 11b RQ3 谱系 · 结论与家族案例 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">08 · RQ3 · Findings</div>
+      <h2 class="s-title">谱系：<span class="accent">结论与家族案例</span></h2>
+    </div>
+    <div class="cols-13">
+      <div class="col reveal d1">
+        <div class="card tint">
+          <div class="lbl">结论与发现</div>
+          <ul class="tick" style="margin-bottom:12px">
+            <li>成规模家族：<b>星型 647 · 链型 169 · 合并型 43 · 混合型 1</b>（星型为主）</li>
+            <li>最长衍生链 <b>151 跳</b>；「被大量下载」和「被大量继承」基本是<b>两拨模型</b></li>
+          </ul>
+          <div class="bars">
+            <div class="bar-row"><span class="bar-lbl">微调 finetune</span><div class="bar"><div class="bar-fill" style="--w:38.52%"></div></div><span class="bar-v">38.52%</span></div>
+            <div class="bar-row"><span class="bar-lbl">适配器 adapter</span><div class="bar"><div class="bar-fill b-green" style="--w:35.84%"></div></div><span class="bar-v">35.84%</span></div>
+            <div class="bar-row"><span class="bar-lbl">量化 quantized</span><div class="bar"><div class="bar-fill b-blue" style="--w:20.41%"></div></div><span class="bar-v">20.41%</span></div>
+            <div class="bar-row"><span class="bar-lbl">合并 merge</span><div class="bar"><div class="bar-fill b-gold" style="--w:5.22%"></div></div><span class="bar-v">5.22%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div class="tabs">
+          <button class="tab active" data-tab="flux">FLUX.1-dev · 星型</button>
+          <button class="tab" data-tab="llama">Llama-3-8B · 链型</button>
+          <button class="tab" data-tab="noobai">noobai-XL · 合并型</button>
+        </div>
+        <div class="tabpane active" data-pane="flux">
+          <figure class="fig" data-cap="星型代表 FLUX.1-dev：43,419 个直接衍生，扇区按四种关系的真实占比分配。"><span class="zoom">⤢</span><img src="RQ3fig19_flux_radial_by_relation.png" alt="FLUX 星型"></figure>
+        </div>
+        <div class="tabpane" data-pane="llama">
+          <figure class="fig" data-cap="链型代表 Meta-Llama-3-8B：1,724 个直接衍生，最长衍生链 151 跳。"><span class="zoom">⤢</span><img src="RQ3fig18_llama_radial_by_relation.png" alt="Llama 链型"></figure>
+        </div>
+        <div class="tabpane" data-pane="noobai">
+          <figure class="fig" data-cap="合并型代表 Laxhar/noobai-XL-1.1：出边中合并关系占 56%。"><span class="zoom">⤢</span><img src="RQ3fig20_noobai_radial_by_relation.png" alt="noobai 合并型"></figure>
+        </div>
+        <figure class="fig" data-cap="下载热度 vs 衍生热度：底座被继承次数与其自身下载量的秩相关只有 0.37，开发者的技术选择和用户的实际下载落在两批不同模型上。"><span class="zoom">⤢</span><img src="RQ3fig15_download_derivative_heat.png" alt="下载 vs 衍生热度"></figure>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="919839">0</div><div class="k">血缘边（条）</div></div>
+      <div class="stat"><div class="v accent" data-count="931066">0</div><div class="k">参与模型（并集去重）</div></div>
+      <div class="stat"><div class="v" data-count="43419">0</div><div class="k">最大直接衍生（FLUX.1-dev）</div></div>
+      <div class="stat"><div class="v accent" data-count="151">0</div><div class="k">最长衍生链（跳）</div></div>
+    </div>
+  </div>
+</section>
+<!-- 12a RQ4 关联 · 方法 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">09 · RQ4 · Association</div>
+      <h2 class="s-title">关联：<span class="accent">如何建模热度</span></h2>
+    </div>
+    <div class="cols-13">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">研究问题 · 数据 · 方法</div>
+          <p><b>问题</b>：给你模型的 7 个属性，能猜出它被下载了多少吗？</p>
+          <p><b>数据</b>：Gold 特征宽表，7 个属性（点赞、创建天数、标签数量、被继承次数、维护跨度、任务、库）+ 目标（近 30 天下载量取对数）。</p>
+          <p><b>方法</b>：确定性哈希抽 20%（626,269 行）；先划分后拟合（训练 501,049 / 测试 125,220，交集 0）；对比<b>基线 / 线性回归 / 随机森林 / 梯度提升树</b>。</p>
+        </div>
+        <div class="card tint">
+          <div class="lbl">问题与解决（评估纪律）</div>
+          <ul class="tick">
+            <li>全量训练太贵 → <b>20% 哈希抽样</b>（禁用「取前 N 行」）</li>
+            <li>训练集自评指标虚高 → <b>先划分</b>，预处理只在训练集做，指标只在测试集算</li>
+            <li>类别词表泄漏 → 词表<b>只在训练集统计</b>，保留前 50</li>
+            <li>独热后维度不能猜 → 从框架元信息<b>逐维读取</b>；CSV 输出是目录 → <b>逐分片合并读取</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <figure class="fig hero" data-cap="特征重要性 + 模型对比：标签数量 0.413 最强、所属库 0.194、点赞 0.151；被继承次数 0.019 近噪声。训练 501,049 / 测试 125,220 行，交集为 0。">
+          <span class="zoom">⤢</span><img src="RQ4fig09_ml_importance.png" alt="特征重要性与模型对比">
+        </figure>
+        <div class="figcap"><b>主图</b> · 特征重要性与模型对比</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 12b RQ4 关联 · 结论 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">09 · RQ4 · Findings</div>
+      <h2 class="s-title">关联：<span class="accent">结论与发现</span></h2>
+    </div>
+    <div class="cols-13">
+      <div class="col reveal d1">
+        <div class="card tint">
+          <div class="lbl">结论与发现</div>
+          <ul class="tick" style="margin-bottom:12px">
+            <li>基线 R²=<b>0</b> · 线性回归 <b>0.4177</b> · 梯度提升树 <b>0.6313</b> · 随机森林 <b>0.6631</b>（RMSE 1.0139）</li>
+            <li>时间切分后 R² 从 0.6779 降到 <b>0.5034</b>（降约 1/4）→ 只能算<b>同期关联</b>，不能当预测</li>
+          </ul>
+          <div class="bars">
+            <div class="bar-row"><span class="bar-lbl">标签数量</span><div class="bar"><div class="bar-fill" style="--w:41.3%"></div></div><span class="bar-v">0.413</span></div>
+            <div class="bar-row"><span class="bar-lbl">所属库</span><div class="bar"><div class="bar-fill b-green" style="--w:19.4%"></div></div><span class="bar-v">0.194</span></div>
+            <div class="bar-row"><span class="bar-lbl">点赞数</span><div class="bar"><div class="bar-fill b-blue" style="--w:15.1%"></div></div><span class="bar-v">0.151</span></div>
+            <div class="bar-row"><span class="bar-lbl">任务类型</span><div class="bar"><div class="bar-fill b-gold" style="--w:13.3%"></div></div><span class="bar-v">0.133</span></div>
+            <div class="bar-row"><span class="bar-lbl">模型年龄</span><div class="bar"><div class="bar-fill" style="--w:5.5%"></div></div><span class="bar-v">0.055</span></div>
+            <div class="bar-row"><span class="bar-lbl">维护跨度</span><div class="bar"><div class="bar-fill b-green" style="--w:3.5%"></div></div><span class="bar-v">0.035</span></div>
+            <div class="bar-row"><span class="bar-lbl">被继承次数</span><div class="bar"><div class="bar-fill b-blue" style="--w:1.9%"></div></div><span class="bar-v">0.019</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div style="display:grid;grid-template-columns:1fr;gap:12px">
+          <div><figure class="fig" data-cap="时间切分 vs 随机切分：同一实现下随机 0.6779、按创建时间 0.5034，属性对时间队列敏感。"><span class="zoom">⤢</span><img src="RQ4figS2_rq4_time_split.png" alt="时间切分检验"></figure><div class="figcap">时间切分检验</div></div>
+          <div><figure class="fig" data-cap="发布账号效应：热度不只取决于模型本身，还取决于它由哪个发布账号发布。"><span class="zoom">⤢</span><img src="RQ4fig26_org_effect.png" alt="组织效应"></figure><div class="figcap">发布账号效应</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v accent" data-count="0.6631">0</div><div class="k">随机森林 R²（最好）</div></div>
+      <div class="stat"><div class="v" data-count="0.413">0</div><div class="k">最强特征：标签数量</div></div>
+      <div class="stat"><div class="v" data-count="0.019">0</div><div class="k">最弱特征：被继承次数</div></div>
+      <div class="stat"><div class="v accent" data-count="0.5034">0</div><div class="k">时间切分后 R²</div></div>
+    </div>
+  </div>
+</section>
+<!-- 13a RQ5 任务 · 方法 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">10 · RQ5 · Task Structure</div>
+      <h2 class="s-title">任务：<span class="accent">如何比较不同任务</span></h2>
+    </div>
+    <div class="cols-12">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">研究问题 · 数据 · 方法</div>
+          <p><b>问题</b>：不同任务类型的模型，生态结构是否不一样？</p>
+          <p><b>数据</b>：Gold 宽表（任务、下载、年龄）+ Silver 边表（算血缘声明覆盖率）。</p>
+          <p><b>方法</b>：按任务分组做描述统计；可比性<b>双门槛</b>（样本量 ≥ 200 且不同取值 ≥ 20）；Gini 与分位数在频数表上<b>精确计算</b>，不用近似函数。</p>
+        </div>
+        <div class="card tint">
+          <div class="lbl">问题与解决</div>
+          <ul class="tick">
+            <li>任务标签缺失 65.55% → 统一记为 <b>unknown</b>，单独报告、<b>恒不参与比较</b></li>
+            <li>小样本组 Gini 无意义 → <b>双门槛</b> + 显式标注「不可比」</li>
+            <li>近似分位数随并行度变化、不可复现 → 改用<b>精确线性插值</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <figure class="fig hero" data-cap="各任务内部下载量集中度（按 Gini 降序）：只列可比 50 个任务（样本量 ≥ 200 且不同取值 ≥ 20，不含 unknown）；横轴自 0 起不截断；引用「50 个」必须带阈值。">
+          <span class="zoom">⤢</span><img src="RQ5fig17_task_gini_ranking.png" alt="逐任务 Gini 排名">
+        </figure>
+        <div class="figcap"><b>主图</b> · 逐任务 Gini 排名（50 个可比任务）</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 13b RQ5 任务 · 结论 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">10 · RQ5 · Findings</div>
+      <h2 class="s-title">任务：<span class="accent">结论与发现</span></h2>
+    </div>
+    <div class="cols-13">
+      <div class="col reveal d1">
+        <div class="card tint">
+          <div class="lbl">结论与发现</div>
+          <ul class="tick">
+            <li>已标注任务 <b>56</b> 个，可比 <b>50</b> 个；文本生成 <b>422,224</b> 个最多</li>
+            <li>每个任务内部都<b>极端长尾</b>（可比任务 Gini 中位数 <b>0.9874</b>）</li>
+            <li><b>数量 ≠ 热度</b>：下载第二是句子相似度（4.39 亿），数量远少于文本生成</li>
+            <li>血缘声明覆盖率差异大：文本排序 <b>84.3%</b>、图像生成 <b>71.3%</b></li>
+            <li>引用「50 个可比」必须带阈值（换阈值在 27–54 之间变化）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div style="display:grid;grid-template-columns:1fr;gap:12px">
+          <div><figure class="fig" data-cap="库与任务生态结构对比：数量多的领域不等于被用得多的领域。"><span class="zoom">⤢</span><img src="RQ5fig04_library_task_structure.png" alt="库与任务结构"></figure><div class="figcap">数量 ≠ 热度</div></div>
+          <div><figure class="fig" data-cap="不同任务的谱系组织方式：复用方式不同，谱系结构带有领域特征（如文生图合并边占比更高）。"><span class="zoom">⤢</span><img src="RQ5fig27_task_lineage.png" alt="任务谱系"></figure><div class="figcap">任务谱系差异</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="56">0</div><div class="k">已标注任务数</div></div>
+      <div class="stat"><div class="v accent" data-count="50">0</div><div class="k">可比任务（带阈值）</div></div>
+      <div class="stat"><div class="v" data-count="0.9874">0</div><div class="k">可比任务 Gini 中位数</div></div>
+      <div class="stat"><div class="v accent" data-count="4.39">0</div><div class="k">句子相似度下载（亿次）</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 章节过渡 · 稳健性总结展望 -->
+<section class="slide divider">
+  <div class="d-num">03</div>
+  <div class="slide-inner">
+    <div class="d-tag reveal d1">Part 03 · 稳健性 · 总结 · 展望</div>
+    <h2 class="reveal d2">稳健性 · <span class="accent">总结 · 展望</span></h2>
+    <div class="d-kws reveal d3">
+      <span class="chip dark"><span class="i">稳健性</span>九根轴 · 完成六根</span>
+      <span class="chip dark"><span class="i">总结</span>大规模长尾 + 超级底座</span>
+      <span class="chip dark"><span class="i">展望</span>四个未来方向</span>
+    </div>
+  </div>
+</section>
+<!-- 15a 稳健性检查（九根轴） -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">11 · Robustness</div>
+      <h2 class="s-title">稳健性：<span class="accent">九根轴换口径重算</span></h2>
+    </div>
+    <div class="cols">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">怎么验</div>
+          <p>把主要结论换不同口径和边界条件重算，判定分三种：<b>稳健</b> / <b>稳健但计数需带条件</b> / <b>弱稳健</b>。</p>
+        </div>
+        <div class="card tint">
+          <div class="lbl">本轮完成六根</div>
+          <div class="pipe" style="margin-bottom:10px">
+            <span>下载口径</span><span>零值处理</span><span>任务比较阈值</span><span>家族结构阈值</span>
+          </div>
+          <div class="pipe"><span>创建年份（弱稳健）</span><span>首月异常</span></div>
+          <ul class="tick" style="margin-top:12px">
+            <li>两根「阈值类」轴定性结论稳定，但计数会变 → 引用数字必须<b>同时写出阈值</b>（如「50 个可比」需样本 ≥ 200、取值 ≥ 20）</li>
+            <li>创建年份是<b>弱稳健</b>：方向一致但排序随口径改变，只能作迹象表述</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div class="card">
+          <div class="lbl">未覆盖三根（如实列出，不假装做过）</div>
+          <ul class="tick">
+            <li>外部底座边 · 自环边 · RQ4 抽样比例与随机种子</li>
+            <li>需重新计算血缘边表与特征表，本轮环境没有条件</li>
+          </ul>
+        </div>
+        <div class="card tint">
+          <div class="lbl">判定标准</div>
+          <ul class="tick">
+            <li><b>稳健</b>：换口径后结论方向与量级不变</li>
+            <li><b>稳健但计数需带条件</b>：结论稳、数字随阈值变 → 必须带阈值引用</li>
+            <li><b>弱稳健</b>：方向一致但排序会变 → 只作迹象表述</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="9">0</div><div class="k">稳健性轴（设计）</div></div>
+      <div class="stat"><div class="v accent" data-count="6">0</div><div class="k">本轮完成</div></div>
+      <div class="stat"><div class="v" data-count="3">0</div><div class="k">未覆盖（如实列出）</div></div>
+      <div class="stat"><div class="v accent" data-count="4">0</div><div class="k">做法新意</div></div>
+    </div>
+  </div>
+</section>
+<!-- 15b 总体结论 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">11 · Conclusion</div>
+      <h2 class="s-title">总体结论与<span class="accent">四点新意</span></h2>
+    </div>
+    <div class="cols">
+      <div class="col reveal d1">
+        <div class="card" style="flex:1">
+          <div class="lbl">总体结论</div>
+          <ul class="tick">
+            <li>这是一个<b>「大规模长尾 + 极少数超级底座」</b>的生态，注意力集中度极高</li>
+            <li>集中主要来自<b>每一组内部</b>，不是组与组之间拉开的差距</li>
+            <li>成规模家族以<b>星型浅层复用</b>为主，链型次之</li>
+            <li>与热度关联最强的属性是<b>标签数量和所属库</b>，而不是被继承次数</li>
+            <li>所有相关性都只是<b>同一份快照内</b>的统计描述</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div class="card tint">
+          <div class="lbl">做法上的四点新意（预告）</div>
+          <ul class="tick">
+            <li>「必须先全局排序」改成<b>先归类再计算</b> + 对拍等价验证</li>
+            <li>含环图<b>先折叠环</b>再求最长链</li>
+            <li>图算法<b>双轨制</b>，跑不完就如实记录</li>
+            <li>全项目<b>只有一个结果清单</b>，杜绝数字对不上</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 16 创新点 · 收获 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">12 · Contribution &amp; Gains</div>
+      <h2 class="s-title">创新点 · <span class="accent">收获</span></h2>
+    </div>
+    <div class="cols">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">四点新意</div>
+          <div class="feat">
+            <div class="feat-item"><div class="fn">01</div><div><div class="ft">先归类再计算</div><div class="fd">把「必须先全局排序」的统计改写，对拍验证与逐个计算完全等价。</div></div></div>
+            <div class="feat-item"><div class="fn">02</div><div><div class="ft">先折叠环再求最长链</div><div class="fd">含环的图先折叠成无环图再求最长链，不用树近似真实拓扑。</div></div></div>
+            <div class="feat-item"><div class="fn">03</div><div><div class="ft">图算法双轨制</div><div class="fd">跑不完就如实记录，绝不用另一个库的结果冒充。</div></div></div>
+            <div class="feat-item"><div class="fn">04</div><div><div class="ft">唯一结果清单</div><div class="fd">图表与报告的数字都从它取，杜绝手抄出错。</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div class="card">
+          <div class="lbl">三点收获</div>
+          <div class="feat">
+            <div class="feat-item"><div class="fn">01</div><div><div class="ft">完整走通全链路</div><div class="fd">采集 → 清洗 → 分析 → 展示，且只有一个结果清单文件。</div></div></div>
+            <div class="feat-item"><div class="fn">02</div><div><div class="ft">受限机器上的大规模处理</div><div class="fd">先压缩成小表再算、精确算法写清楚、长任务加超时与断点续跑。</div></div></div>
+            <div class="feat-item"><div class="fn">03</div><div><div class="ft">区分「测到了什么」和「不能说什么」</div><div class="fd">每条结论写清成立条件。</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 17 挑战 · 投入 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">13 · Challenges &amp; Effort</div>
+      <h2 class="s-title">挑战 · <span class="accent">投入</span></h2>
+      <p class="s-sub">挑战主要不在算法，而在口径。</p>
+    </div>
+    <div class="cols-21">
+      <div class="col reveal d1">
+        <div class="card">
+          <div class="lbl">四大挑战</div>
+          <div class="challenges">
+            <div class="challenge c-blue"><div class="ct">环境</div><p>Windows 缺 winutils.exe → 换纯 Java 本地文件系统；时区不固定 → 记录跨月。</p></div>
+            <div class="challenge c-gold"><div class="ct">数据质量</div><p>缺失 65.55% / 71.74% 不推断；首月 90.7% 挤同一天；28,097 条修改早于创建。</p></div>
+            <div class="challenge c-green"><div class="ct">性能</div><p>全局排序单分区串行；早期十次全量扫描；底座热点倾斜；图算法单步数百秒。</p></div>
+            <div class="challenge"><div class="ct">训练</div><p>训练集自评指标虚高；取前 N 行会取到热门榜单（样本带偏）。</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="col reveal d2">
+        <div class="card">
+          <div class="lbl">投入</div>
+          <ul class="tick">
+            <li>44 个脚本 · 214 项自动检查 · 107 个测量组合 · 321 次计时执行</li>
+            <li>全量清洗 142.8 秒 · 图迭代 6 步约 22 分钟</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="44">0</div><div class="k">脚本数</div></div>
+      <div class="stat"><div class="v accent" data-count="214">0</div><div class="k">自动检查项</div></div>
+      <div class="stat"><div class="v" data-count="321">0</div><div class="k">计时执行次数</div></div>
+      <div class="stat"><div class="v accent" data-count="142.8">0</div><div class="k">全量清洗（秒）</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 未来打算 -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="s-head">
+      <div class="kicker">14 · Future</div>
+      <h2 class="s-title">未来<span class="accent">打算</span></h2>
+    </div>
+    <div class="cols-4 reveal d1">
+      <div class="card"><div class="lbl">① 组织维度</div><p>启用已提取未使用的<b>作者/组织</b>字段：检验「标签数量最强」是否只是组织规模的替代表达。</p></div>
+      <div class="card"><div class="lbl">② 补齐稳健性</div><p>补完剩余三根轴：<b>外部底座边、自环边、RQ4 抽样比例与随机种子</b>。</p></div>
+      <div class="card"><div class="lbl">③ 架构归因</div><p>把源数据里描述模型架构的 <b>config 字段</b>纳入契约，做架构家族（Qwen 系 vs Llama 系）的衍生活跃度对比。</p></div>
+      <div class="card"><div class="lbl">④ 跨期预测</div><p>拿到<b>第二个时间点快照</b>，把 RQ4 从「同期关联」推进到「跨期预测」——这也是数据本身最大的边界。</p></div>
+    </div>
+    <div class="card tint reveal d2" style="margin-top:18px">
+      <div class="lbl">工程侧补强</div>
+      <p>交付包完整性校验 · 数据质量标记列 · 统一图表登记与命令行入口。</p>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="v" data-count="4">0</div><div class="k">未来方向</div></div>
+      <div class="stat"><div class="v accent" data-count="3">0</div><div class="k">待补稳健性轴</div></div>
+      <div class="stat"><div class="v" data-count="1">0</div><div class="k">待用字段（作者组织）</div></div>
+      <div class="stat"><div class="v accent" data-count="2">0</div><div class="k">目标：第二个快照</div></div>
+    </div>
+  </div>
+</section>
+<!-- 19 尾页 -->
+<section class="slide end">
+  <canvas class="net-bg"></canvas>
+  <div class="slide-inner">
+    <div class="end-tag reveal d1">Thanks · Q&amp;A</div>
+    <div class="end-title reveal d2">谢谢<span class="em">聆听</span></div>
+    <div class="end-line reveal d3"></div>
+    <p class="end-note reveal d4"><b>「大规模长尾 + 极少数超级底座」</b>——注意力高度集中、家族以星型浅层复用为主。</p>
+    <div class="end-meta reveal d5">
+      <span class="m">成员 <b>彭婉茹 · 尹佳锐 · 魏小童 · 郝佳瑞 · 和姝珂</b></span>
+      <span class="m">班级 <b>＿＿＿＿</b></span>
+      <span class="m">指导教师 <b>＿＿＿＿</b></span>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+</div></div></main>
+<script>
+(function(){
+  var track = document.getElementById('track');
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var N = slides.length;
+  var progress = document.getElementById('progress');
+  var counter = document.getElementById('counter');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var dotsBox = document.getElementById('dots');
+  var lightbox = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lbImg');
+  var lbCap = document.getElementById('lbCap');
+  var lbClose = document.getElementById('lbClose');
+  var current = 0;
+  var dots = [];
+
+  function formatNum(val, targetStr){
+    if(targetStr.indexOf('.') !== -1){
+      var d = targetStr.split('.')[1].length;
+      return val.toFixed(d);
+    }
+    return Math.round(val).toLocaleString('en-US');
+  }
+  function animateCount(el){
+    var targetStr = el.getAttribute('data-count');
+    var target = parseFloat(targetStr);
+    var dur = 1200, start = null;
+    function step(ts){
+      if(!start) start = ts;
+      var p = Math.min(1, (ts - start) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.textContent = formatNum(target * e, targetStr);
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    var s = el.getAttribute('data-count');
+    el.textContent = s.indexOf('.') !== -1 ? (0).toFixed(s.split('.')[1].length) : '0';
+  });
+
+  function fit(){
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  function goTo(i){
+    i = Math.max(0, Math.min(N - 1, i));
+    current = i;
+    track.style.transform = 'translateX(' + (-i * 1280) + 'px)';
+    update();
+  }
+  function update(){
+    progress.style.width = (N > 1 ? (current / (N - 1) * 100) : 0) + '%';
+    counter.textContent = (current + 1) + ' / ' + N;
+    slides.forEach(function(s, i){
+      var on = (i === current);
+      if(on && !s.classList.contains('on')){
+        s.querySelectorAll('[data-count]').forEach(function(el){
+          if(!el.getAttribute('data-done')){ el.setAttribute('data-done', '1'); animateCount(el); }
+        });
+      }
+      s.classList.toggle('on', on);
+    });
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === current); });
+    prevBtn.disabled = (current === 0);
+    nextBtn.disabled = (current === N - 1);
+  }
+
+  for(var i = 0; i < N; i++){
+    (function(j){
+      var d = document.createElement('button');
+      d.className = 'dot';
+      d.setAttribute('aria-label', '第 ' + (j + 1) + ' 页');
+      d.addEventListener('click', function(){ goTo(j); });
+      dotsBox.appendChild(d);
+      dots.push(d);
+    })(i);
+  }
+
+  prevBtn.addEventListener('click', function(){ goTo(current - 1); });
+  nextBtn.addEventListener('click', function(){ goTo(current + 1); });
+
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ' || e.key === 'Spacebar'){
+      e.preventDefault(); goTo(current + 1);
+    } else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){
+      e.preventDefault(); goTo(current - 1);
+    } else if(e.key === 'Home'){
+      e.preventDefault(); goTo(0);
+    } else if(e.key === 'End'){
+      e.preventDefault(); goTo(N - 1);
+    } else if(e.key === 'Escape'){
+      lightbox.classList.remove('open');
+    }
+  });
+
+  var wheelLock = false;
+  window.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 12) return;
+    wheelLock = true;
+    if(e.deltaY > 0) goTo(current + 1); else goTo(current - 1);
+    setTimeout(function(){ wheelLock = false; }, 720);
+  }, { passive: true });
+
+  document.querySelectorAll('.agenda li[data-goto]').forEach(function(li){
+    li.addEventListener('click', function(){ goTo(parseInt(li.getAttribute('data-goto'), 10)); });
+  });
+
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    tabs.querySelectorAll('.tab').forEach(function(tab){
+      tab.addEventListener('click', function(){
+        tabs.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+        tab.classList.add('active');
+        var slide = tabs.closest('.slide');
+        var pane = slide.querySelector('.tabpane[data-pane="' + tab.getAttribute('data-tab') + '"]');
+        slide.querySelectorAll('.tabpane').forEach(function(p){ p.classList.remove('active'); });
+        if(pane) pane.classList.add('active');
+      });
+    });
+  });
+
+  document.querySelectorAll('.fig').forEach(function(fig){
+    fig.addEventListener('click', function(){
+      var img = fig.querySelector('img');
+      if(img){ lbImg.src = img.getAttribute('src'); lbImg.alt = img.getAttribute('alt') || ''; }
+      lbCap.textContent = fig.getAttribute('data-cap') || '';
+      lightbox.classList.add('open');
+    });
+  });
+  lbClose.addEventListener('click', function(){ lightbox.classList.remove('open'); });
+  lightbox.addEventListener('click', function(e){
+    if(e.target === lightbox) lightbox.classList.remove('open');
+  });
+  function initNet(canvas){
+    var ctx = canvas.getContext('2d');
+    var w = 0, h = 0, nodes = [], LINK = 150;
+    function build(){
+      var n = Math.max(30, Math.min(120, Math.floor(w * h / 16000)));
+      nodes = [];
+      for(var i = 0; i < n; i++){
+        nodes.push({ x: Math.random() * w, y: Math.random() * h,
+          vx: (Math.random() - .5) * .34, vy: (Math.random() - .5) * .34 });
+      }
+    }
+    function resize(){
+      w = canvas.width = canvas.offsetWidth;
+      h = canvas.height = canvas.offsetHeight;
+      LINK = Math.max(120, Math.min(w, h) / 6);
+      build();
+    }
+    function tick(){
+      ctx.clearRect(0, 0, w, h);
+      for(var i = 0; i < nodes.length; i++){
+        var a = nodes[i];
+        a.x += a.vx; a.y += a.vy;
+        if(a.x < 0 || a.x > w) a.vx *= -1;
+        if(a.y < 0 || a.y > h) a.vy *= -1;
+      }
+      for(var i2 = 0; i2 < nodes.length; i2++){
+        for(var j = i2 + 1; j < nodes.length; j++){
+          var a = nodes[i2], b = nodes[j];
+          var d = Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+          if(d < LINK){
+            var alpha = 0.17 * (1 - d / LINK);
+            ctx.strokeStyle = 'rgba(185,85,58,' + alpha.toFixed(3) + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        }
+      }
+      for(var k = 0; k < nodes.length; k++){
+        var p = nodes[k];
+        ctx.fillStyle = 'rgba(217,119,87,0.9)';
+        ctx.beginPath(); ctx.arc(p.x, p.y, 2.1, 0, Math.PI * 2); ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+    resize(); tick();
+    window.addEventListener('resize', resize);
+  }
+  document.querySelectorAll('canvas.net-bg').forEach(initNet);
+
+  window.addEventListener('resize', function(){ fit(); goTo(current); });
+  fit();
+  goTo(0);
+
+})();
+
+</script>
+
+</body>
+</html>

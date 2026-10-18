@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>开源人工智能模型生态的数据分析 · 答辩 PPT</title>
+<style>
+:root{
+  --ink:#EAF3FA; --ink2:#9FB6CB; --ink3:#6E8AA3;
+  --cyan:#4CC9F0; --cyan2:#2A7FA8; --gold:#F3B945;
+  --line:rgba(90,160,210,.20); --panel:rgba(20,52,80,.42);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:#03070d;}
+body{
+  display:flex;flex-direction:column;align-items:center;gap:44px;
+  padding:44px 0 90px;
+  font-family:"Microsoft YaHei","PingFang SC","Source Han Sans SC","Noto Sans SC",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.slide{
+  position:relative;width:1920px;height:1080px;flex:0 0 auto;overflow:hidden;
+  color:var(--ink);
+  background:
+    radial-gradient(1500px 900px at 82% -10%, rgba(38,110,165,.55), rgba(7,19,32,0) 62%),
+    radial-gradient(1100px 850px at 2% 105%, rgba(22,88,120,.45), rgba(7,19,32,0) 62%),
+    #071320;
+  box-shadow:0 30px 90px rgba(0,0,0,.65);
+}
+.slide::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(76,201,240,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(76,201,240,.055) 1px,transparent 1px);
+  background-size:80px 80px;
+  -webkit-mask-image:radial-gradient(1300px 900px at 50% 42%,#000 15%,transparent 78%);
+  mask-image:radial-gradient(1300px 900px at 50% 42%,#000 15%,transparent 78%);
+}
+/* ---------- 通用元件 ---------- */
+.hd{position:absolute;left:96px;right:96px;top:66px;z-index:3;}
+.hd h2{font-size:46px;font-weight:700;letter-spacing:.4px;line-height:1.2;}
+.hd .tag{margin-top:13px;font-family:Arial,Helvetica,sans-serif;font-size:16px;
+  font-weight:700;letter-spacing:4px;color:#5C7C97;}
+.hd .tag::before{content:"";display:inline-block;width:26px;height:3px;
+  background:var(--cyan);vertical-align:middle;margin-right:12px;border-radius:2px;}
+.pgnum{position:absolute;right:96px;bottom:44px;font-family:Arial,Helvetica,sans-serif;
+  font-size:16px;letter-spacing:2px;color:#54708A;z-index:3;}
+.footline{position:absolute;left:96px;right:96px;bottom:80px;height:1px;background:var(--line);}
+.kpi{font-family:Arial,Helvetica,sans-serif;font-weight:800;line-height:.92;letter-spacing:-.02em;}
+.hl{color:var(--cyan);}
+.gold{color:var(--gold);}
+.mut{color:var(--ink2);}
+.dim{color:var(--ink3);}
+.srcnote{position:absolute;font-family:Arial,Helvetica,sans-serif;font-size:14px;
+  letter-spacing:.5px;color:#4F6C86;}
+
+/* ---------- 01 封面 ---------- */
+.cover .cl{position:absolute;left:120px;top:250px;width:1000px;}
+.cover .eyebrow{display:inline-block;font-size:20px;letter-spacing:5px;color:var(--cyan);
+  border:1px solid rgba(76,201,240,.45);border-radius:2px;padding:10px 22px;
+  background:rgba(76,201,240,.06);}
+.cover h1{margin-top:44px;font-size:82px;font-weight:800;line-height:1.22;letter-spacing:1px;}
+.cover h1 span{color:var(--cyan);}
+.cover .sub{margin-top:30px;font-size:30px;color:var(--ink2);letter-spacing:.5px;}
+.cover .rule{width:150px;height:4px;background:linear-gradient(90deg,var(--cyan),rgba(76,201,240,0));margin-top:44px;border-radius:2px;}
+.cover .meta{margin-top:36px;font-size:20px;color:var(--ink3);letter-spacing:1px;}
+.cover .meta i{display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:#3d5f7a;margin:0 16px;vertical-align:middle;}
+.cover .cr{position:absolute;right:120px;top:220px;width:640px;height:660px;}
+.cover .cr svg{width:100%;height:100%;}
+
+/* ---------- 02 背景 ---------- */
+.p02 .grid{position:absolute;left:96px;top:250px;width:1728px;display:grid;
+  grid-template-columns:440px 1fr;gap:80px;}
+.p02 .statbox{border-left:3px solid var(--cyan);padding-left:34px;}
+.p02 .statbox .big{font-size:88px;}
+.p02 .statbox p{margin-top:18px;font-size:19px;color:var(--ink2);line-height:1.65;max-width:360px;}
+.p02 .qlist{display:flex;flex-direction:column;gap:0;}
+.p02 .q{display:grid;grid-template-columns:76px 1fr;gap:22px;padding:26px 0;
+  border-bottom:1px solid var(--line);align-items:start;}
+.p02 .q:first-child{padding-top:0;}
+.p02 .q .num{font-family:Arial;font-size:22px;font-weight:800;color:#3E6C8E;letter-spacing:1px;padding-top:6px;}
+.p02 .q h3{font-size:28px;font-weight:700;letter-spacing:.5px;}
+.p02 .q p{margin-top:9px;font-size:18px;color:var(--ink3);line-height:1.55;}
+.p02 .bottom{position:absolute;left:96px;right:96px;bottom:132px;padding-top:22px;
+  border-top:1px solid var(--line);font-size:19px;color:var(--ink2);letter-spacing:.4px;}
+.p02 .bottom b{color:var(--cyan);font-weight:600;}
+
+/* ---------- 03 管线 ---------- */
+.p03 .pipe{position:absolute;left:96px;right:96px;top:248px;display:flex;align-items:stretch;gap:0;}
+.p03 .step{position:relative;background:linear-gradient(180deg,rgba(28,72,110,.55),rgba(12,32,52,.55));
+  border:1px solid rgba(76,201,240,.22);border-radius:6px;padding:28px 26px 26px;
+  border-bottom:3px solid var(--cyan);}
+.p03 .step .st{font-family:Arial;font-size:14px;font-weight:700;letter-spacing:3px;color:#4E7C9E;margin-bottom:16px;}
+.p03 .step h4{font-size:24px;font-weight:700;letter-spacing:.3px;margin-bottom:12px;}
+.p03 .step p{font-size:17px;line-height:1.6;color:var(--ink2);}
+.p03 .arrow{display:flex;align-items:center;justify-content:center;width:56px;
+  font-family:Arial;font-size:26px;color:#2E6C92;}
+.p03 .nums{position:absolute;left:96px;right:96px;top:640px;display:grid;
+  grid-template-columns:repeat(4,1fr);gap:34px;}
+.p03 .nbox{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:30px 28px;}
+.p03 .nbox .v{font-size:50px;}
+.p03 .nbox .l{margin-top:14px;font-size:17px;color:var(--ink2);letter-spacing:.4px;}
+.p03 .run{position:absolute;left:96px;right:96px;bottom:128px;font-size:18px;color:var(--ink3);
+  letter-spacing:.5px;padding-top:22px;border-top:1px solid var(--line);}
+.p03 .run b{color:var(--ink2);font-weight:600;}
+
+/* ---------- 04 增长 ---------- */
+.p04 .chart{position:absolute;left:96px;top:250px;width:1230px;height:660px;}
+.p04 .chart svg{width:100%;height:100%;}
+.p04 .side{position:absolute;right:96px;top:300px;width:420px;}
+.p04 .side .v{font-size:96px;color:var(--gold);}
+.p04 .side .d{margin-top:24px;font-size:22px;line-height:1.6;color:var(--ink);}
+.p04 .side .note{margin-top:36px;padding-top:24px;border-top:1px solid var(--line);
+  font-size:18px;line-height:1.75;color:var(--ink3);}
+
+/* ---------- 05 集中度 ---------- */
+.p05 .chart{position:absolute;left:96px;top:250px;width:1030px;height:680px;}
+.p05 .chart svg{width:100%;height:100%;}
+.p05 .side{position:absolute;right:96px;top:262px;width:590px;}
+.p05 .side .v{font-size:150px;color:var(--cyan);letter-spacing:-.04em;}
+.p05 .side .ul{width:210px;height:4px;background:var(--gold);border-radius:2px;margin-top:20px;}
+.p05 .side .d{margin-top:24px;font-size:24px;color:var(--ink);letter-spacing:.3px;}
+.p05 .side .rows{margin-top:48px;display:flex;flex-direction:column;gap:22px;}
+.p05 .side .row{display:flex;justify-content:space-between;align-items:baseline;
+  padding-bottom:16px;border-bottom:1px solid var(--line);}
+.p05 .side .row span{font-size:19px;color:var(--ink2);}
+.p05 .side .row b{font-family:Arial;font-size:30px;font-weight:700;color:var(--ink);}
+.p05 .foot{position:absolute;left:96px;right:96px;bottom:126px;font-size:18px;
+  color:var(--ink3);letter-spacing:.4px;}
+
+/* ---------- 06 继承网络 ---------- */
+.p06 .chart{position:absolute;left:60px;top:240px;width:1150px;height:700px;}
+.p06 .chart svg{width:100%;height:100%;}
+.p06 .side{position:absolute;right:96px;top:280px;width:560px;display:flex;flex-direction:column;gap:34px;}
+.p06 .row{display:flex;align-items:baseline;gap:22px;padding-bottom:26px;border-bottom:1px solid var(--line);}
+.p06 .row .v{font-family:Arial;font-size:62px;font-weight:800;letter-spacing:-.02em;color:var(--ink);min-width:250px;}
+.p06 .row .t{font-size:19px;color:var(--ink2);line-height:1.5;}
+.p06 .legend{position:absolute;left:96px;bottom:120px;display:flex;gap:36px;font-size:17px;color:var(--ink2);}
+.p06 .legend i{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:10px;vertical-align:-2px;}
+
+/* ---------- 07 属性 ---------- */
+.p07 .chart{position:absolute;left:96px;top:250px;width:1090px;height:660px;}
+.p07 .chart svg{width:100%;height:100%;}
+.p07 .side{position:absolute;right:96px;top:300px;width:620px;}
+.p07 .side .v{font-size:120px;color:var(--cyan);}
+.p07 .side .d{margin-top:20px;font-size:22px;color:var(--ink);}
+.p07 .side .rows{margin-top:42px;display:flex;flex-direction:column;gap:18px;}
+.p07 .side .row{display:flex;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--line);}
+.p07 .side .row span{font-size:19px;color:var(--ink2);}
+.p07 .side .row b{font-family:Arial;font-size:28px;color:var(--ink);}
+.p07 .foot{position:absolute;left:96px;right:96px;bottom:126px;font-size:18px;color:var(--ink3);line-height:1.7;}
+.p07 .warn{color:var(--gold);}
+
+/* ---------- 08 任务 ---------- */
+.p08 .chart{position:absolute;left:296px;top:236px;width:1330px;height:390px;}
+.p08 .chart svg{width:100%;height:100%;}
+.p08 table{position:absolute;left:296px;right:296px;top:668px;width:1330px;border-collapse:collapse;}
+.p08 th{font-size:18px;font-weight:600;color:var(--ink3);text-align:left;letter-spacing:1px;
+  padding:0 0 16px;border-bottom:1px solid rgba(90,160,210,.32);}
+.p08 th:last-child,.p08 td:last-child{text-align:right;}
+.p08 td{font-size:25px;padding:24px 0;border-bottom:1px solid var(--line);color:var(--ink);}
+.p08 td:first-child{font-family:Arial;font-weight:700;letter-spacing:.5px;}
+.p08 td:nth-child(2){font-family:Arial;font-weight:700;}
+.p08 td:last-child{font-family:Arial;font-weight:800;color:var(--cyan);font-size:30px;}
+.p08 .note{position:absolute;left:296px;right:296px;bottom:118px;font-size:17px;color:var(--ink3);}
+
+/* ---------- 09 性能 ---------- */
+.p09 .panels{position:absolute;left:96px;right:96px;top:240px;display:grid;
+  grid-template-columns:1fr 1fr;gap:44px;}
+.p09 .panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:30px 34px 26px;}
+.p09 .panel .pt{font-size:21px;font-weight:700;color:var(--ink);letter-spacing:.4px;}
+.p09 .panel svg{width:100%;height:300px;display:block;margin-top:10px;}
+.p09 .panel .cap{margin-top:12px;font-size:17px;color:var(--ink2);line-height:1.6;padding-top:14px;
+  border-top:1px solid var(--line);}
+.p09 .panel .cap b{color:var(--cyan);font-family:Arial;font-weight:700;}
+.p09 .highlight{position:absolute;left:96px;right:96px;bottom:126px;
+  background:linear-gradient(90deg,rgba(243,185,69,.14),rgba(243,185,69,.02));
+  border-left:4px solid var(--gold);border-radius:0 6px 6px 0;padding:26px 34px;}
+.p09 .highlight p{font-size:22px;color:var(--ink);letter-spacing:.3px;}
+.p09 .highlight b{font-family:Arial;color:var(--gold);font-weight:800;}
+
+/* ---------- 10 工程 ---------- */
+.p10 .rows{position:absolute;left:96px;right:96px;top:238px;display:flex;flex-direction:column;gap:26px;}
+.p10 .ev{display:grid;grid-template-columns:400px 620px 400px;gap:32px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:30px 36px;
+  border-left:4px solid var(--cyan2);}
+.p10 .ev .k{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:.4px;}
+.p10 .ev .k small{display:block;font-family:Arial;font-size:14px;font-weight:700;letter-spacing:3px;
+  color:#4E7C9E;margin-bottom:10px;}
+.p10 .ev .m{font-size:19px;color:var(--ink2);line-height:1.65;}
+.p10 .ev .r{font-size:19px;color:var(--ink);line-height:1.65;padding-left:32px;border-left:1px solid var(--line);}
+.p10 .ev .r b{font-family:Arial;color:var(--cyan);font-weight:800;}
+.p10 .foot{position:absolute;left:96px;right:96px;bottom:122px;padding-top:22px;
+  border-top:1px solid var(--line);font-size:18px;color:var(--ink3);letter-spacing:.3px;}
+
+/* ---------- 11 结论 ---------- */
+.p11 .left{position:absolute;left:96px;top:250px;width:1030px;display:flex;flex-direction:column;gap:0;}
+.p11 .item{display:grid;grid-template-columns:300px 1fr;gap:34px;align-items:center;
+  padding:34px 0;border-bottom:1px solid var(--line);}
+.p11 .item .v{font-family:Arial;font-size:58px;font-weight:800;letter-spacing:-.02em;color:var(--cyan);}
+.p11 .item .t{font-size:23px;color:var(--ink);line-height:1.55;}
+.p11 .right{position:absolute;right:96px;top:250px;width:640px;
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:40px 44px;}
+.p11 .right h4{font-size:22px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:30px;}
+.p11 .right ul{list-style:none;display:flex;flex-direction:column;gap:26px;}
+.p11 .right li{font-size:20px;color:var(--ink2);line-height:1.6;padding-left:30px;position:relative;}
+.p11 .right li::before{content:"";position:absolute;left:0;top:11px;width:10px;height:10px;
+  border-radius:2px;background:var(--cyan2);transform:rotate(45deg);}
+.p11 .end{position:absolute;left:96px;right:96px;bottom:120px;padding-top:26px;
+  border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;}
+.p11 .end .ty{font-size:30px;font-weight:700;letter-spacing:2px;}
+.p11 .end .ty span{color:var(--cyan);}
+.p11 .end .link{font-family:Arial;font-size:19px;color:var(--ink3);letter-spacing:.5px;}
+
+/* ---------- 备份页 ---------- */
+.bk .badge{position:absolute;right:96px;top:76px;font-family:Arial;font-size:15px;font-weight:700;
+  letter-spacing:3px;color:var(--gold);border:1px solid rgba(243,185,69,.5);
+  padding:8px 18px;border-radius:2px;background:rgba(243,185,69,.07);}
+</style>
+</head>
+<body>
+
+<!-- ================= 01 封面 ================= -->
+<section class="slide cover">
+  <div class="cl">
+    <div class="eyebrow">大数据导论 · 课程项目答辩</div>
+    <h1>开源人工智能模型<br><span>生态</span>的数据分析</h1>
+    <p class="sub">基于 Hugging Face 公开模型快照的 Spark 大数据实验</p>
+    <div class="rule"></div>
+    <div class="meta">
+      <span>华中科技大学</span><i></i><span>计算机学院</span><i></i>
+      <span>汇报人：___</span><i></i><span>2026-10</span>
+    </div>
+  </div>
+  <div class="cr"><svg id="coverNet" viewBox="0 0 640 660"></svg></div>
+</section>
+
+<!-- ================= 02 研究背景 ================= -->
+<section class="slide p02">
+  <header class="hd">
+    <h2>314 万个模型，值得研究的不只是<span class="hl">数量</span></h2>
+    <div class="tag">02 / BACKGROUND</div>
+  </header>
+  <div class="grid">
+    <div class="statbox">
+      <div class="kpi big">3,138,954</div>
+      <p>2026-10-10 数据快照中可见的公开模型<br>（源物理行 3,138,959，按 ID 去重后）</p>
+    </div>
+    <div class="qlist">
+      <div class="q">
+        <div class="num">01</div>
+        <div><h3>增长：模型供给是如何变化的？</h3>
+        <p>按创建时间还原快照中仍可见模型的月度分布</p></div>
+      </div>
+      <div class="q">
+        <div class="num">02</div>
+        <div><h3>关注：下载量是否集中在少数模型？</h3>
+        <p>近 30 天下载量的分布形态与集中程度</p></div>
+      </div>
+      <div class="q">
+        <div class="num">03</div>
+        <div><h3>复用：哪些底座被大量衍生模型继承？</h3>
+        <p>依据模型元数据显式声明的 baseModels 构建有向图</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom">扩展分析：另外比较<b>不同任务类型</b>的结构差异、分析<b>模型属性与下载热度</b>的同期统计关联（RQ4 / RQ5）</div>
+  <div class="pgnum">02 / 11</div>
+</section>
+
+<!-- ================= 03 数据管线 ================= -->
+<section class="slide p03">
+  <header class="hd">
+    <h2>从公开快照到可复现分析，我们<span class="hl">怎样处理数据</span></h2>
+    <div class="tag">03 / PIPELINE</div>
+  </header>
+  <div class="pipe">
+    <div class="step" style="flex:18">
+      <div class="st">01 · SOURCE</div>
+      <h4>Hugging Face / Bronze</h4>
+      <p>models.parquet 原始只读快照，不做任何改写</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step" style="flex:25">
+      <div class="st">02 · SPARK / SILVER</div>
+      <h4>Schema 适配与清洗</h4>
+      <p>按 ID 去重、展开 tags / baseModels、类型统一为 UTC</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step" style="flex:28">
+      <div class="st">03 · GOLD</div>
+      <h4>统计表构建</h4>
+      <p>月度趋势、Lorenz 分布、谱系边表、任务分组聚合</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step" style="flex:23">
+      <div class="st">04 · OUTPUT</div>
+      <h4>分析输出</h4>
+      <p>GraphFrames、MLlib、可视化图表与报告</p>
+    </div>
+  </div>
+  <div class="nums">
+    <div class="nbox"><div class="kpi v">3,138,959</div><div class="l">源物理行</div></div>
+    <div class="nbox"><div class="kpi v">3,138,954</div><div class="l">去重后模型数</div></div>
+    <div class="nbox"><div class="kpi v">20,625,635</div><div class="l">标签行（tags）</div></div>
+    <div class="nbox"><div class="kpi v">919,839</div><div class="l">血缘边（base → derived）</div></div>
+  </div>
+  <div class="run">运行环境：<b>Windows 11 / PySpark 4.2.0 / local[6] / driver 3 GB</b> 　—　单机多核执行，非多节点集群</div>
+  <div class="pgnum">03 / 11</div>
+</section>
+
+<!-- ================= 04 增长 ================= -->
+<section class="slide p04">
+  <header class="hd">
+    <h2>模型数量持续增长，但快照<span class="hl">不是完整历史</span></h2>
+    <div class="tag">04 / RQ1 · GROWTH</div>
+  </header>
+  <div class="chart"><svg id="chartGrowth" viewBox="0 0 1200 620"></svg></div>
+  <div class="srcnote" style="left:110px;top:928px;">figures_final / fig01_monthly_evolution.svg（示意排版，请替换为仓库真实图）</div>
+  <div class="side">
+    <div class="kpi v">125,030</div>
+    <div class="d">2024 年 9 月：快照中创建时间落在该月的模型数量峰值</div>
+    <div class="note">2026 年 10 月尚未结束，不应与完整月份直接比较。<br>2022-03 存在异常时间戳堆积，根因尚未证实。</div>
+  </div>
+  <div class="pgnum">04 / 11</div>
+</section>
+
+<!-- ================= 05 下载集中 ================= -->
+<section class="slide p05">
+  <header class="hd">
+    <h2>前 <span class="hl">1%</span> 的模型获得了 <span class="hl">97.13%</span> 的近 30 天下载量</h2>
+    <div class="tag">05 / RQ2 · CONCENTRATION</div>
+  </header>
+  <div class="chart">
+    <svg viewBox="0 0 1030 680">
+      <defs>
+        <linearGradient id="lz" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#4CC9F0"/><stop offset="100%" stop-color="#2A7FA8"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- 网格 -->
+      <g stroke="rgba(90,160,210,.14)" stroke-width="1">
+        <line x1="110" y1="140" x2="900" y2="140"/>
+        <line x1="110" y1="260" x2="900" y2="260"/>
+        <line x1="110" y1="380" x2="900" y2="380"/>
+      </g>
+      <line x1="110" y1="600" x2="900" y2="600" stroke="rgba(120,180,220,.5)" stroke-width="1.5"/>
+      <line x1="110" y1="600" x2="110" y2="90" stroke="rgba(120,180,220,.5)" stroke-width="1.5"/>
+      <!-- 平等线 -->
+      <line x1="110" y1="600" x2="900" y2="90" stroke="#5C7C97" stroke-width="1.6" stroke-dasharray="8 8"/>
+      <text x="600" y="330" fill="#5C7C97" font-size="17" font-family="Arial">绝对平等线</text>
+      <!-- 洛伦兹曲线 -->
+      <path d="M110,600 C116,320 120,140 128,105 C160,88 260,84 500,83 L900,82"
+            fill="none" stroke="url(#lz)" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
+      <!-- 1% 标记 -->
+      <line x1="128" y1="105" x2="128" y2="600" stroke="#F3B945" stroke-width="1.6" stroke-dasharray="6 6"/>
+      <line x1="110" y1="105" x2="128" y2="105" stroke="#F3B945" stroke-width="1.6" stroke-dasharray="6 6"/>
+      <circle cx="128" cy="105" r="8" fill="#F3B945"/>
+      <text x="150" y="96" fill="#F3B945" font-size="22" font-family="Arial" font-weight="700">Top 1% → 97.13%</text>
+      <!-- 轴标签 -->
+      <text x="505" y="650" fill="#6E8AA3" font-size="19" font-family="Arial" text-anchor="middle">模型累计占比（按近 30 天下载量降序）</text>
+      <text x="60" y="345" fill="#6E8AA3" font-size="19" font-family="Arial" text-anchor="middle"
+            transform="rotate(-90 60 345)">下载量累计占比</text>
+      <text x="110" y="626" fill="#54708A" font-size="16" font-family="Arial" text-anchor="middle">0%</text>
+      <text x="900" y="626" fill="#54708A" font-size="16" font-family="Arial" text-anchor="middle">100%</text>
+      <text x="86" y="606" fill="#54708A" font-size="16" font-family="Arial" text-anchor="end">0%</text>
+      <text x="86" y="96" fill="#54708A" font-size="16" font-family="Arial" text-anchor="end">100%</text>
+    </svg>
+  </div>
+  <div class="srcnote" style="left:110px;top:952px;">figures_final / fig05_lorenz.svg（示意排版，请替换为仓库真实图）</div>
+  <div class="side">
+    <div class="kpi v">97.13%</div>
+    <div class="ul"></div>
+    <div class="d">Top 1% 模型所占近 30 天下载份额</div>
+    <div class="rows">
+      <div class="row"><span>Gini 系数（近 30 天）</span><b>0.995355</b></div>
+      <div class="row"><span>近 30 天下载为零的模型占比</span><b>43.54%</b></div>
+    </div>
+  </div>
+  <div class="foot">downloads = 近 30 天下载量；长尾 ≠ 已通过幂律分布检验。下载次数不是独立用户数，下载量也不代表模型质量。</div>
+  <div class="pgnum">05 / 11</div>
+</section>
+
+<!-- ================= 06 继承网络 ================= -->
+<section class="slide p06">
+  <header class="hd">
+    <h2>近 <span class="hl">92 万条</span>显式继承关系，连接起模型家族</h2>
+    <div class="tag">06 / RQ3 · LINEAGE</div>
+  </header>
+  <div class="chart"><svg id="chartNet" viewBox="0 0 1150 700"></svg></div>
+  <div class="srcnote" style="left:110px;top:952px;">figures_final / fig07_family_network.svg（示意排版，请替换为仓库真实图）</div>
+  <div class="side">
+    <div class="row"><span class="v">919,839</span><span class="t">明确报告的 base → derived 关系</span></div>
+    <div class="row"><span class="v">931,066</span><span class="t">参与这些关系的模型节点</span></div>
+    <div class="row"><span class="v">43,419</span><span class="t">FLUX.1-dev 的直接衍生模型数</span></div>
+  </div>
+  <div class="legend">
+    <span><i style="background:#4CC9F0"></i>底座模型 base</span>
+    <span><i style="background:#2A7FA8"></i>衍生模型 derived</span>
+    <span><i style="background:#F3B945"></i>示例家族子图（非全量网络）</span>
+  </div>
+  <div class="pgnum">06 / 11</div>
+</section>
+
+<!-- ================= 07 模型属性 ================= -->
+<section class="slide p07">
+  <header class="hd">
+    <h2>模型属性与下载量<span class="hl">有关联</span>，但不是未来热度预测</h2>
+    <div class="tag">07 / RQ4 · ML</div>
+  </header>
+  <div class="chart"><svg id="chartMl" viewBox="0 0 1090 660"></svg></div>
+  <div class="srcnote" style="left:110px;top:930px;">figures_final / fig09_ml_importance.svg（示意排版，请替换为仓库真实图）</div>
+  <div class="side">
+    <div class="kpi v">R² = 0.6631</div>
+    <div class="d">RandomForest · 独立测试集</div>
+    <div class="rows">
+      <div class="row"><span>Linear Regression</span><b>0.4177</b></div>
+      <div class="row"><span>GBT</span><b>0.6313</b></div>
+    </div>
+  </div>
+  <div class="foot">样本 626,269；先划分训练 / 测试（约 8:2），仅在测试集评估。目标为 log(1 + downloads)。<br>
+  <span class="warn">同期统计关联 ≠ 预测未来下载量</span></div>
+  <div class="pgnum">07 / 11</div>
+</section>
+
+<!-- ================= 08 任务类型 ================= -->
+<section class="slide p08">
+  <header class="hd">
+    <h2>不同任务类型的模型数量和继承比例<span class="hl">并不相同</span></h2>
+    <div class="tag">08 / RQ5 · TASKS</div>
+  </header>
+  <div class="chart">
+    <svg viewBox="0 0 1330 390">
+      <defs>
+        <linearGradient id="barA" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#4CC9F0"/><stop offset="100%" stop-color="#2A7FA8"/>
+        </linearGradient>
+        <linearGradient id="barB" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#F3B945"/><stop offset="100%" stop-color="#B98420"/>
+        </linearGradient>
+      </defs>
+      <!-- Text Generation -->
+      <text x="0" y="76" fill="#9FB6CB" font-size="20" font-family="Arial">Text Generation</text>
+      <text x="0" y="140" fill="#EAF3FA" font-size="38" font-family="Arial" font-weight="800">422,224</text>
+      <rect x="330" y="52" width="1000" height="46" rx="6" fill="rgba(90,160,210,.12)"/>
+      <rect x="330" y="52" width="922" height="46" rx="6" fill="url(#barA)"/>
+      <text x="1280" y="84" fill="#EAF3FA" font-size="26" font-family="Arial" font-weight="700" text-anchor="end">46.38%</text>
+      <!-- Text to Image -->
+      <text x="0" y="256" fill="#9FB6CB" font-size="20" font-family="Arial">Text to Image</text>
+      <text x="0" y="320" fill="#EAF3FA" font-size="38" font-family="Arial" font-weight="800">111,444</text>
+      <rect x="330" y="232" width="1000" height="46" rx="6" fill="rgba(90,160,210,.12)"/>
+      <rect x="330" y="232" width="714" height="46" rx="6" fill="url(#barB)" opacity=".85"/>
+      <text x="1280" y="264" fill="#F3B945" font-size="26" font-family="Arial" font-weight="700" text-anchor="end">71.34%</text>
+    </svg>
+  </div>
+  <table>
+    <thead>
+      <tr><th>任务类型</th><th>快照可见模型数</th><th>已声明底座关系比例</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Text Generation</td><td>422,224</td><td>46.38%</td></tr>
+      <tr><td>Text to Image</td><td>111,444</td><td>71.34%</td></tr>
+    </tbody>
+  </table>
+  <div class="note">仅比较已标注任务；任务标签缺失 65.55%，统一为 unknown，不参与任务间排序。差异原因不作因果推断。</div>
+  <div class="pgnum">08 / 11</div>
+</section>
+
+<!-- ================= 09 Spark 性能 ================= -->
+<section class="slide p09">
+  <header class="hd">
+    <h2>Spark 的性能差异来自<span class="hl">算子和数据规模</span>，不只是核数</h2>
+    <div class="tag">09 / PERFORMANCE</div>
+  </header>
+  <div class="panels">
+    <div class="panel">
+      <div class="pt">数据规模与全列扫描耗时</div>
+      <svg id="chartScale" viewBox="0 0 700 300"></svg>
+      <div class="cap">真实数据全列扫描：约 31 万条 <b>0.797 s</b> → 314 万条 <b>4.891 s</b></div>
+    </div>
+    <div class="panel">
+      <div class="pt">Shuffle 分区数与耗时</div>
+      <svg id="chartPart" viewBox="0 0 700 300"></svg>
+      <div class="cap">分区数并非越多越好：相同算子 16 分区 <b>2.558 s</b>，64 分区 <b>5.105 s</b></div>
+    </div>
+  </div>
+  <div class="highlight">
+    <p>列裁剪实验：314 万行数据，解码全列约 <b>4.891 s</b>，仅读取 6 列约 <b>0.567 s</b>（约 <b>8.6 倍</b>）　—　三段数据使用统一基准口径</p>
+  </div>
+  <div class="srcnote" style="left:96px;bottom:96px;">本机 Windows / Spark local[6] / 多次测量报告中位数，非多节点扩展测试。秒数为算子基准测试，非 142.8 s 全量 ETL 耗时。</div>
+  <div class="pgnum">09 / 11</div>
+</section>
+
+<!-- ================= 10 工程问题 ================= -->
+<section class="slide p10">
+  <header class="hd">
+    <h2>比“跑通”更重要：<span class="hl">优化瓶颈并核对结果</span></h2>
+    <div class="tag">10 / ENGINEERING</div>
+  </header>
+  <div class="rows">
+    <div class="ev">
+      <div class="k"><small>ISSUE 01</small>全局排序</div>
+      <div class="m">对 314 万条模型使用全局窗口排名，数据被压到单个分区，执行缓慢且内存压力大。</div>
+      <div class="r">改为<b>下载量频数聚合 + 并行恢复排名</b><br>与旧算法逐行等价对照通过</div>
+    </div>
+    <div class="ev">
+      <div class="k"><small>ISSUE 02</small>反复重算</div>
+      <div class="m">多张 Gold 表重复读取 Bronze 原始数据，同样的扫描与解码被反复执行。</div>
+      <div class="r">Bronze 只读一次，写出 Silver，后续从磁盘回读<br>样本 ETL <b>193 s → 50.7 s</b></div>
+    </div>
+    <div class="ev">
+      <div class="k"><small>ISSUE 03</small>图算法开销</div>
+      <div class="m">近百万节点规模下，迭代式图算法计算成本高，容易超时中断。</div>
+      <div class="r">GraphFrames 独立脚本 + 超时看门狗 + 分步骤持久化<br><b>6 个迭代步骤最终全部运行完成</b></div>
+    </div>
+  </div>
+  <div class="foot">可信度补充：约 5 万条确定性样本进行 13 项 Spark ↔ pandas ETL 对照测试；正式结果由统一结果清单（results_manifest.json）驱动。</div>
+  <div class="pgnum">10 / 11</div>
+</section>
+
+<!-- ================= 11 结论与边界 ================= -->
+<section class="slide p11">
+  <header class="hd">
+    <h2>结论与边界：<span class="hl">规模、集中、继承</span></h2>
+    <div class="tag">11 / CONCLUSION</div>
+  </header>
+  <div class="left">
+    <div class="item"><div class="v">314 万</div><div class="t">规模可观，快照中近年可见模型的创建量明显增长</div></div>
+    <div class="item"><div class="v">97.13%</div><div class="t">近 30 天下载关注极度集中，前 1% 模型占据绝大部分份额</div></div>
+    <div class="item"><div class="v">91.98 万</div><div class="t">公开声明的继承边连接出清晰的模型复用网络</div></div>
+  </div>
+  <div class="right">
+    <h4>结果的适用范围</h4>
+    <ul>
+      <li>仅为固定快照，不能覆盖历史上下架模型</li>
+      <li>任务标签、底座信息存在较高缺失</li>
+      <li>单机 Spark 测试不能证明多节点扩展性能</li>
+    </ul>
+  </div>
+  <div class="end">
+    <div class="ty">感谢聆听 · <span>Q&amp;A</span></div>
+    <div class="link">github.com/Wanru-P/HUST-　（二维码现场可选，须指向真实仓库）</div>
+  </div>
+  <div class="pgnum">11 / 11</div>
+</section>
+
+<!-- ================= 备份 A ================= -->
+<section class="slide bk">
+  <header class="hd">
+    <h2>我们究竟统计了哪些模型？</h2>
+    <div class="tag">BACKUP A · DATA SCOPE</div>
+  </header>
+  <div class="badge">备用页 · 不翻</div>
+
+  <div style="position:absolute;left:96px;top:300px;width:1080px;">
+    <div style="position:relative;height:6px;background:rgba(90,160,210,.22);border-radius:3px;">
+      <div style="position:absolute;left:0;top:-9px;width:20px;height:24px;border-radius:4px;background:#2A7FA8;"></div>
+      <div style="position:absolute;right:0;top:-9px;width:20px;height:24px;border-radius:4px;background:#4CC9F0;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:28px;font-size:21px;color:#9FB6CB;">
+      <span>2022-03</span><span>2026-10-10（快照更新时间）</span>
+    </div>
+    <div style="margin-top:64px;font-size:26px;color:#EAF3FA;line-height:1.7;">
+      统计对象：<span style="color:#4CC9F0;">当前快照中仍可见模型的 createdAt</span><br>
+      <span style="font-size:21px;color:#6E8AA3;">不画作完整历史发行量，不代表平台累计发布过的全部模型。</span>
+    </div>
+  </div>
+
+  <div style="position:absolute;right:96px;top:300px;width:640px;background:rgba(20,52,80,.42);
+       border:1px solid rgba(90,160,210,.2);border-radius:8px;padding:40px 44px;">
+    <h4 style="font-size:22px;color:#F3B945;letter-spacing:1px;margin-bottom:30px;">三个已知限制</h4>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:28px;">
+      <li style="font-size:20px;color:#9FB6CB;line-height:1.6;">pipeline_tag 缺失 <b style="color:#EAF3FA;font-family:Arial;">65.55%</b></li>
+      <li style="font-size:20px;color:#9FB6CB;line-height:1.6;">baseModels 缺失 <b style="color:#EAF3FA;font-family:Arial;">71.74%</b></li>
+      <li style="font-size:20px;color:#9FB6CB;line-height:1.6;">2022-03 存在时间戳聚集异常，根因未证实</li>
+    </ul>
+  </div>
+  <div class="pgnum">备份 A</div>
+</section>
+
+<!-- ================= 备份 B ================= -->
+<section class="slide bk">
+  <header class="hd">
+    <h2>剔除零下载模型，集中度<span class="hl">仍然很高</span></h2>
+    <div class="tag">BACKUP B · ROBUSTNESS</div>
+  </header>
+  <div class="badge">备用页 · 不翻</div>
+
+  <div style="position:absolute;left:96px;top:280px;width:900px;height:620px;">
+    <svg viewBox="0 0 900 620">
+      <defs>
+        <linearGradient id="lz2" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#4CC9F0"/><stop offset="100%" stop-color="#2A7FA8"/>
+        </linearGradient>
+      </defs>
+      <g stroke="rgba(90,160,210,.14)" stroke-width="1">
+        <line x1="100" y1="150" x2="820" y2="150"/>
+        <line x1="100" y1="270" x2="820" y2="270"/>
+        <line x1="100" y1="390" x2="820" y2="390"/>
+      </g>
+      <line x1="100" y1="540" x2="820" y2="540" stroke="rgba(120,180,220,.5)" stroke-width="1.5"/>
+      <line x1="100" y1="540" x2="100" y2="80" stroke="rgba(120,180,220,.5)" stroke-width="1.5"/>
+      <line x1="100" y1="540" x2="820" y2="80" stroke="#5C7C97" stroke-width="1.6" stroke-dasharray="8 8"/>
+      <path d="M100,540 C108,300 112,140 122,110 C170,94 300,90 520,89 L820,88"
+            fill="none" stroke="url(#lz2)" stroke-width="5" stroke-linecap="round"/>
+      <path d="M100,540 C112,360 120,180 134,140 C190,110 340,104 560,102 L820,100"
+            fill="none" stroke="#F3B945" stroke-width="3.5" stroke-dasharray="10 7" opacity=".9"/>
+      <text x="470" y="586" fill="#6E8AA3" font-size="18" font-family="Arial" text-anchor="middle">模型累计占比</text>
+      <text x="60" y="310" fill="#6E8AA3" font-size="18" font-family="Arial" text-anchor="middle"
+            transform="rotate(-90 60 310)">下载量累计占比</text>
+      <text x="140" y="132" fill="#4CC9F0" font-size="17" font-family="Arial">全部模型</text>
+      <text x="140" y="196" fill="#F3B945" font-size="17" font-family="Arial">剔除零下载</text>
+    </svg>
+  </div>
+
+  <div style="position:absolute;right:96px;top:290px;width:700px;">
+    <div style="display:flex;flex-direction:column;gap:30px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;
+           padding-bottom:22px;border-bottom:1px solid rgba(90,160,210,.2);">
+        <span style="font-size:21px;color:#9FB6CB;">全部模型 Gini</span>
+        <b style="font-family:Arial;font-size:40px;color:#EAF3FA;">0.995355</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;
+           padding-bottom:22px;border-bottom:1px solid rgba(90,160,210,.2);">
+        <span style="font-size:21px;color:#9FB6CB;">剔除零下载后 Gini</span>
+        <b style="font-family:Arial;font-size:40px;color:#4CC9F0;">0.991773</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;
+           padding-bottom:22px;border-bottom:1px solid rgba(90,160,210,.2);">
+        <span style="font-size:21px;color:#9FB6CB;">近 30 天零下载比例</span>
+        <b style="font-family:Arial;font-size:40px;color:#EAF3FA;">43.54%</b>
+      </div>
+    </div>
+    <p style="margin-top:48px;font-size:20px;line-height:1.75;color:#9FB6CB;">
+      集中并非完全由零下载记录导致；但我们没有做严格幂律拟合，<br>
+      <span style="color:#F3B945;">不能据此判断为幂律分布。</span>
+    </p>
+  </div>
+  <div class="pgnum">备份 B</div>
+</section>
+
+<!-- ================= 备份 C ================= -->
+<section class="slide bk">
+  <header class="hd">
+    <h2>训练 / 测试怎样划分？结果是否对未来有效？</h2>
+    <div class="tag">BACKUP C · ML VALIDATION</div>
+  </header>
+  <div class="badge">备用页 · 不翻</div>
+
+  <div style="position:absolute;left:96px;top:290px;width:900px;">
+    <div style="display:flex;align-items:center;gap:26px;">
+      <div style="background:rgba(20,52,80,.5);border:1px solid rgba(90,160,210,.25);border-radius:8px;
+           padding:34px 30px;text-align:center;flex:1;">
+        <div style="font-family:Arial;font-size:42px;font-weight:800;color:#EAF3FA;">626,269</div>
+        <div style="margin-top:14px;font-size:18px;color:#9FB6CB;">确定性采样</div>
+      </div>
+      <div style="font-family:Arial;font-size:28px;color:#2E6C92;">→</div>
+      <div style="background:rgba(20,52,80,.5);border:1px solid rgba(90,160,210,.25);border-radius:8px;
+           padding:34px 30px;text-align:center;flex:1;">
+        <div style="font-family:Arial;font-size:42px;font-weight:800;color:#EAF3FA;">8 : 2</div>
+        <div style="margin-top:14px;font-size:18px;color:#9FB6CB;">训练 / 测试划分</div>
+      </div>
+      <div style="font-family:Arial;font-size:28px;color:#2E6C92;">→</div>
+      <div style="background:rgba(20,52,80,.5);border:1px solid rgba(90,160,210,.25);border-radius:8px;
+           padding:34px 30px;text-align:center;flex:1;">
+        <div style="font-family:Arial;font-size:32px;font-weight:800;color:#EAF3FA;">fit on train</div>
+        <div style="margin-top:14px;font-size:18px;color:#9FB6CB;">预处理仅在训练集</div>
+      </div>
+    </div>
+    <p style="margin-top:44px;font-size:21px;color:#9FB6CB;line-height:1.75;">
+      目标变量：log(1 + downloads)　·　仅在测试集上计算 R²，避免预处理泄漏
+    </p>
+  </div>
+
+  <div style="position:absolute;right:96px;top:290px;width:700px;background:rgba(20,52,80,.42);
+       border:1px solid rgba(90,160,210,.2);border-radius:8px;padding:42px 46px;">
+    <div style="font-size:20px;color:#6E8AA3;letter-spacing:1px;margin-bottom:34px;">同一实现口径下的对照</div>
+    <div style="display:flex;flex-direction:column;gap:28px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;
+           padding-bottom:20px;border-bottom:1px solid rgba(90,160,210,.2);">
+        <span style="font-size:20px;color:#9FB6CB;">Spark RandomForest</span>
+        <b style="font-family:Arial;font-size:36px;color:#4CC9F0;">0.6631</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;
+           padding-bottom:20px;border-bottom:1px solid rgba(90,160,210,.2);">
+        <span style="font-size:20px;color:#9FB6CB;">sklearn · 随机切分</span>
+        <b style="font-family:Arial;font-size:36px;color:#EAF3FA;">0.6779</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <span style="font-size:20px;color:#9FB6CB;">sklearn · 创建时间切分</span>
+        <b style="font-family:Arial;font-size:36px;color:#F3B945;">0.5034</b>
+      </div>
+    </div>
+    <p style="margin-top:38px;font-size:19px;line-height:1.7;color:#9FB6CB;">
+      同快照属性与下载量存在统计关联；时间切分结果下降提示对数据分布变化敏感，
+      <span style="color:#F3B945;">但不是未来下载热度的可靠预测。</span>
+    </p>
+  </div>
+  <div class="pgnum">备份 C</div>
+</section>
+
+<script>
+/* ================= 工具 ================= */
+const NS = "http://www.w3.org/2000/svg";
+
+/* ---------- 封面：底座节点 + 衍生节点 ---------- */
+(function coverNet(){
+  const svg = document.getElementById('coverNet');
+  const cx = 300, cy = 330;
+  let html = '';
+
+  const rings = [
+    { r:150, n:12, size:9,  op:.95 },
+    { r:245, n:20, size:6,  op:.62 },
+    { r:310, n:14, size:4,  op:.34 }
+  ];
+
+  // 连线
+  rings.forEach((ring, ri)=>{
+    for(let i=0;i<ring.n;i++){
+      const a = (i/ring.n)*Math.PI*2 + ri*0.42;
+      const x = cx + Math.cos(a)*ring.r;
+      const y = cy + Math.sin(a)*ring.r;
+      html += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"
+               stroke="rgba(76,201,240,${0.30 - ri*0.08})" stroke-width="1.2"/>`;
+    }
+  });
+  // 节点
+  rings.forEach((ring, ri)=>{
+    for(let i=0;i<ring.n;i++){
+      const a = (i/ring.n)*Math.PI*2 + ri*0.42;
+      const x = cx + Math.cos(a)*ring.r;
+      const y = cy + Math.sin(a)*ring.r;
+      const isHub = (ri===0 && i%3===0);
+      html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${ring.size}"
+               fill="${isHub ? '#F3B945' : '#4CC9F0'}" opacity="${isHub ? 1 : ring.op}"/>`;
+      if(isHub){
+        html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${ring.size+7}"
+                 fill="none" stroke="rgba(243,185,69,.35)" stroke-width="1.4"/>`;
+      }
+    }
+  });
+  // 中心底座
+  html += `<circle cx="${cx}" cy="${cy}" r="58" fill="rgba(76,201,240,.10)"/>`;
+  html += `<circle cx="${cx}" cy="${cy}" r="40" fill="none" stroke="rgba(76,201,240,.45)" stroke-width="1.6"/>`;
+  html += `<circle cx="${cx}" cy="${cy}" r="24" fill="#4CC9F0"/>`;
+  html += `<text x="${cx}" y="${cy+62}" fill="#6E8AA3" font-size="16"
+           font-family="Arial" text-anchor="middle" letter-spacing="2">BASE MODEL</text>`;
+
+  svg.innerHTML = html;
+})();
+
+/* ---------- 04 月度柱状图 ---------- */
+(function growth(){
+  const svg = document.getElementById('chartGrowth');
+  const W=1200, H=620, padL=90, padR=60, padT=60, padB=110;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const values = [
+    3,3,4,4,5,6,6,7,8,9,10,11,
+    14,18,22,27,33,40,48,58,95,78,72,66,
+    60,64,68,72,76,80,84,88,82,78,74,70,
+    66,62,60,58,56,54,52,50,48,32
+  ];
+  const n = values.length;
+  const step = plotW/n, bw = step*0.62;
+  const maxV = 100;
+  const peak = 20; // 2024-09
+
+  let html = `
+    <defs>
+      <linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#4CC9F0"/><stop offset="100%" stop-color="#1B5B7E"/>
+      </linearGradient>
+    </defs>
+  `;
+  // 网格
+  [0.25,0.5,0.75,1].forEach(p=>{
+    const y = padT + plotH - p*plotH;
+    html += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"
+             stroke="rgba(90,160,210,.12)" stroke-width="1"/>`;
+  });
+
+  values.forEach((v,i)=>{
+    const h = (v/maxV)*plotH;
+    const x = padL + i*step + (step-bw)/2;
+    const y = padT + plotH - h;
+    const fill = (i===peak) ? '#F3B945' : 'url(#bg1)';
+    html += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}"
+             height="${h.toFixed(1)}" rx="2" fill="${fill}"/>`;
+  });
+
+  // 基准线
+  html += `<line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}"
+           stroke="rgba(120,180,220,.55)" stroke-width="1.5"/>`;
+
+  // 峰值标注
+  const px = padL + peak*step + step/2;
+  const py = padT + plotH - (95/maxV)*plotH;
+  html += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="#F3B945"/>`;
+  html += `<text x="${px.toFixed(1)}" y="${(py-26).toFixed(1)}" fill="#F3B945" font-size="24"
+           font-family="Arial" font-weight="700" text-anchor="middle">125,030</text>`;
+  html += `<line x1="${px.toFixed(1)}" y1="${py-10}" x2="${px.toFixed(1)}" y2="${padT+plotH}"
+           stroke="rgba(243,185,69,.45)" stroke-width="1.4" stroke-dasharray="5 5"/>`;
+
+  // X 轴年份
+  const years = [ {i:0, t:'2023'}, {i:12, t:'2024'}, {i:24, t:'2025'}, {i:36, t:'2026'} ];
+  years.forEach(y=>{
+    const x = padL + y.i*step + step/2;
+    html += `<text x="${x.toFixed(1)}" y="${padT+plotH+38}" fill="#6E8AA3" font-size="19"
+             font-family="Arial" text-anchor="middle">${y.t}</text>`;
+  });
+  html += `<text x="${W-padR}" y="${padT+plotH+38}" fill="#4F6C86" font-size="15"
+           font-family="Arial" text-anchor="end">2026-10（未结束）</text>`;
+
+  // Y 轴标题
+  html += `<text x="46" y="${padT+plotH/2}" fill="#6E8AA3" font-size="18" font-family="Arial"
+           text-anchor="middle" transform="rotate(-90 46 ${padT+plotH/2})">当月创建模型数</text>`;
+
+  svg.innerHTML = html;
+})();
+
+/* ---------- 06 谱系网络 ---------- */
+(function lineage(){
+  const svg = document.getElementById('chartNet');
+  const cx = 470, cy = 350;
+  let html = '';
+
+  // 同心参考圈
+  [150, 250, 335].forEach(r=>{
+    html += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+             stroke="rgba(90,160,210,.10)" stroke-width="1"/>`;
+  });
+
+  // 中心枢纽
+  html += `<circle cx="${cx}" cy="${cy}" r="74" fill="rgba(76,201,240,.08)"/>`;
+  html += `<circle cx="${cx}" cy="${cy}" r="46" fill="#4CC9F0"/>`;
+  html += `<text x="${cx}" y="${cy+5}" fill="#062033" font-size="16" font-family="Arial"
+           font-weight="800" text-anchor="middle">FLUX</text>`;
+
+  const rings = [
+    { r:150, n:16, size:10, op:.95 },
+    { r:250, n:26, size:6.5, op:.60 },
+    { r:335, n:34, size:4,   op:.32 }
+  ];
+
+  // 连线
+  rings.forEach((ring, ri)=>{
+    for(let i=0;i<ring.n;i++){
+      const a = (i/ring.n)*Math.PI*2 + ri*0.36;
+      const x = cx + Math.cos(a)*ring.r;
+      const y = cy + Math.sin(a)*ring.r;
+      html += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"
+               stroke="rgba(76,201,240,${(0.34-ri*0.09).toFixed(2)})" stroke-width="1.1"/>`;
+    }
+  });
+  // 节点
+  rings.forEach((ring, ri)=>{
+    for(let i=0;i<ring.n;i++){
+      const a = (i/ring.n)*Math.PI*2 + ri*0.36;
+      const x = cx + Math.cos(a)*ring.r;
+      const y = cy + Math.sin(a)*ring.r;
+      const hot = (ri===0 && i%4===0);
+      html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${ring.size}"
+               fill="${hot ? '#F3B945' : '#4CC9F0'}" opacity="${hot ? 1 : ring.op}"/>`;
+    }
+  });
+
+  // 右侧次级小家族
+  const c2x = 900, c2y = 560;
+  html += `<circle cx="${c2x}" cy="${c2y}" r="26" fill="rgba(76,201,240,.35)"/>`;
+  for(let i=0;i<9;i++){
+    const a = (i/9)*Math.PI*2 + .3;
+    const x = c2x + Math.cos(a)*78;
+    const y = c2y + Math.sin(a)*78;
+    html += `<line x1="${c2x}" y1="${c2y}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"
+             stroke="rgba(76,201,240,.22)" stroke-width="1"/>`;
+    html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="#4CC9F0" opacity=".55"/>`;
+  }
+
+  svg.innerHTML = html;
+})();
+
+/* ---------- 07 ML 模型对比 ---------- */
+(function ml(){
+  const svg = document.getElementById('chartMl');
+  const items = [
+    { name:'Random Forest', v:0.6631, color:'#4CC9F0', note:'独立测试集' },
+    { name:'Gradient Boosted Trees', v:0.6313, color:'#2A7FA8', note:'' },
+    { name:'Linear Regression', v:0.4177, color:'#1E5C7C', note:'' }
+  ];
+  const padL = 330, padR = 90, top = 60, rowH = 150, barH = 54;
+  const maxW = 1090 - padL - padR;
+  const maxV = 0.8;
+
+  let html = `<text x="0" y="${top-18}" fill="#6E8AA3" font-size="18" font-family="Arial">测试集 R²</text>`;
+
+  items.forEach((it, i)=>{
+    const y = top + i*rowH;
+    const w = (it.v/maxV)*maxW;
+    html += `<text x="0" y="${y+barH*0.72}" fill="#9FB6CB" font-size="21"
+             font-family="Arial">${it.name}</text>`;
+    html += `<rect x="${padL}" y="${y}" width="${maxW}" height="${barH}" rx="6"
+             fill="rgba(90,160,210,.10)"/>`;
+    html += `<rect x="${padL}" y="${y}" width="${w.toFixed(1)}" height="${barH}" rx="6"
+             fill="${it.color}"/>`;
+    html += `<text x="${padL+w+20}" y="${y+barH*0.72}" fill="#EAF3FA" font-size="30"
+             font-family="Arial" font-weight="700">${it.v.toFixed(4)}</text>`;
+    if(it.note){
+      html += `<text x="${padL+w+180}" y="${y+barH*0.72}" fill="#6E8AA3" font-size="17"
+               font-family="Arial">${it.note}</text>`;
+    }
+  });
+
+  svg.innerHTML = html;
+})();
+
+/* ---------- 09 左：规模 vs 耗时 ---------- */
+(function scale(){
+  const svg = document.getElementById('chartScale');
+  const items = [
+    { label:'31 万条', v:0.797, color:'#2A7FA8' },
+    { label:'314 万条', v:4.891, color:'#4CC9F0' }
+  ];
+  const padL = 130, padR = 90, top = 40, rowH = 110, barH = 52;
+  const maxW = 700 - padL - padR, maxV = 5.4;
+
+  let html = '';
+  items.forEach((it, i)=>{
+    const y = top + i*rowH;
+    const w = (it.v/maxV)*maxW;
+    html += `<text x="0" y="${y+barH*0.72}" fill="#9FB6CB" font-size="20"
+             font-family="Arial">${it.label}</text>`;
+    html += `<rect x="${padL}" y="${y}" width="${maxW}" height="${barH}" rx="5"
+             fill="rgba(90,160,210,.10)"/>`;
+    html += `<rect x="${padL}" y="${y}" width="${w.toFixed(1)}" height="${barH}" rx="5"
+             fill="${it.color}"/>`;
+    html += `<text x="${padL+w+16}" y="${y+barH*0.72}" fill="#EAF3FA" font-size="27"
+             font-family="Arial" font-weight="700">${it.v.toFixed(3)} s</text>`;
+  });
+  html += `<line x1="${padL}" y1="${top+2*rowH}" x2="${padL+maxW}" y2="${top+2*rowH}"
+           stroke="rgba(120,180,220,.35)" stroke-width="1"/>`;
+  svg.innerHTML = html;
+})();
+
+/* ---------- 09 右：分区 vs 耗时 ---------- */
+(function part(){
+  const svg = document.getElementById('chartPart');
+  const items = [
+    { label:'16 分区', v:2.558, color:'#4CC9F0' },
+    { label:'64 分区', v:5.105, color:'#F3B945' }
+  ];
+  const padL = 130, padR = 90, top = 40, rowH = 110, barH = 52;
+  const maxW = 700 - padL - padR, maxV = 5.6;
+
+  let html = '';
+  items.forEach((it, i)=>{
+    const y = top + i*rowH;
+    const w = (it.v/maxV)*maxW;
+    html += `<text x="0" y="${y+barH*0.72}" fill="#9FB6CB" font-size="20"
+             font-family="Arial">${it.label}</text>`;
+    html += `<rect x="${padL}" y="${y}" width="${maxW}" height="${barH}" rx="5"
+             fill="rgba(90,160,210,.10)"/>`;
+    html += `<rect x="${padL}" y="${y}" width="${w.toFixed(1)}" height="${barH}" rx="5"
+             fill="${it.color}"/>`;
+    html += `<text x="${padL+w+16}" y="${y+barH*0.72}" fill="#EAF3FA" font-size="27"
+             font-family="Arial" font-weight="700">${it.v.toFixed(3)} s</text>`;
+  });
+  html += `<line x1="${padL}" y1="${top+2*rowH}" x2="${padL+maxW}" y2="${top+2*rowH}"
+           stroke="rgba(120,180,220,.35)" stroke-width="1"/>`;
+  svg.innerHTML = html;
+})();
+</script>
+</body>
+</html>

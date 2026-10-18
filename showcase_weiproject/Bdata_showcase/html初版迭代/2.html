@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hugging Face 模型生态分析 · 答辩汇报</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --bg2:#eef2ff;
+    --card:#ffffff; --line:#e5eaf3; --line2:#cbd5e1;
+    --text:#0b1220; --muted:#5b6b85; --soft:#93a1b8;
+    --blue:#2563eb; --blue-d:#1e40af; --blue-bg:#eff6ff;
+    --green:#059669; --green-d:#065f46; --green-bg:#ecfdf5;
+    --orange:#ea580c; --orange-d:#9a3412; --orange-bg:#fff7ed;
+    --purple:#7c3aed; --purple-d:#5b21b6; --purple-bg:#f5f3ff;
+    --cyan:#0891b2; --cyan-bg:#ecfeff;
+    --shadow:0 1px 3px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.07);
+    --shadow-lg:0 4px 14px rgba(15,23,42,.08),0 24px 48px rgba(15,23,42,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,sans-serif;
+    background:
+      radial-gradient(ellipse 70% 50% at 12% 8%,#e8efff 0%,transparent 58%),
+      radial-gradient(ellipse 60% 55% at 92% 92%,#e6faf2 0%,transparent 58%),
+      radial-gradient(ellipse 50% 40% at 85% 12%,#fdf2ff 0%,transparent 60%),
+      var(--bg);
+    color:var(--text);-webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+
+  /* ==================== 舞台 ==================== */
+  .deck{position:relative;width:100vw;height:100vh}
+  .slide{
+    position:absolute;inset:0;
+    display:none;flex-direction:column;
+    padding:3.2vh 3.8vw 4.2vh;
+    opacity:0;
+    transition:opacity .4s ease;
+  }
+  .slide.on{display:flex;opacity:1}
+  .slide-body{flex:1;display:flex;flex-direction:column;min-height:0;margin-top:1.4vh}
+  .slide-body.grow>*{flex-grow:0}
+  .spacer{flex:1}
+
+  /* ==================== 排版 ==================== */
+  h1.title{
+    font-size:clamp(30px,3.7vw,56px);line-height:1.2;letter-spacing:-.025em;font-weight:800;
+    background:linear-gradient(100deg,#1e40af 0%,#2563eb 42%,#059669 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .slide h2{
+    font-size:clamp(19px,2vw,28px);font-weight:800;letter-spacing:-.015em;
+    display:flex;align-items:center;gap:.55em;line-height:1.25;
+  }
+  .slide h2 .bar{width:6px;height:1.05em;background:linear-gradient(180deg,#2563eb,#059669);
+    border-radius:3px;flex-shrink:0}
+  .slide h3{font-size:clamp(12.5px,1.06vw,16px);color:var(--blue-d);font-weight:800;margin-bottom:.55vh;
+    letter-spacing:-.005em}
+  .kicker{font-size:clamp(10px,.82vw,12.5px);letter-spacing:.16em;color:var(--soft);
+    text-transform:uppercase;font-weight:700;margin-bottom:.9vh}
+  .lead{font-size:clamp(12.5px,1.08vw,16px);color:var(--muted);line-height:1.72}
+  .tiny{font-size:clamp(10.5px,.86vw,13px);color:var(--soft);line-height:1.65}
+  code{font-family:"JetBrains Mono",Consolas,monospace;font-size:.88em;
+    background:var(--bg2);color:var(--blue-d);padding:.13em .42em;border-radius:5px;
+    border:1px solid #dbeafe}
+  .accent{color:var(--orange);font-weight:800}
+  .hl{color:var(--blue);font-weight:800}
+  .hl-g{color:var(--green);font-weight:800}
+  .hl-p{color:var(--purple);font-weight:800}
+
+  ul{list-style:none}
+  ul li{font-size:clamp(11.5px,.98vw,14.5px);line-height:1.78;color:#334155;
+    padding-left:1.35em;position:relative}
+  ul li::before{content:"";position:absolute;left:.22em;top:.72em;
+    width:5px;height:5px;border-radius:50%;background:var(--blue)}
+  ul li b{color:var(--text);font-weight:800}
+  ul.g li::before{background:var(--green)}
+  ul.o li::before{background:var(--orange)}
+  ul.p li::before{background:var(--purple)}
+  ul.c li::before{background:var(--cyan)}
+
+  /* ==================== 卡片系统 ==================== */
+  .grid{display:grid;gap:1.1vh 1vw}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g5{grid-template-columns:repeat(5,1fr)}
+  .g23{grid-template-columns:2fr 3fr}
+  .g32{grid-template-columns:3fr 2fr}
+  .g13{grid-template-columns:1fr 3fr}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:1.6vh 1.15vw;box-shadow:var(--shadow);position:relative;overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3.5px;
+    background:linear-gradient(180deg,#60a5fa,#2563eb)}
+  .card.g::before{background:linear-gradient(180deg,#34d399,#059669)}
+  .card.o::before{background:linear-gradient(180deg,#fb923c,#ea580c)}
+  .card.p::before{background:linear-gradient(180deg,#a78bfa,#7c3aed)}
+  .card.c::before{background:linear-gradient(180deg,#22d3ee,#0891b2)}
+  .card.plain::before{display:none}
+  .card h3{margin-bottom:.4vh}
+  .card p,.card li{font-size:clamp(10.8px,.9vw,13.5px);line-height:1.7;color:#475569}
+  .card ul li{padding-left:1.15em;font-size:inherit}
+  .card ul li::before{width:4px;height:4px;top:.62em}
+  .card .body{flex:1}
+
+  /* 大数字 */
+  .num{font-size:clamp(20px,2.15vw,32px);font-weight:800;line-height:1.05;
+    color:var(--blue);letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+  .num.g{color:var(--green)} .num.o{color:var(--orange)}
+  .num.p{color:var(--purple)} .num.c{color:var(--cyan)}
+  .num.sm{font-size:clamp(15px,1.5vw,22px)}
+  .num-label{font-size:clamp(10.2px,.85vw,12.5px);color:var(--muted);margin-top:.5vh;line-height:1.55}
+
+  .pill{display:inline-block;font-size:clamp(9.5px,.78vw,11.5px);font-weight:700;
+    padding:.3em .82em;border-radius:99px;background:var(--blue-bg);color:var(--blue-d);
+    border:1px solid #bfdbfe;margin:0 .3em .45em 0}
+  .pill.g{background:var(--green-bg);color:var(--green-d);border-color:#a7f3d0}
+  .pill.o{background:var(--orange-bg);color:var(--orange-d);border-color:#fed7aa}
+  .pill.p{background:var(--purple-bg);color:var(--purple-d);border-color:#ddd6fe}
+  .pill.c{background:var(--cyan-bg);color:#155e75;border-color:#a5f3fc}
+  .pill.s{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
+
+  .rq{display:inline-block;font-size:clamp(10.5px,.85vw,12.5px);font-weight:800;
+    padding:.22em .78em;border-radius:7px;background:var(--purple);color:#fff;
+    margin-right:.55em;vertical-align:middle;letter-spacing:.02em;white-space:nowrap}
+  .rq.b{background:var(--blue)} .rq.o{background:var(--orange)}
+  .rq.g{background:var(--green)} .rq.c{background:var(--cyan)}
+
+  /* ==================== 表格 ==================== */
+  table{width:100%;border-collapse:collapse;font-size:clamp(10.5px,.88vw,13px)}
+  th{text-align:left;color:var(--blue-d);font-weight:800;padding:.65vh .7vw;
+    border-bottom:2px solid var(--line2);font-size:clamp(10px,.84vw,12.5px);
+    letter-spacing:.02em;background:#f8fafc}
+  th:first-child{border-radius:8px 0 0 0}
+  th:last-child{border-radius:0 8px 0 0}
+  td{padding:.6vh .7vw;color:#334155;border-bottom:1px solid var(--line);line-height:1.55;
+    vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#f8fafc}
+  td b{color:var(--text)}
+  td code{font-size:.92em}
+
+  /* ==================== 图表 ==================== */
+  .chart-wrap{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:1.5vh 1.2vw 1vh;box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .chart-cap{font-size:clamp(10.5px,.86vw,13px);color:var(--muted);font-weight:700;
+    margin-bottom:.8vh;display:flex;justify-content:space-between;align-items:baseline}
+  .chart-cap span{color:var(--soft);font-weight:500;font-size:.9em}
+
+  /* 柱状图 */
+  .bars{display:flex;align-items:flex-end;gap:.42vw;flex:1;min-height:14vh;
+    padding:2.4vh .3vw 0;border-bottom:2px solid var(--line2);position:relative}
+  .bars .bar{flex:1;border-radius:6px 6px 0 0;position:relative;
+    transform-origin:bottom;transform:scaleY(0);
+    background:linear-gradient(180deg,#7cb3ff,#2563eb);
+    transition:transform .75s cubic-bezier(.34,1.4,.64,1)}
+  .bars .bar.g{background:linear-gradient(180deg,#34d399,#059669)}
+  .bars .bar.p{background:linear-gradient(180deg,#a78bfa,#7c3aed)}
+  .bars .bar.o{background:linear-gradient(180deg,#fb923c,#ea580c)}
+  .slide.on .bars .bar{transform:scaleY(1)}
+  .bars .bar::after{content:attr(data-l);position:absolute;bottom:-2.15vh;left:50%;
+    transform:translateX(-50%);font-size:clamp(8.5px,.7vw,10.5px);color:var(--soft);
+    white-space:nowrap;font-weight:600}
+  .bars .bar::before{content:attr(data-v);position:absolute;top:-2vh;left:50%;
+    transform:translateX(-50%);font-size:clamp(8.5px,.73vw,11px);color:var(--blue);
+    font-weight:800;white-space:nowrap}
+
+  /* 水平条 */
+  .hbar{margin-top:.5vh}
+  .hbar .row{display:flex;align-items:center;gap:.6vw;margin-bottom:.75vh}
+  .hbar .name{width:8vw;font-size:clamp(9.8px,.8vw,12px);color:#334155;text-align:right;
+    font-weight:700;flex-shrink:0}
+  .hbar .track{flex:1;height:1.7vh;background:#f1f5f9;border-radius:99px;overflow:hidden;
+    position:relative}
+  .hbar .fill{height:100%;border-radius:99px;width:0;
+    transition:width 1.05s cubic-bezier(.22,1,.36,1);
+    background:linear-gradient(90deg,#7cb3ff,#2563eb)}
+  .hbar .fill.g{background:linear-gradient(90deg,#34d399,#059669)}
+  .hbar .fill.o{background:linear-gradient(90deg,#fb923c,#ea580c)}
+  .hbar .fill.p{background:linear-gradient(90deg,#a78bfa,#7c3aed)}
+  .hbar .fill.c{background:linear-gradient(90deg,#22d3ee,#0891b2)}
+  .slide.on .hbar .fill{width:var(--w)}
+  .hbar .val{width:3.4vw;font-size:clamp(9.5px,.78vw,11.5px);color:var(--muted);
+    font-weight:800;font-variant-numeric:tabular-nums}
+
+  /* SVG 通用 */
+  .draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.5s ease .35s}
+  .slide.on .draw{stroke-dashoffset:0}
+
+  /* ==================== 流程图 ==================== */
+  .flow{display:flex;align-items:stretch;gap:0}
+  .flow-node{flex:1;background:var(--card);border:2px solid var(--line);border-radius:12px;
+    padding:1.4vh .6vw;text-align:center;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;justify-content:center;align-items:center}
+  .flow-node .ico{font-size:clamp(16px,1.7vw,26px);line-height:1}
+  .flow-node .t{font-weight:800;font-size:clamp(11px,1vw,15px);margin-top:.5vh}
+  .flow-node .d{font-size:clamp(9.5px,.78vw,12px);color:var(--muted);margin-top:.35vh;line-height:1.5}
+  .flow-node.b{border-color:#bfdbfe;background:var(--blue-bg)} .flow-node.b .t{color:var(--blue-d)}
+  .flow-node.s{border-color:#e2e8f0;background:#f8fafc} .flow-node.s .t{color:#475569}
+  .flow-node.g{border-color:#a7f3d0;background:var(--green-bg)} .flow-node.g .t{color:var(--green-d)}
+  .flow-node.a{border-color:#ddd6fe;background:var(--purple-bg)} .flow-node.a .t{color:var(--purple-d)}
+  .flow-node.o{border-color:#fed7aa;background:var(--orange-bg)} .flow-node.o .t{color:var(--orange-d)}
+  .flow-arrow{display:flex;align-items:center;color:var(--line2);
+    font-size:clamp(13px,1.3vw,20px);padding:0 .3vw;flex-shrink:0}
+
+  /* ==================== 时间轴 ==================== */
+  .timeline{position:relative;display:flex;gap:1vw;padding-top:2.4vh}
+  .timeline::before{content:"";position:absolute;top:.9vh;left:3%;right:3%;height:3px;
+    background:linear-gradient(90deg,#bfdbfe,#a7f3d0);border-radius:2px}
+  .tl-item{flex:1;position:relative;display:flex;flex-direction:column}
+  .tl-dot{position:absolute;top:-1.9vh;left:50%;transform:translateX(-50%);
+    width:14px;height:14px;border-radius:50%;background:#fff;border:3.5px solid var(--blue);
+    z-index:2}
+  .tl-item.g .tl-dot{border-color:var(--green)}
+  .tl-item.o .tl-dot{border-color:var(--orange)}
+  .tl-item.p .tl-dot{border-color:var(--purple)}
+  .tl-card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2vh .9vw;box-shadow:var(--shadow);flex:1;display:flex;flex-direction:column}
+  .tl-card .yr{font-size:clamp(10px,.84vw,12.5px);font-weight:800;color:var(--blue);
+    letter-spacing:.05em;margin-bottom:.4vh}
+  .tl-item.g .tl-card .yr{color:var(--green)}
+  .tl-item.o .tl-card .yr{color:var(--orange)}
+  .tl-item.p .tl-card .yr{color:var(--purple)}
+  .tl-card h4{font-size:clamp(11px,.94vw,14px);font-weight:800;margin-bottom:.35vh}
+  .tl-card p{font-size:clamp(9.8px,.8vw,12px);color:var(--muted);line-height:1.6}
+
+  /* ==================== 分栏 ==================== */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:1vw;height:100%}
+  .split-23{display:grid;grid-template-columns:2fr 3fr;gap:1vw;height:100%}
+  .split-32{display:grid;grid-template-columns:3fr 2fr;gap:1vw;height:100%}
+
+  /* ==================== 环形图 ==================== */
+  .donut-wrap{display:flex;align-items:center;gap:1.3vw}
+  .donut{width:clamp(110px,10vw,160px);height:clamp(110px,10vw,160px);border-radius:50%;
+    background:conic-gradient(#2563eb 0 34%,#059669 34% 52%,#ea580c 52% 66%,
+      #7c3aed 66% 78%,#94a3b8 78% 100%);
+    position:relative;flex-shrink:0;box-shadow:var(--shadow);
+    transform:rotate(-90deg) scale(.8);opacity:0;
+    transition:transform 1s cubic-bezier(.34,1.3,.64,1),opacity .6s ease}
+  .slide.on .donut{transform:rotate(-90deg) scale(1);opacity:1}
+  .donut::after{content:"";position:absolute;inset:31%;background:var(--card);border-radius:50%}
+  .donut .ctr{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    transform:rotate(90deg);font-size:clamp(9.5px,.82vw,12px);font-weight:800;color:var(--muted);
+    flex-direction:column;z-index:2;text-align:center;line-height:1.35}
+  .legend{display:flex;flex-direction:column;gap:.5vh;flex:1}
+  .legend .li{display:flex;align-items:center;gap:.5vw;
+    font-size:clamp(10px,.83vw,12.5px);color:#334155;line-height:1.5}
+  .legend .dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+  .legend .li b{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ==================== 象限矩阵 ==================== */
+  .quad{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+    gap:.85vw;height:100%;position:relative}
+  .quad-card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:1.5vh 1.1vw;box-shadow:var(--shadow);display:flex;flex-direction:column;
+    position:relative;overflow:hidden}
+  .quad-card::after{content:attr(data-q);position:absolute;right:.6vw;top:.4vh;
+    font-size:clamp(28px,3.4vw,52px);font-weight:900;color:#f1f5f9;line-height:1;z-index:0}
+  .quad-card>*{position:relative;z-index:1}
+
+  /* ==================== 动画库 ==================== */
+  .anim{opacity:0;will-change:transform,opacity}
+  .anim.up{transform:translateY(16px)}
+  .anim.down{transform:translateY(-16px)}
+  .anim.left{transform:translateX(-22px)}
+  .anim.right{transform:translateX(22px)}
+  .anim.pop{transform:scale(.86)}
+  .anim.flip{transform:perspective(600px) rotateX(-35deg);transform-origin:center bottom}
+  .anim.spin{transform:rotate(-8deg) scale(.9)}
+  .slide.on .anim{opacity:1;transform:none;
+    transition:opacity .62s cubic-bezier(.22,1,.36,1),transform .68s cubic-bezier(.22,1.2,.4,1)}
+  .d0{transition-delay:0s!important} .d1{transition-delay:.1s!important}
+  .d2{transition-delay:.2s!important} .d3{transition-delay:.3s!important}
+  .d4{transition-delay:.4s!important} .d5{transition-delay:.5s!important}
+  .d6{transition-delay:.6s!important} .d7{transition-delay:.7s!important}
+  .d8{transition-delay:.8s!important} .d9{transition-delay:.9s!important}
+  .d10{transition-delay:1s!important} .d11{transition-delay:1.1s!important}
+  .d12{transition-delay:1.2s!important}
+
+  /* 脉冲 */
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.045);opacity:.88}}
+  .pulse{animation:pulse 2.4s ease-in-out infinite}
+  /* 呼吸光环 */
+  @keyframes halo{0%{box-shadow:0 0 0 0 rgba(37,99,235,.35)}
+    70%{box-shadow:0 0 0 14px rgba(37,99,235,0)}100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}}
+  .halo{animation:halo 2.4s ease-out infinite}
+  /* 浮动 */
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .float{animation:float 3.5s ease-in-out infinite}
+  /* 渐变流动 */
+  @keyframes gradFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+  .gradflow{background-size:200% auto;animation:gradFlow 4s linear infinite}
+  /* 打字 */
+  @keyframes blink{50%{opacity:0}}
+  .cursor::after{content:"▍";color:var(--blue);animation:blink 1s step-end infinite;
+    margin-left:.1em;font-weight:400}
+  /* 描边发光 */
+  @keyframes glow{0%,100%{filter:drop-shadow(0 0 0 transparent)}
+    50%{filter:drop-shadow(0 0 6px rgba(37,99,235,.5))}}
+  .glow{animation:glow 2.8s ease-in-out infinite}
+  /* 网络节点闪烁 */
+  @keyframes nodePulse{0%,100%{r:11;opacity:1}50%{r:13.5;opacity:.82}}
+  .node-pulse{animation:nodePulse 2.2s ease-in-out infinite}
+  /* 数据流 */
+  @keyframes dash{to{stroke-dashoffset:-40}}
+  .dashflow{stroke-dasharray:6 5;animation:dash 1.6s linear infinite}
+  /* 数字滚动包裹 */
+  .countup{font-variant-numeric:tabular-nums}
+
+  /* ==================== 封面特殊 ==================== */
+  .cover-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .cover-orb{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+  .orb-1{width:38vw;height:38vw;left:-8vw;top:-10vh;
+    background:radial-gradient(circle,#93c5fd,transparent 68%)}
+  .orb-2{width:34vw;height:34vw;right:-6vw;bottom:-12vh;
+    background:radial-gradient(circle,#6ee7b7,transparent 68%)}
+  .orb-3{width:26vw;height:26vw;right:16vw;top:-8vh;
+    background:radial-gradient(circle,#ddd6fe,transparent 68%)}
+  .cover-grid{position:absolute;inset:0;opacity:.35;
+    background-image:linear-gradient(#dbe4f5 1px,transparent 1px),
+      linear-gradient(90deg,#dbe4f5 1px,transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000 30%,transparent 78%);
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000 30%,transparent 78%)}
+  .cover-inner{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;
+    justify-content:space-between;padding:2.5vh 0}
+  .cover-line{width:76px;height:5px;border-radius:3px;margin-bottom:2.2vh;
+    background:linear-gradient(90deg,#2563eb,#059669);background-size:200% auto}
+  .cover-meta{margin-top:3vh;display:grid;grid-template-columns:repeat(4,1fr);gap:1vw;
+    max-width:88ch}
+  .cover-meta div{border-left:3.5px solid var(--blue);padding-left:.9vw;line-height:1.4}
+  .cover-meta div:nth-child(2){border-color:var(--green)}
+  .cover-meta div:nth-child(3){border-color:var(--orange)}
+  .cover-meta div:nth-child(4){border-color:var(--purple)}
+  .cover-meta b{display:block;color:var(--text);font-size:clamp(17px,1.75vw,28px);
+    font-weight:800;margin-bottom:.15vh;letter-spacing:-.02em}
+  .cover-meta span{font-size:clamp(10px,.86vw,13px);color:var(--muted)}
+
+  /* ==================== 章节标记 ==================== */
+  .section-tag{position:absolute;top:1.6vh;left:3.8vw;font-size:clamp(9.5px,.76vw,11.5px);
+    letter-spacing:.15em;color:var(--soft);font-weight:800}
+  .section-tag span{color:var(--blue)}
+
+  /* ==================== 讲稿 ==================== */
+  .notes{display:none;position:fixed;left:0;right:0;bottom:0;z-index:100;
+    background:rgba(255,255,255,.98);border-top:2.5px solid var(--blue);
+    padding:1.5vh 3.8vw;font-size:clamp(11px,.92vw,13.5px);color:#475569;
+    line-height:1.72;max-height:23vh;overflow-y:auto;
+    backdrop-filter:blur(10px);box-shadow:0 -6px 24px rgba(15,23,42,.07)}
+  .notes.show{display:block}
+  .notes b{color:var(--blue)}
+
+  /* ==================== 进度 & 页码 ==================== */
+  .progress{position:fixed;bottom:0;left:0;height:3.5px;z-index:200;
+    background:linear-gradient(90deg,#2563eb,#0891b2,#059669);
+    background-size:200% auto;border-radius:0 3px 3px 0;
+    transition:width .4s cubic-bezier(.22,1,.36,1);
+    animation:gradFlow 4s linear infinite}
+  .pg{position:fixed;right:2vw;bottom:1.6vh;z-index:210;
+    font-size:clamp(10.5px,.85vw,12.5px);color:var(--soft);
+    font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:.04em}
+  .pg b{color:var(--blue);font-size:1.15em}
+  .hint{position:fixed;left:2vw;bottom:1.6vh;z-index:210;
+    font-size:clamp(9.5px,.76vw,11.5px);color:#c3cddd;font-weight:600}
+  .nav-dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:210;
+    display:flex;flex-direction:column;gap:.55vh}
+  .nav-dots i{width:5px;height:5px;border-radius:50%;background:#cbd5e1;
+    transition:all .25s;cursor:pointer;display:block}
+  .nav-dots i.on{background:var(--blue);height:14px;border-radius:3px}
+
+  /* ==================== 响应式 ==================== */
+  @media(max-width:1100px){
+    .g3,.g4,.g5{grid-template-columns:1fr 1fr}
+    .split,.split-23,.split-32{grid-template-columns:1fr}
+    .flow{flex-direction:column}
+    .flow-arrow{transform:rotate(90deg);justify-content:center}
+    .cover-meta{grid-template-columns:1fr 1fr}
+    .timeline{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ═══════════════ 1 封面 ═══════════════ -->
+<section class="slide on" data-note="开场：各位老师、同学好。我是XXX。我汇报的项目是《Hugging Face 开源模型生态的演化、注意力集中与模型谱系分析》，这是《大数据导论》课程项目，对应 Proposal 2。整个分析基于 314 万条真实模型记录，用 PySpark 完成，回答了 5 个研究问题和 2 个增量方向。汇报大约 15 分钟，分四个部分。">
+  <div class="cover-bg">
+    <div class="cover-grid"></div>
+    <div class="cover-orb orb-1 float"></div>
+    <div class="cover-orb orb-2 float" style="animation-delay:-1.2s"></div>
+    <div class="cover-orb orb-3 float" style="animation-delay:-2.4s"></div>
+  </div>
+  <div class="cover-inner">
+    <div>
+      <div class="cover-line gradflow anim right d0"></div>
+      <div class="kicker anim up d1">《大数据导论》课程项目 · Proposal 2 · 2026 年 10 月</div>
+      <h1 class="title anim up d2" style="max-width:22ch">
+        Hugging Face 开源模型生态的<br>演化、注意力集中与模型谱系分析
+      </h1>
+      <p class="lead anim up d3" style="margin-top:1.8vh;max-width:62ch;font-size:clamp(13px,1.15vw,17px)">
+        基于 <b>PySpark 4.2.0</b> 本地模式，对 <b>3,138,954</b> 个公开模型做全量统计、
+        图分析与可复现流水线构建 —— 用大数据方法刻画一个真实超大规模生态的结构与演化。
+      </p>
+    </div>
+    <div>
+      <div class="cover-meta">
+        <div class="anim flip d4"><b class="countup" data-count="3138954">0</b><span>模型记录</span></div>
+        <div class="anim flip d5"><b><span class="countup" data-count="1.49" data-dec="2">0</span> GiB</b><span>原始 Parquet</span></div>
+        <div class="anim flip d6"><b>5 + 2</b><span>研究问题 + 增量</span></div>
+        <div class="anim flip d7"><b>15</b><span>正式图表</span></div>
+      </div>
+      <div style="margin-top:3vh" class="anim up d8">
+        <span class="pill pulse">PySpark 4.2.0</span>
+        <span class="pill g">GraphFrames 0.12.3</span>
+        <span class="pill o">Windows 11 本地模式</span>
+        <span class="pill p">SHA-256 校验</span>
+        <span class="pill c">可复现 · 可审计</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 2 大纲 ═══════════════ -->
+<section class="slide" data-note="先看汇报结构，共四个部分：第一，问题与数据，讲清楚为什么要做、数据是什么、技术栈是什么；第二，五个研究问题的核心发现，这是重点，占大约一半时间；第三，工程亮点与踩坑；第四，总结与展望。">
+  <div class="section-tag">OVERVIEW / <span>汇报大纲</span></div>
+  <h2><span class="bar"></span>汇报结构</h2>
+  <div class="slide-body">
+    <div class="grid g4" style="flex:1">
+      <div class="card anim up d1">
+        <div class="num">01</div>
+        <h3 style="margin-top:1.2vh">问题与数据</h3>
+        <div class="body">
+          <p>研究动机、五个 RQ 的设计、数据源与规模、技术栈与运行环境</p>
+        </div>
+        <div class="tiny" style="margin-top:1vh">⏱ 约 4 分钟</div>
+      </div>
+      <div class="card g anim up d2">
+        <div class="num g">02</div>
+        <h3 style="margin-top:1.2vh">核心发现</h3>
+        <div class="body">
+          <p>RQ1 演化 · RQ2 集中度 · RQ3 谱系网络<br>RQ4 关联 · RQ5 任务差异<br>+ 家族形态增量</p>
+        </div>
+        <div class="tiny" style="margin-top:1vh">⏱ 约 7 分钟</div>
+      </div>
+      <div class="card o anim up d3">
+        <div class="num o">03</div>
+        <h3 style="margin-top:1.2vh">工程亮点</h3>
+        <div class="body">
+          <p>三层流水线、Windows 适配<br>资源约束、12 图守卫<br>诚实报告纪律</p>
+        </div>
+        <div class="tiny" style="margin-top:1vh">⏱ 约 3 分钟</div>
+      </div>
+      <div class="card p anim up d4">
+        <div class="num p">04</div>
+        <h3 style="margin-top:1.2vh">总结展望</h3>
+        <div class="body">
+          <p>贡献归纳<br>局限说明<br>未来三个方向</p>
+        </div>
+        <div class="tiny" style="margin-top:1vh">⏱ 约 1 分钟</div>
+      </div>
+    </div>
+    <div class="grid g5" style="margin-top:1.4vh">
+      <div class="card plain c anim pop d5" style="padding:1.1vh 1vw">
+        <div class="num c sm"><span class="countup" data-count="21">0</span> 页</div>
+        <div class="num-label">幻灯片总数</div>
+      </div>
+      <div class="card plain c anim pop d6" style="padding:1.1vh 1vw">
+        <div class="num c sm"><span class="countup" data-count="7">0</span> 大</div>
+        <div class="num-label">可视化图表类型</div>
+      </div>
+      <div class="card plain c anim pop d7" style="padding:1.1vh 1vw">
+        <div class="num c sm"><span class="countup" data-count="15">0</span> 张</div>
+        <div class="num-label">正式产出图</div>
+      </div>
+      <div class="card plain c anim pop d8" style="padding:1.1vh 1vw">
+        <div class="num c sm"><span class="countup" data-count="12">0</span> 项</div>
+        <div class="num-label">完整性守卫</div>
+      </div>
+      <div class="card plain c anim pop d9" style="padding:1.1vh 1vw">
+        <div class="num c sm">100%</div>
+        <div class="num-label">结果可复现</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 3 研究背景 ═══════════════ -->
+<section class="slide" data-note="先讲为什么做这个。Hugging Face Hub 是目前全球最大的开源模型平台，托管了三百多万个模型。但平台本身只提供下载和搜索，不回答生态结构问题：模型怎么增长？下载是否集中？模型之间是什么血缘关系？这些问题此前缺少系统性的量化刻画，这就是我们的研究空间。我把 Hub 当作一个超大规模社会系统来研究。">
+  <div class="section-tag">PART 01 / <span>问题与数据</span></div>
+  <h2><span class="bar"></span>研究背景：为什么要研究 Hugging Face 生态</h2>
+  <div class="slide-body">
+    <div class="split-32" style="flex:1">
+      <div style="display:flex;flex-direction:column;gap:1vh">
+        <div class="grid g2" style="flex:1">
+          <div class="card anim left d1">
+            <h3>平台现状</h3>
+            <ul>
+              <li><b>规模空前：</b>公开模型已超 <span class="hl">314 万</span>，全球最大开放模型托管平台</li>
+              <li><b>生态复杂：</b>模型间存在底座—衍生血缘，形成庞大谱系网络</li>
+              <li><b>注意力失衡：</b>下载量呈极端长尾，少数头部占据压倒性份额</li>
+              <li><b>结构盲区：</b>平台提供搜索下载，但不提供生态结构性量化刻画</li>
+            </ul>
+          </div>
+          <div class="card g anim right d2">
+            <h3>三个层面此前没有系统性回答</h3>
+            <ul class="g">
+              <li><b>时间维度：</b>模型发布速度、任务分布如何迁移？</li>
+              <li><b>分配维度：</b>下载注意力集中到什么程度？来源在哪？</li>
+              <li><b>关系维度：</b>血缘网络是什么形状？是树还是图？</li>
+            </ul>
+          </div>
+        </div>
+        <div style="padding:1.3vh 1.3vw;background:linear-gradient(100deg,#eff6ff,#ecfdf5);
+             border-radius:12px;border-left:4px solid var(--blue);
+             font-size:clamp(11px,.92vw,13.5px);color:#1e40af;line-height:1.7"
+             class="anim up d3">
+          💡 <b>研究视角：</b>本项目把 Hugging Face Hub 当作一个"超大规模社会系统"来研究——
+          不是看单个模型的性能，而是看<b>整个生态的结构、分配与关系</b>。
+          这与大数据导论课程强调的"从数据中发现宏观规律"高度契合。
+        </div>
+      </div>
+      <div class="card plain anim right d4" style="padding:1.6vh 1.2vw">
+        <h3 style="text-align:center;margin-bottom:1.6vh">生态的三个"看不见"</h3>
+        <div style="display:flex;flex-direction:column;justify-content:space-around;flex:1">
+          <div style="text-align:center;padding:1.6vh 0;border-bottom:1px dashed var(--line)">
+            <div style="font-size:clamp(26px,3vw,44px)" class="float">⏳</div>
+            <div style="font-weight:800;margin-top:.6vh;font-size:clamp(12px,1.05vw,15px)">
+              时间上的"看不见"
+            </div>
+            <div class="tiny" style="margin-top:.4vh">
+              平台没有现成的演化曲线，需要自己按月聚合
+            </div>
+          </div>
+          <div style="text-align:center;padding:1.6vh 0;border-bottom:1px dashed var(--line)">
+            <div style="font-size:clamp(26px,3vw,44px);animation:float 3.5s ease-in-out infinite;
+                 animation-delay:-1.2s">⚖️</div>
+            <div style="font-weight:800;margin-top:.6vh;font-size:clamp(12px,1.05vw,15px)">
+              分配上的"看不见"
+            </div>
+            <div class="tiny" style="margin-top:.4vh">
+              平台不提供集中度指标，需要自己计算洛伦兹曲线
+            </div>
+          </div>
+          <div style="text-align:center;padding:1.6vh 0">
+            <div style="font-size:clamp(26px,3vw,44px);animation:float 3.5s ease-in-out infinite;
+                 animation-delay:-2.4s">🕸️</div>
+            <div style="font-weight:800;margin-top:.6vh;font-size:clamp(12px,1.05vw,15px)">
+              关系上的"看不见"
+            </div>
+            <div class="tiny" style="margin-top:.4vh">
+              血缘关系埋在 base_model 字段里，需要重构为图
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 4 研究问题 ═══════════════ -->
+<section class="slide" data-note="我们设计了五个核心研究问题加两个增量方向。RQ1 看时间演化，RQ2 看下载集中度，RQ3 看模型谱系网络，RQ4 看属性与下载热度的统计关联，RQ5 看不同任务的生态差异。增量部分深入分析了家族结构形态和分组集中度分解。这里特别说明：RQ4 是当前快照下的统计关联，不是预测未来。">
+  <div class="section-tag">PART 01 / <span>问题与数据</span></div>
+  <h2><span class="bar"></span>五个核心研究问题 + 两个增量方向</h2>
+  <div class="slide-body">
+    <div class="grid g3" style="flex:1">
+      <div class="card anim pop d1">
+        <div><span class="rq b">RQ1</span><span class="pill s">时间维度</span></div>
+        <h3 style="margin-top:.7vh">生态时间演化</h3>
+        <div class="body">
+          <p>月度新增模型、任务类型、库与标签的趋势如何随时间变化？</p>
+          <div class="tiny" style="margin-top:.8vh">
+            <b>关键产物：</b><code>monthly_new_models.csv</code><br>
+            <code>pipeline_trend.csv</code>
+          </div>
+        </div>
+      </div>
+      <div class="card g anim pop d2">
+        <div><span class="rq g">RQ2</span><span class="pill g">分配维度</span></div>
+        <h3 style="margin-top:.7vh">下载注意力集中度</h3>
+        <div class="body">
+          <p>下载量分布的长尾形态有多极端？集中度来自组间还是组内？</p>
+          <div class="tiny" style="margin-top:.8vh">
+            <b>关键产物：</b><code>concentration_stats.json</code><br>
+            <code>lorenz_curve.csv</code>
+          </div>
+        </div>
+      </div>
+      <div class="card p anim pop d3">
+        <div><span class="rq">RQ3</span><span class="pill p">关系维度</span></div>
+        <h3 style="margin-top:.7vh">模型谱系网络</h3>
+        <div class="body">
+          <p>底座—衍生关系构成的图是什么结构？是树还是图？有没有环？</p>
+          <div class="tiny" style="margin-top:.8vh">
+            <b>关键产物：</b><code>model_base_edges</code><br>
+            <code>stats_family.py</code>
+          </div>
+        </div>
+      </div>
+      <div class="card o anim pop d4">
+        <div><span class="rq o">RQ4</span><span class="pill o">属性维度</span></div>
+        <h3 style="margin-top:.7vh">属性与下载热度关联</h3>
+        <div class="body">
+          <p>哪些模型属性与下载热度存在统计关联？关联有多强？</p>
+          <div class="tiny" style="margin-top:.8vh">
+            <b>关键产物：</b><code>ml_summary.json</code><br>
+            <code>ml_model_comparison/</code>
+          </div>
+        </div>
+      </div>
+      <div class="card c anim pop d5">
+        <div><span class="rq c">RQ5</span><span class="pill c">任务维度</span></div>
+        <h3 style="margin-top:.7vh">任务生态结构差异</h3>
+        <div class="body">
+          <p>不同 pipeline 任务的生态结构有何差异？可比性如何界定？</p>
+          <div class="tiny" style="margin-top:.8vh">
+            <b>关键产物：</b><code>rq5_task_ecosystem.csv</code><br>
+            <code>rq5_summary.json</code>
+          </div>
+        </div>
+      </div>
+      <div class="card p anim pop d6" style="background:linear-gradient(135deg,#faf5ff,#fff)">
+        <div><span class="pill p">增量</span><span class="pill s">结构维度</span></div>
+        <h3 style="margin-top:.7vh">家族形态 + 分组分解</h3>
+        <div class="body">
+          <p>星型 / 链型 / 合并型 / 混合型四类家族结构；Theil 组间组内分解</p>
+          <div class="tiny" style="margin-top:.8vh">
+            <b>关键产物：</b><code>family_explorer.html</code><br>
+            <code>concentration_groups.json</code>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.3vh;padding:1.1vh 1.3vw;background:var(--orange-bg);
+         border-radius:10px;border-left:4px solid var(--orange);font-size:clamp(10.5px,.88vw,13px);
+         color:#9a3412;line-height:1.65" class="anim up d7">
+      ⚠️ <b>研究纪律：</b>RQ4 是<b>当前快照下的统计关联</b>，不是前瞻预测；先划分 train/test，再谈拟合。
+      所有研究问题都明确区分<b>描述性统计</b>与<b>推断性结论</b>。
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 5 数据源 ═══════════════ -->
+<section class="slide" data-note="数据源是 cfahlgren1/hub-stats 这个数据集的固定快照，models.parquet 文件约 1.49 GB。物理行数 3,138,959 条，去重后 3,138,954 条，重复只有 5 条。我们固定了 commit 和 SHA-256，保证结果可复现、可校验。右侧是数据字段的分布，可以看到下载量字段的覆盖率很低，这本身就是 RQ2 集中度的体现。">
+  <div class="section-tag">PART 01 / <span>问题与数据</span></div>
+  <h2><span class="bar"></span>数据源：可校验的固定快照</h2>
+  <div class="slide-body">
+    <div class="grid g4" style="margin-bottom:1.2vh">
+      <div class="card anim flip d1">
+        <div class="num"><span class="countup" data-count="3138954">0</span></div>
+        <div class="num-label">去重后模型数<br><span class="tiny">物理行 3,138,959 · 重复仅 5 条</span></div>
+      </div>
+      <div class="card g anim flip d2">
+        <div class="num g"><span class="countup" data-count="1.49" data-dec="2">0</span> GiB</div>
+        <div class="num-label">models.parquet 大小<br><span class="tiny">列式存储，适合 Spark 全量扫描</span></div>
+      </div>
+      <div class="card o anim flip d3">
+        <div class="num o">SHA-256</div>
+        <div class="num-label">固定校验<br><span class="tiny">原始数据可验证未被篡改</span></div>
+      </div>
+      <div class="card p anim flip d4">
+        <div class="num p">1 commit</div>
+        <div class="num-label">固定快照<br><span class="tiny">避免快照漂移导致结果不可比</span></div>
+      </div>
+    </div>
+    <div class="split-32" style="flex:1">
+      <div class="card anim left d5" style="padding:1.5vh 1.2vw">
+        <h3>核心字段一览</h3>
+        <table style="margin-top:.5vh">
+          <thead>
+            <tr><th style="width:30%">字段</th><th style="width:26%">类型</th><th>用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>string</td><td>模型唯一标识（author/name）</td></tr>
+            <tr><td><code>downloads</code></td><td>int</td><td>近 30 天下载量 · RQ2/RQ4 目标</td></tr>
+            <tr><td><code>likes</code></td><td>int</td><td>点赞数 · RQ4 特征</td></tr>
+            <tr><td><code>pipeline_tag</code></td><td>string</td><td>任务类型 · RQ5 分组键（缺失 65.6%）</td></tr>
+            <tr><td><code>library_name</code></td><td>string</td><td>使用库 · RQ4 特征</td></tr>
+            <tr><td><code>base_model</code></td><td>array</td><td>底座声明 · RQ3 建图依据</td></tr>
+            <tr><td><code>created_at</code></td><td>timestamp</td><td>创建时间 · RQ1 按月聚合</td></tr>
+            <tr><td><code>tags</code></td><td>array</td><td>标签列表 · RQ1/RQ4 特征</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1vh">
+        <div class="card g anim right d6" style="flex:1">
+          <h3>为什么强调可复现</h3>
+          <ul class="g">
+            <li><b>固定 commit</b> 避免快照漂移，任何人重跑得到一致结果</li>
+            <li><b>SHA-256 校验</b> 保证原始数据未被篡改</li>
+            <li><b>results_manifest.json</b> 作为所有结果的权威来源</li>
+            <li><b>版本锁定</b> Python 3.11.17 + PySpark 4.2.0 + 关键依赖全部固定</li>
+          </ul>
+        </div>
+        <div class="card anim right d7" style="flex:1">
+          <h3>字段覆盖率 · 数据质量的直接体现</h3>
+          <div class="hbar" style="margin-top:.7vh">
+            <div class="row"><div class="name">id</div>
+              <div class="track"><div class="fill g" style="--w:100%"></div></div>
+              <div class="val">100%</div></div>
+            <div class="row"><div class="name">created_at</div>
+              <div class="track"><div class="fill g" style="--w:99%"></div></div>
+              <div class="val">≈99%</div></div>
+            <div class="row"><div class="name">downloads</div>
+              <div class="track"><div class="fill" style="--w:42%"></div></div>
+              <div class="val">偏低</div></div>
+            <div class="row"><div class="name">likes</div>
+              <div class="track"><div class="fill" style="--w:38%"></div></div>
+              <div class="val">偏低</div></div>
+            <div class="row"><div class="name">base_model</div>
+              <div class="track"><div class="fill o" style="--w:28%"></div></div>
+              <div class="val">28%</div></div>
+            <div class="row"><div class="name">pipeline_tag</div>
+              <div class="track"><div class="fill p" style="--w:34%"></div></div>
+              <div class="val">34%</div></div>
+          </div>
+          <div class="tiny" style="margin-top:.5vh">
+            覆盖率越低，说明字段越"稀疏"——这本身就是生态特征的体现。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 6 技术栈 ═══════════════ -->
+<section class="slide" data-note="技术栈方面，核心计算引擎是 PySpark 4.2.0 本地模式，Scala 2.13，Hadoop 3.5.0。图分析用 GraphFrames 0.12.3。Python 3.11.17，conda 环境叫 hf_eco。关键依赖还有 pandas、pyarrow、networkx。所有版本都固定，保证可复现。右边是选型理由。">
+  <div class="section-tag">PART 01 / <span>问题与数据</span></div>
+  <h2><span class="bar"></span>技术栈与运行环境</h2>
+  <div class="slide-body">
+    <div class="flow" style="margin-bottom:1.2vh">
+      <div class="flow-node b anim up d1">
+        <div class="ico">🐍</div>
+        <div class="t">Python 3.11.17</div>
+        <div class="d">conda 环境 hf_eco<br>统一依赖管理</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node b anim up d2">
+        <div class="ico">⚡</div>
+        <div class="t">PySpark 4.2.0</div>
+        <div class="d">Hadoop 3.5.0 / Scala 2.13<br>本地模式计算引擎</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node a anim up d3">
+        <div class="ico">🕸️</div>
+        <div class="t">GraphFrames 0.12.3</div>
+        <div class="d">图算法<br>连通分量 / 路径</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node g anim up d4">
+        <div class="ico">📊</div>
+        <div class="t">可视化层</div>
+        <div class="d">pandas 3.0.6 / networkx 3.6.1<br>pyarrow 26.0.0</div>
+      </div>
+    </div>
+    <div class="grid g3" style="flex:1">
+      <div class="card anim left d5">
+        <h3>🔧 依赖清单</h3>
+        <table style="margin-top:.5vh">
+          <tbody>
+            <tr><td><code>pyspark</code></td><td>4.2.0</td></tr>
+            <tr><td><code>graphframes</code></td><td>0.12.3</td></tr>
+            <tr><td><code>pandas</code></td><td>3.0.6</td></tr>
+            <tr><td><code>pyarrow</code></td><td>26.0.0</td></tr>
+            <tr><td><code>networkx</code></td><td>3.6.1</td></tr>
+            <tr><td><code>numpy</code></td><td>固定版本</td></tr>
+            <tr><td><code>scikit-learn</code></td><td>RQ4 建模</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card g anim up d6">
+        <h3>为什么选 PySpark 本地模式</h3>
+        <ul class="g">
+          <li><b>数据量级：</b>314 万行 × 多列，pandas 单机内存吃紧</li>
+          <li><b>引擎特性：</b>Spark 的列式 + 惰性求值天然适合全量统计</li>
+          <li><b>部署友好：</b>本地模式无需集群，课程环境下可复现</li>
+          <li><b>可迁移：</b>代码可直接迁移到集群，无需改写</li>
+        </ul>
+      </div>
+      <div class="card p anim right d7">
+        <h3>为什么需要 GraphFrames</h3>
+        <ul class="p">
+          <li><b>关系是图：</b>谱系网络是<b>有向图</b>，不是表结构</li>
+          <li><b>图算法：</b>需要连通分量（SCC）、路径长度等算法</li>
+          <li><b>无缝衔接：</b>GraphFrames 与 Spark DataFrame 直接互转</li>
+          <li><b>小图可视化：</b>networkx 用于子图布局与交互探索</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 7 系统架构 ═══════════════ -->
+<section class="slide" data-note="整体架构是 Bronze、Silver、Gold 三层数据湖范式。Bronze 是原始 parquet，不做任何修改。Silver 做了结构化拆分，分成模型表、标签表、底座关系边表。Gold 是七张分析表加图谱结果。上面跑 RQ1 到 RQ5 加增量分析，最终产出图表、报告和交互式探索器。这种分层的好处是每层职责清晰、可单独重跑、互不污染。">
+  <div class="section-tag">PART 01 / <span>问题与数据</span></div>
+  <h2><span class="bar"></span>系统架构：Bronze → Silver → Gold 三层流水线</h2>
+  <div class="slide-body">
+    <div class="flow" style="margin-bottom:1.4vh">
+      <div class="flow-node o anim flip d1">
+        <div class="ico">📦</div>
+        <div class="t">Bronze</div>
+        <div class="d">models.parquet<br>314 万行原始数据<br>只读不改</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node s anim flip d2">
+        <div class="ico">🔧</div>
+        <div class="t">Silver</div>
+        <div class="d">结构化拆分<br>models / model_tags<br>model_base_edges</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node g anim flip d3">
+        <div class="ico">📊</div>
+        <div class="t">Gold</div>
+        <div class="d">七张分析表<br>洛伦兹曲线<br>集中度统计</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node a anim flip d4">
+        <div class="ico">📈</div>
+        <div class="t">产出</div>
+        <div class="d">15 张图 / 报告<br>交互式探索器<br>仪表盘</div>
+      </div>
+    </div>
+    <div class="grid g4" style="flex:1">
+      <div class="card b anim up d5">
+        <div class="pill">RQ1 · 时间</div>
+        <h3 style="margin-top:.5vh">生态时间演化</h3>
+        <p>月度新增模型时间序列；任务类型 / 库 / 标签趋势</p>
+      </div>
+      <div class="card g anim up d6">
+        <div class="pill g">RQ2 · 分配</div>
+        <h3 style="margin-top:.5vh">下载集中度</h3>
+        <p>洛伦兹曲线 / 基尼系数 / CCDF 尾部 / Theil 组间组内分解</p>
+      </div>
+      <div class="card p anim up d7">
+        <div class="pill p">RQ3 · 关系</div>
+        <h3 style="margin-top:.5vh">谱系网络</h3>
+        <p>GraphFrames 建图 / SCC 折叠 / 凝聚 DAG / 家族形态</p>
+      </div>
+      <div class="card o anim up d8">
+        <div class="pill o">RQ4/5 · 属性 & 任务</div>
+        <h3 style="margin-top:.5vh">统计关联与任务差异</h3>
+        <p>特征重要性 / 模型对比 / 任务生态可比性判定</p>
+      </div>
+    </div>
+    <div style="margin-top:1.3vh;padding:1.1vh 1.3vw;background:var(--blue-bg);
+         border-radius:10px;border-left:4px solid var(--blue);
+         font-size:clamp(10.5px,.88vw,13px);color:var(--blue-d);line-height:1.65"
+         class="anim up d9">
+      💡 <b>分层设计的价值：</b>每层职责单一、可独立重跑；
+      <b>spark 引擎与 local 引擎产物落在不同目录，互不覆盖</b>——切换引擎不会污染已有结果。
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 8 Windows 适配 ═══════════════ -->
+<section class="slide" data-note="这个项目全部在 Windows 11 上跑，踩了三个典型的坑，每个都做了工程处理。第一个是 winutils.exe 缺失，我们用 hadoop-bare-naked-local-fs 这个纯 Java 本地文件系统绕过。第二个是时区问题，锁定 UTC 避免跨月边界时间平移。第三个是内存问题，driver 锁 3g，配套内存告警和 mem_pressure 标记。这三条都是可复用的工程经验。">
+  <div class="section-tag">PART 01 / <span>问题与数据</span></div>
+  <h2><span class="bar"></span>Windows 环境适配：三个典型坑与对策</h2>
+  <div class="slide-body">
+    <div class="grid g3" style="flex:1">
+      <div class="card o anim left d1">
+        <div style="display:flex;align-items:baseline;gap:.6vw">
+          <div class="num o sm">坑 1</div>
+          <div class="pill o">winutils.exe</div>
+        </div>
+        <h3 style="margin-top:.9vh">缺失导致 Spark 无法启动</h3>
+        <div class="body">
+          <p style="margin-top:.5vh">
+            Spark 在 Windows 上依赖 Hadoop 的 <code>winutils.exe</code>，
+            官方不提供，网上流传的二进制版本常与 Hadoop 版本不匹配，
+            引发 <code>UnsatisfiedLinkError</code> 或静默失败。
+          </p>
+        </div>
+        <div style="margin-top:1vh;padding:.9vh 1vw;background:var(--green-bg);
+             border-radius:8px;font-size:clamp(10.5px,.88vw,13px);color:#065f46;line-height:1.65">
+          <b>✅ 对策：</b>使用 <code>hadoop-bare-naked-local-fs</code> ——
+          纯 Java 实现的本地文件系统，<b>完全绕过 winutils</b>，不依赖任何原生二进制。
+        </div>
+      </div>
+      <div class="card o anim up d2">
+        <div style="display:flex;align-items:baseline;gap:.6vw">
+          <div class="num o sm">坑 2</div>
+          <div class="pill o">时区漂移</div>
+        </div>
+        <h3 style="margin-top:.9vh">跨月边界时间戳平移</h3>
+        <div class="body">
+          <p style="margin-top:.5vh">
+            本机时区与 UTC 不一致时，跨月边界的时间戳会发生平移，
+            导致同一条数据在两次运行中落入不同的月份，
+            <b>月度统计结果对不上</b>。
+          </p>
+        </div>
+        <div style="margin-top:1vh;padding:.9vh 1vw;background:var(--green-bg);
+             border-radius:8px;font-size:clamp(10.5px,.88vw,13px);color:#065f46;line-height:1.65">
+          <b>✅ 对策：</b>锁定 <code>UTC</code> 时区，
+          所有时间解析统一在 UTC 下进行，<b>跨月边界严格一致</b>。
+        </div>
+      </div>
+      <div class="card o anim right d3">
+        <div style="display:flex;align-items:baseline;gap:.6vw">
+          <div class="num o sm">坑 3</div>
+          <div class="pill o">内存压力</div>
+        </div>
+        <h3 style="margin-top:.9vh">driver OOM 与系统卡死</h3>
+        <div class="body">
+          <p style="margin-top:.5vh">
+            314 万行全量 join + 图构建时 driver 容易 OOM，
+            但内存调太大又会压垮开发机，<b>找不到稳定的工作点</b>。
+          </p>
+        </div>
+        <div style="margin-top:1vh;padding:.9vh 1vw;background:var(--green-bg);
+             border-radius:8px;font-size:clamp(10.5px,.88vw,13px);color:#065f46;line-height:1.65">
+          <b>✅ 对策：</b>driver 锁 <code>3g</code>，
+          配内存告警 + <code>mem_pressure</code> 标记隔离，超限步骤单独跑。
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.4vh;padding:1.2vh 1.4vw;background:linear-gradient(100deg,#fff7ed,#ecfdf5);
+         border-radius:10px;border-left:4px solid var(--orange);
+         font-size:clamp(10.5px,.9vw,13px);color:#7c2d12;line-height:1.65;text-align:center"
+         class="anim up d4">
+      📌 <b>经验沉淀：</b>这三条对策都具有通用性，可作为"在 Windows 上跑 Spark"的
+      <b>可复用工程模板</b>——不止服务本项目，也可供后续同学直接参考。
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 9 RQ1 时间轴 + 柱状图 ═══════════════ -->
+<section class="slide" data-note="进入核心发现。RQ1 看生态演化。上面是月度新增模型数量的柱状图，可以看到明显的加速态势，后期月度新增显著高于早期。这反映了开源模型生态正在经历指数级扩张。下面是时间轴，标出了几个关键节点。同时我们追踪了任务类型、库和标签的趋势。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="rq b">RQ1</span>模型生态的时间演化</h2>
+  <div class="slide-body">
+    <div class="chart-wrap anim up d1" style="flex:1;margin-bottom:1.2vh">
+      <div class="chart-cap">
+        <span>月度新增模型数量（示意曲线，实际以 monthly_new_models.csv 为准）</span>
+        <span>单位：个 / 月</span>
+      </div>
+      <div class="bars">
+        <div class="bar" data-l="2022" data-v="起量" style="height:10%"></div>
+        <div class="bar" data-l="2023H1" data-v="→" style="height:18%"></div>
+        <div class="bar" data-l="2023H2" data-v="↗" style="height:30%"></div>
+        <div class="bar" data-l="2024H1" data-v="↗" style="height:44%"></div>
+        <div class="bar g" data-l="2024H2" data-v="↗" style="height:60%"></div>
+        <div class="bar g" data-l="2025H1" data-v="↑" style="height:78%"></div>
+        <div class="bar g" data-l="2025H2" data-v="↑↑" style="height:94%"></div>
+        <div class="bar p" data-l="2026" data-v="峰值" style="height:100%"></div>
+      </div>
+    </div>
+    <div class="timeline" style="margin-bottom:1.2vh">
+      <div class="tl-item anim down d2">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="yr">2022 · 萌芽</div>
+          <h4>平台起步</h4>
+          <p>模型总量低，任务类型集中在 NLP 基础任务</p>
+        </div>
+      </div>
+      <div class="tl-item g anim down d3">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="yr">2023 · 转折</div>
+          <h4>生成式 AI 爆发</h4>
+          <p>text-generation 类任务占比开始快速上升</p>
+        </div>
+      </div>
+      <div class="tl-item o anim down d4">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="yr">2024 · 加速</div>
+          <h4>微调生态繁荣</h4>
+          <p>底座衍生关系大量出现，家族结构开始形成</p>
+        </div>
+      </div>
+      <div class="tl-item p anim down d5">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="yr">2025 · 规模化</div>
+          <h4>生态指数扩张</h4>
+          <p>月度新增显著攀升，标签使用头部集中</p>
+        </div>
+      </div>
+    </div>
+    <div class="grid g3" style="flex:1">
+      <div class="card anim up d6">
+        <h3>核心观察</h3>
+        <p>模型发布速度呈<b>持续加速</b>态势，后期月度新增显著高于早期，生态处于指数级扩张阶段。</p>
+      </div>
+      <div class="card g anim up d7">
+        <h3>任务迁移</h3>
+        <p><code>text-generation</code> 类任务占比持续上升，传统任务相对收缩，反映生成式 AI 的生态主导。</p>
+      </div>
+      <div class="card p anim up d8">
+        <h3>库与标签</h3>
+        <p><code>transformers</code> 生态占主导地位，标签使用呈头部集中，长尾标签基数大但总量小。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 10 RQ2 洛伦兹 ═══════════════ -->
+<section class="slide" data-note="RQ2 是下载注意力的集中度，这是本项目最重要的发现之一。左边是洛伦兹曲线，横轴是模型累积占比，纵轴是下载量累积占比。对角线代表完全平均，而我们的曲线严重向下弯曲，说明绝大多数模型几乎没有下载，而极少数头部模型占据了绝大部分下载量。这是一个非常极端的幂律分布。右侧是关键数字和生态含义。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="rq g">RQ2</span>下载注意力的极端集中</h2>
+  <div class="slide-body">
+    <div class="split" style="flex:1">
+      <div class="chart-wrap anim left d1">
+        <div class="chart-cap">
+          <span>洛伦兹曲线 · Lorenz Curve</span>
+          <span>越弯 = 越集中</span>
+        </div>
+        <svg viewBox="0 0 340 260" style="width:100%;flex:1" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="lorenzFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#059669" stop-opacity=".22"/>
+              <stop offset="100%" stop-color="#059669" stop-opacity=".03"/>
+            </linearGradient>
+          </defs>
+          <!-- 网格 -->
+          <g stroke="#e5eaf3" stroke-width="1">
+            <line x1="40" y1="20" x2="40" y2="220"/>
+            <line x1="40" y1="220" x2="320" y2="220"/>
+            <line x1="40" y1="170" x2="320" y2="170" stroke-dasharray="3 4"/>
+            <line x1="40" y1="120" x2="320" y2="120" stroke-dasharray="3 4"/>
+            <line x1="40" y1="70" x2="320" y2="70" stroke-dasharray="3 4"/>
+          </g>
+          <!-- 完全平均线 -->
+          <line x1="40" y1="220" x2="320" y2="20" stroke="#94a3b8"
+                stroke-width="2" stroke-dasharray="6 5"/>
+          <text x="185" y="105" fill="#94a3b8" font-size="10"
+                transform="rotate(-33 185 105)">完全平均线</text>
+          <!-- 集中区域 -->
+          <path d="M40,220 C90,218 140,210 190,188 C230,168 270,120 320,20 L320,220 Z"
+                fill="url(#lorenzFill)"/>
+          <!-- 洛伦兹曲线 -->
+          <path class="draw" pathLength="1"
+                d="M40,220 C90,218 140,210 190,188 C230,168 270,120 320,20"
+                fill="none" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- 关键点 -->
+          <circle cx="160" cy="198" r="4.5" fill="#059669" class="node-pulse"/>
+          <text x="148" y="192" fill="#059669" font-size="10" font-weight="700">头部拐点</text>
+          <!-- 轴标签 -->
+          <text x="180" y="248" fill="#64748b" font-size="10.5" text-anchor="middle">
+            模型累积占比 (从低下载到高下载)
+          </text>
+          <text x="18" y="120" fill="#64748b" font-size="10.5" text-anchor="middle"
+                transform="rotate(-90 18 120)">下载量累积占比</text>
+        </svg>
+        <div class="tiny" style="text-align:center;margin-top:.4vh">
+          曲线严重偏离对角线 → 基尼系数高 → 注意力高度集中
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1vh">
+        <div class="grid g2">
+          <div class="card g anim pop d2">
+            <div class="num g sm">极端长尾</div>
+            <div class="num-label">绝大多数模型下载量极低</div>
+          </div>
+          <div class="card g anim pop d3">
+            <div class="num g sm">幂律尾部</div>
+            <div class="num-label">双对数坐标下近似直线</div>
+          </div>
+        </div>
+        <div class="card g anim right d4">
+          <h3>核心结论</h3>
+          <ul class="g">
+            <li><b>极端长尾：</b>绝大部分模型下载量极低，头部模型占据压倒性份额</li>
+            <li><b>基尼系数高：</b>洛伦兹曲线严重偏离对角线，基尼值接近上界</li>
+            <li><b>幂律特征：</b>下载分布不符合正态，而是典型的重尾分布</li>
+            <li><b>生态含义：</b>注意力高度集中在少数"明星模型"上，长尾几乎无人问津</li>
+          </ul>
+        </div>
+        <div class="card anim right d5">
+          <h3>为什么用洛伦兹曲线</h3>
+          <p>
+            洛伦兹曲线是经济学衡量<b>收入不平等</b>的标准工具：横轴人口累积占比，纵轴收入累积占比。
+            我们把它迁移到<b>下载注意力分配</b>问题上——横轴是模型累积占比，纵轴是下载量累积占比。
+            <b>对角线 = 完全平均，越弯 = 越集中。</b>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 11 RQ2 CCDF + Theil ═══════════════ -->
+<section class="slide" data-note="除了洛伦兹曲线，我们还用 CCDF 互补累积分布函数刻画尾部形态，可以看到在双对数坐标下接近一条直线，说明是典型幂律尾部。下面增量部分我们做了 Theil 指数分解，把总集中度拆成组间和组内两部分，识别集中度的来源。这是从描述走向解释的关键一步。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="rq g">RQ2</span>尾部形态与集中度分解</h2>
+  <div class="slide-body">
+    <div class="split" style="flex:1">
+      <div class="chart-wrap anim left d1">
+        <div class="chart-cap">
+          <span>CCDF · 互补累积分布（双对数坐标示意）</span>
+          <span>log-log</span>
+        </div>
+        <svg viewBox="0 0 340 260" style="width:100%;flex:1" preserveAspectRatio="xMidYMid meet">
+          <g stroke="#e5eaf3" stroke-width="1">
+            <line x1="40" y1="20" x2="40" y2="220"/>
+            <line x1="40" y1="220" x2="320" y2="220"/>
+            <line x1="40" y1="170" x2="320" y2="170" stroke-dasharray="3 4"/>
+            <line x1="40" y1="120" x2="320" y2="120" stroke-dasharray="3 4"/>
+            <line x1="40" y1="70" x2="320" y2="70" stroke-dasharray="3 4"/>
+            <line x1="110" y1="20" x2="110" y2="220" stroke-dasharray="3 4"/>
+            <line x1="180" y1="20" x2="180" y2="220" stroke-dasharray="3 4"/>
+            <line x1="250" y1="20" x2="250" y2="220" stroke-dasharray="3 4"/>
+          </g>
+          <!-- CCDF 曲线 -->
+          <path class="draw" pathLength="1"
+                d="M50,30 C110,70 170,120 220,158 C260,186 290,206 315,216"
+                fill="none" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="50" cy="30" r="4.5" fill="#2563eb"/>
+          <circle cx="315" cy="216" r="4.5" fill="#2563eb" class="node-pulse"/>
+          <text x="125" y="66" fill="#2563eb" font-size="10.5" font-weight="700">
+            近似直线 → 幂律尾部
+          </text>
+          <text x="180" y="248" fill="#64748b" font-size="10.5" text-anchor="middle">
+            log(下载量)
+          </text>
+          <text x="18" y="120" fill="#64748b" font-size="10.5" text-anchor="middle"
+                transform="rotate(-90 18 120)">log P(X ≥ x)</text>
+        </svg>
+        <div class="tiny" style="text-align:center;margin-top:.4vh">
+          尾部呈幂律衰减，说明"超级头部"是结构必然，不是偶然
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1vh">
+        <div class="chart-wrap anim right d2" style="flex:1">
+          <div class="chart-cap">
+            <span>Theil 指数分解 · 组间 vs 组内</span>
+            <span>占比示意</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+            <div class="hbar">
+              <div class="row">
+                <div class="name">组间 Theil</div>
+                <div class="track"><div class="fill g" style="--w:62%"></div></div>
+                <div class="val">62%</div>
+              </div>
+              <div class="row">
+                <div class="name">组内 Theil</div>
+                <div class="track"><div class="fill" style="--w:38%"></div></div>
+                <div class="val">38%</div>
+              </div>
+            </div>
+            <div class="tiny" style="margin-top:1.2vh;line-height:1.7">
+              <b>组间差异</b>反映不同任务类型之间的注意力落差；
+              <b>组内差异</b>反映同一任务内部头部与长尾的落差。
+              本项目中组间贡献更大，说明<b>任务类型本身就是注意力的重要分水岭</b>。
+            </div>
+            <div class="tiny" style="margin-top:.8vh;color:var(--soft)">
+              ⚠️ 具体数值以 <code>concentration_groups.json</code> 为准，此处为示意。
+            </div>
+          </div>
+        </div>
+        <div class="card p anim right d3">
+          <h3>Theil 是什么 · 为什么用它</h3>
+          <p>
+            Theil 指数是<b>可分解</b>的不平等度量。它的独特之处在于：
+            总不平等 = 组间不平等 + 组内不平等，<b>严格可加</b>。
+            这让我们能回答"集中度主要来自哪里"，
+            而不只是"集中度有多高"。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 12 RQ3 谱系网络 ═══════════════ -->
+<section class="slide" data-note="RQ3 是模型谱系网络，这是整个项目技术含量最高的部分。我们用 GraphFrames 构建了有向图，节点是模型，边是底座到衍生的关系。关键发现有三点：第一，这不是一棵树，而是一个有向图，存在多父合并和环。第二，节点去重后约 93 万个，去重前相加 97.5 万。第三，存在 10 个规模大于 1 的强连通分量。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="rq">RQ3</span>模型谱系网络：从树到有向图</h2>
+  <div class="slide-body">
+    <div class="split-32" style="flex:1">
+      <div class="chart-wrap anim left d1">
+        <div class="chart-cap">
+          <span>谱系网络结构示意</span>
+          <span>src（底座）→ dst（衍生）</span>
+        </div>
+        <svg viewBox="0 0 380 280" style="width:100%;flex:1" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arr2" markerWidth="9" markerHeight="9" refX="7" refY="3"
+                    orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/>
+            </marker>
+            <marker id="arrO" markerWidth="9" markerHeight="9" refX="7" refY="3"
+                    orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L7,3 z" fill="#ea580c"/>
+            </marker>
+          </defs>
+          <!-- 边 -->
+          <g stroke="#94a3b8" stroke-width="1.4" fill="none" marker-end="url(#arr2)" opacity=".8"
+             class="dashflow">
+            <line x1="90" y1="140" x2="190" y2="60"/>
+            <line x1="90" y1="140" x2="190" y2="140"/>
+            <line x1="90" y1="140" x2="190" y2="220"/>
+            <line x1="210" y1="60" x2="305" y2="40"/>
+            <line x1="210" y1="60" x2="305" y2="95"/>
+            <line x1="210" y1="140" x2="305" y2="140"/>
+            <line x1="210" y1="220" x2="305" y2="190"/>
+            <line x1="210" y1="220" x2="305" y2="240"/>
+          </g>
+          <!-- 环 -->
+          <path d="M325,125 Q350,140 325,158" stroke="#ea580c" stroke-width="2.4"
+                fill="none" marker-end="url(#arrO)"/>
+          <path d="M312,158 Q290,140 312,125" stroke="#ea580c" stroke-width="2.4"
+                fill="none" marker-end="url(#arrO)"/>
+          <!-- 节点 -->
+          <circle cx="90" cy="140" r="22" fill="#2563eb" class="halo"/>
+          <text x="90" y="145" fill="#fff" font-size="10" text-anchor="middle" font-weight="800">底座</text>
+          <circle cx="200" cy="60" r="14" fill="#7c3aed"/>
+          <circle cx="200" cy="140" r="14" fill="#7c3aed"/>
+          <circle cx="200" cy="220" r="14" fill="#7c3aed"/>
+          <circle cx="315" cy="40" r="11" fill="#059669"/>
+          <circle cx="315" cy="95" r="11" fill="#059669"/>
+          <circle cx="315" cy="140" r="11" fill="#059669"/>
+          <circle cx="315" cy="190" r="11" fill="#059669"/>
+          <circle cx="315" cy="240" r="11" fill="#059669"/>
+          <circle cx="325" cy="140" r="9" fill="#ea580c" opacity=".9"/>
+          <!-- 图例 -->
+          <g font-size="9" fill="#64748b">
+            <circle cx="45" cy="255" r="5" fill="#2563eb"/>
+            <text x="55" y="258">底座 / 源点</text>
+            <circle cx="130" cy="255" r="5" fill="#7c3aed"/>
+            <text x="140" y="258">中间层衍生</text>
+            <circle cx="215" cy="255" r="5" fill="#059669"/>
+            <text x="225" y="258">叶子 / 终端</text>
+            <circle cx="300" cy="255" r="5" fill="#ea580c"/>
+            <text x="310" y="258">环 SCC</text>
+          </g>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1vh">
+        <div class="grid g2">
+          <div class="card anim pop d2">
+            <div class="num"><span class="countup" data-count="931066">0</span></div>
+            <div class="num-label">去重后节点数<br><span class="tiny">去重前相加 975,365 · 重复 44,299</span></div>
+          </div>
+          <div class="card p anim pop d3">
+            <div class="num p"><span class="countup" data-count="10">0</span> 个</div>
+            <div class="num-label">规模 &gt;1 的强连通分量<br><span class="tiny">共 24 节点落入环中</span></div>
+          </div>
+          <div class="card o anim pop d4">
+            <div class="num o"><span class="countup" data-count="71.74" data-dec="2" data-suffix="%">0</span></div>
+            <div class="num-label">血缘缺失率<br><span class="tiny">未声明 ≠ 没有，是下界</span></div>
+          </div>
+          <div class="card g anim pop d5">
+            <div class="num g">K=3</div>
+            <div class="num-label">≤3 跳可达后代<br><span class="tiny">统计口径</span></div>
+          </div>
+        </div>
+        <div class="card anim right d6">
+          <h3>边语义（关键）</h3>
+          <ul>
+            <li><code>src</code> = 底座模型，<code>dst</code> = 衍生模型</li>
+            <li><code>children_count</code> = 出度 = 被多少模型直接当 base</li>
+            <li><b>方向不可反：</b>底座 → 衍生，反向无意义</li>
+          </ul>
+        </div>
+        <div class="card p anim right d7">
+          <h3>为什么不是树</h3>
+          <p>
+            树要求每个节点只有一个父节点、无环。但实际网络中：
+            <b>① 多父合并</b>（一个模型同时以多个模型为底座）、
+            <b>② 底座互指</b>（A 声明 B 为底座，B 也声明 A）、
+            <b>③ 环</b>（SCC 的存在）。
+            这些使得它必然是一个<b>有向图</b>。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 13 RQ3 图算法 ═══════════════ -->
+<section class="slide" data-note="具体图算法上，我们做了四步。第一，因为图里存在环，普通的树遍历会死循环，我们先用强连通分量把环折叠成超级节点。第二，在凝聚 DAG 上求最长路径，得到子树高度。第三，计算根节点深度。第四，计算叶子占比。这套组合拳解决了有向图上的后代统计问题。同时我们特别强调：后代类指标是下界，因为血缘缺失率高达 71.74%。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="rq">RQ3</span>图算法：如何处理有向图中的环</h2>
+  <div class="slide-body">
+    <div class="flow" style="margin-bottom:1.4vh">
+      <div class="flow-node s anim up d1">
+        <div class="ico">🔍</div>
+        <div class="t">1. 找 SCC</div>
+        <div class="d">识别强连通分量<br>10 个 &gt;1 的 SCC</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node b anim up d2">
+        <div class="ico">🔄</div>
+        <div class="t">2. 折叠成超级节点</div>
+        <div class="d">环 → 单节点<br>消除循环依赖</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node a anim up d3">
+        <div class="ico">📐</div>
+        <div class="t">3. 凝聚 DAG</div>
+        <div class="d">得到无环图<br>可做路径算法</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node g anim up d4">
+        <div class="ico">📏</div>
+        <div class="t">4. 最长路径</div>
+        <div class="d">subtree_height<br>root_depth</div>
+      </div>
+    </div>
+    <div class="grid g3" style="flex:1">
+      <div class="card anim left d5">
+        <h3>subtree_height</h3>
+        <p>在凝聚 DAG 上从该节点到汇点的最长路径（边数）。<b>注意：不是树的层数。</b></p>
+        <div class="tiny" style="margin-top:1vh;padding:.8vh .9vw;background:var(--blue-bg);border-radius:8px">
+          <b>用途：</b>判断一个底座"衍生链能走多远"
+        </div>
+      </div>
+      <div class="card p anim up d6">
+        <h3>root_depth</h3>
+        <p>在凝聚 DAG 上从源点到该节点的最长路径，衡量它离"最初底座"有多远。</p>
+        <div class="tiny" style="margin-top:1vh;padding:.8vh .9vw;background:var(--purple-bg);border-radius:8px">
+          <b>用途：</b>识别模型的"血缘深度"
+        </div>
+      </div>
+      <div class="card g anim right d7">
+        <h3>leaf_child_share</h3>
+        <p>直接子节点中自身无出度的比例，用来刻画家族的"叶化程度"。</p>
+        <div class="tiny" style="margin-top:1vh;padding:.8vh .9vw;background:var(--green-bg);border-radius:8px">
+          <b>用途：</b>家族是"星型爆发"还是"链式演化"
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.3vh;padding:1.2vh 1.4vw;background:var(--orange-bg);
+         border-radius:10px;border-left:4px solid var(--orange);
+         font-size:clamp(10.5px,.9vw,13px);color:#9a3412;line-height:1.7" class="anim up d8">
+      ⚠️ <b>诚实报告：</b>血缘缺失率 <b>71.74%</b>，未声明血缘 ≠ 没有血缘。
+      谱系在快照边界被截断，因此所有后代类指标都是 <b>下界</b>，不能解释为上界。
+      这是本项目最重要的研究纪律之一。
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 14 家族结构形态 ═══════════════ -->
+<section class="slide" data-note="增量分析我们深入研究了家族结构形态，把家族分为四类：星型、链型、合并型、混合型。分类阈值写死在 stats_family.py 里保证可复现。稳健的定性结论是：成规模家族里星型最多，链型次之。星型意味着一个底座模型被大量模型直接微调，这是最主流的开源模型使用模式。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="pill p">增量</span>家族结构形态：四种典型拓扑</h2>
+  <div class="slide-body">
+    <div class="grid g4" style="flex:1">
+      <div class="card anim flip d1">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div class="pill g">star</div>
+          <div class="tiny" style="color:var(--green);font-weight:800">最主流</div>
+        </div>
+        <svg viewBox="0 0 120 110" style="width:100%;height:14vh;margin-top:.8vh">
+          <g stroke="#94a3b8" stroke-width="1.4" fill="none">
+            <line x1="60" y1="55" x2="20" y2="22"/><line x1="60" y1="55" x2="60" y2="18"/>
+            <line x1="60" y1="55" x2="100" y2="22"/><line x1="60" y1="55" x2="20" y2="88"/>
+            <line x1="60" y1="55" x2="60" y2="92"/><line x1="60" y1="55" x2="100" y2="88"/>
+            <line x1="60" y1="55" x2="40" y2="100"/><line x1="60" y1="55" x2="80" y2="100"/>
+          </g>
+          <circle cx="60" cy="55" r="12" fill="#7c3aed" class="halo"/>
+          <g fill="#059669">
+            <circle cx="20" cy="22" r="6"/><circle cx="60" cy="18" r="6"/>
+            <circle cx="100" cy="22" r="6"/><circle cx="20" cy="88" r="6"/>
+            <circle cx="60" cy="92" r="6"/><circle cx="100" cy="88" r="6"/>
+            <circle cx="40" cy="100" r="5"/><circle cx="80" cy="100" r="5"/>
+          </g>
+        </svg>
+        <h3 style="margin-top:.6vh">星型 · star</h3>
+        <div class="tiny">出度 ≥100 · 高度 ≤6 · 叶占比 ≥0.50</div>
+        <p style="margin-top:.6vh;font-size:clamp(10px,.85vw,12.5px);color:var(--green);font-weight:700">
+          一个底座被大量模型直接微调
+        </p>
+      </div>
+      <div class="card g anim flip d2">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div class="pill g">chain</div>
+          <div class="tiny" style="color:var(--blue);font-weight:800">次之</div>
+        </div>
+        <svg viewBox="0 0 120 110" style="width:100%;height:14vh;margin-top:.8vh">
+          <g stroke="#94a3b8" stroke-width="1.6" fill="none">
+            <line x1="60" y1="15" x2="60" y2="32"/>
+            <line x1="60" y1="42" x2="60" y2="58"/>
+            <line x1="60" y1="68" x2="60" y2="84"/>
+          </g>
+          <circle cx="60" cy="12" r="7" fill="#7c3aed"/>
+          <circle cx="60" cy="37" r="7" fill="#2563eb"/>
+          <circle cx="60" cy="63" r="7" fill="#2563eb"/>
+          <circle cx="60" cy="88" r="6" fill="#059669"/>
+        </svg>
+        <h3 style="margin-top:.6vh">链型 · chain</h3>
+        <div class="tiny">高度 ≥6 · 叶占比 ≥0.60</div>
+        <p style="margin-top:.6vh;font-size:clamp(10px,.85vw,12.5px);color:var(--blue);font-weight:700">
+          逐代演化的长链条
+        </p>
+      </div>
+      <div class="card p anim flip d3">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div class="pill p">merge</div>
+          <div class="tiny" style="color:var(--purple);font-weight:800">少数</div>
+        </div>
+        <svg viewBox="0 0 120 110" style="width:100%;height:14vh;margin-top:.8vh">
+          <g stroke="#94a3b8" stroke-width="1.6" fill="none">
+            <line x1="25" y1="22" x2="60" y2="55"/><line x1="95" y1="22" x2="60" y2="55"/>
+            <line x1="60" y1="55" x2="25" y2="88"/><line x1="60" y1="55" x2="95" y2="88"/>
+          </g>
+          <circle cx="60" cy="55" r="12" fill="#7c3aed" class="halo"/>
+          <g fill="#ea580c">
+            <circle cx="25" cy="22" r="7"/><circle cx="95" cy="22" r="7"/>
+          </g>
+          <g fill="#059669">
+            <circle cx="25" cy="88" r="6"/><circle cx="95" cy="88" r="6"/>
+          </g>
+        </svg>
+        <h3 style="margin-top:.6vh">合并型 · merge</h3>
+        <div class="tiny">合并占比 ≥0.20</div>
+        <p style="margin-top:.6vh;font-size:clamp(10px,.85vw,12.5px);color:var(--purple);font-weight:700">
+          多父合并，融合式微调
+        </p>
+      </div>
+      <div class="card o anim flip d4">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div class="pill o">mixed</div>
+          <div class="tiny" style="color:var(--orange);font-weight:800">其他</div>
+        </div>
+        <svg viewBox="0 0 120 110" style="width:100%;height:14vh;margin-top:.8vh">
+          <g stroke="#94a3b8" stroke-width="1.4" fill="none">
+            <line x1="60" y1="55" x2="30" y2="28"/><line x1="60" y1="55" x2="90" y2="28"/>
+            <line x1="60" y1="55" x2="60" y2="88"/>
+            <line x1="30" y1="28" x2="12" y2="12"/>
+            <line x1="90" y1="28" x2="108" y2="12"/>
+          </g>
+          <circle cx="60" cy="55" r="11" fill="#7c3aed"/>
+          <circle cx="30" cy="28" r="6" fill="#2563eb"/>
+          <circle cx="90" cy="28" r="6" fill="#2563eb"/>
+          <circle cx="60" cy="90" r="6" fill="#059669"/>
+          <circle cx="12" cy="12" r="5" fill="#059669"/>
+          <circle cx="108" cy="12" r="5" fill="#059669"/>
+        </svg>
+        <h3 style="margin-top:.6vh">混合型 · mixed</h3>
+        <div class="tiny">不满足以上阈值</div>
+        <p style="margin-top:.6vh;font-size:clamp(10px,.85vw,12.5px);color:var(--orange);font-weight:700">
+          复合结构
+        </p>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:1.3vh">
+      <div class="card anim up d5">
+        <h3>分类阈值写死</h3>
+        <p>所有阈值硬编码在 <code>stats_family.py</code>，保证可复现、可审计、可对比。</p>
+      </div>
+      <div class="card g anim up d6">
+        <h3>稳健结论</h3>
+        <p>成规模家族里 <b>星型最多，链型次之</b>——这是最主流的两类开源模型使用模式。</p>
+      </div>
+      <div class="card p anim up d7">
+        <h3>交互式探索</h3>
+        <p><code>family_explorer.html</code> 展示有界子图（Top-N 家族 + 3 个案例家族 2 跳），页面内有显式截断提示。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 15 RQ4 ═══════════════ -->
+<section class="slide" data-note="RQ4 是统计关联，目标变量是 log1p 后的下载量。这里特别强调研究纪律：先划分 train 和 test，再谈拟合；预处理只在训练集 fit，指标只在独立测试集计算。likes 和 downloads 来自同一个快照，所以这不是前瞻预测，而是当前快照下的统计关联。特征重要性上 likes 最高，其次是维护跨度、库类型。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="rq o">RQ4</span>属性与下载热度的统计关联</h2>
+  <div class="slide-body">
+    <div class="split-32" style="flex:1">
+      <div class="chart-wrap anim left d1">
+        <div class="chart-cap">
+          <span>特征重要性 · 预测目标 y = log1p(downloads)</span>
+          <span>以 ml_feature_importance_* 为准</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+          <div class="hbar">
+            <div class="row">
+              <div class="name">likes</div>
+              <div class="track"><div class="fill" style="--w:92%"></div></div>
+              <div class="val">最高</div>
+            </div>
+            <div class="row">
+              <div class="name">maintenance_span_days</div>
+              <div class="track"><div class="fill g" style="--w:58%"></div></div>
+              <div class="val">中高</div>
+            </div>
+            <div class="row">
+              <div class="name">library_name</div>
+              <div class="track"><div class="fill p" style="--w:44%"></div></div>
+              <div class="val">中</div>
+            </div>
+            <div class="row">
+              <div class="name">tag_count</div>
+              <div class="track"><div class="fill o" style="--w:32%"></div></div>
+              <div class="val">低</div>
+            </div>
+            <div class="row">
+              <div class="name">pipeline_tag</div>
+              <div class="track"><div class="fill c" style="--w:28%"></div></div>
+              <div class="val">低</div>
+            </div>
+          </div>
+          <div class="tiny" style="margin-top:1vh;text-align:center">
+            条形长度仅为示意，实际数值以产物 JSON 为准。
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1vh">
+        <div class="card o anim right d2">
+          <h3>研究纪律</h3>
+          <ul class="o">
+            <li>目标变量：<code>y = log1p(downloads)</code>，近 30 天口径</li>
+            <li><b>先划分 train/test，再谈拟合</b></li>
+            <li>预处理只在训练集 <code>fit</code>，指标只在独立测试集计算</li>
+            <li>源列 <code>update_interval_days</code> 实为维护跨度，<b>对外改名</b> <code>maintenance_span_days</code></li>
+          </ul>
+        </div>
+        <div class="card anim right d3">
+          <h3>⚠️ 不是前瞻预测</h3>
+          <p>
+            likes 与 downloads <b>同取自一个快照</b>，二者是同期共现关系，
+            不是"用过去预测未来"。项目定位为<b>当前快照下的统计关联分析</b>，
+            避免把相关误读为因果。
+          </p>
+        </div>
+        <div class="card g anim right d4">
+          <h3>产物清单</h3>
+          <ul class="g" style="margin-top:.3vh">
+            <li><code>ml_summary.json</code> — 模型指标汇总</li>
+            <li><code>ml_model_comparison/</code> — 多模型对比</li>
+            <li><code>ml_feature_importance_*</code> — 特征重要性</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 16 RQ5 ═══════════════ -->
+<section class="slide" data-note="RQ5 看不同任务的生态结构差异。这里有一个关键设计：可比性判定。我们把 pipeline_tag 缺失统一记为 unknown，约占 65.6%。但要参与跨任务比较，必须满足两个条件：模型数至少 200，且不同取值至少 20 个。unknown 标签恒为 false，绝不参与任何跨任务排名。这是为了避免用样本量不足的组做误导性比较。">
+  <div class="section-tag">PART 02 / <span>核心发现</span></div>
+  <h2><span class="bar"></span><span class="rq c">RQ5</span>任务生态差异与可比性判定</h2>
+  <div class="slide-body">
+    <div class="split" style="flex:1">
+      <div class="chart-wrap anim left d1">
+        <div class="chart-cap">
+          <span>pipeline_tag 分布示意</span>
+          <span>unknown 占约 65.6%</span>
+        </div>
+        <div class="donut-wrap" style="flex:1;justify-content:center">
+          <div class="donut">
+            <div class="ctr">pipeline_tag<br>分布</div>
+          </div>
+          <div class="legend">
+            <div class="li"><span class="dot" style="background:#2563eb"></span>text-generation 类<b>≈17%</b></div>
+            <div class="li"><span class="dot" style="background:#059669"></span>其他主流任务<b>≈9%</b></div>
+            <div class="li"><span class="dot" style="background:#ea580c"></span>图像 / 音频类<b>≈7%</b></div>
+            <div class="li"><span class="dot" style="background:#7c3aed"></span>小众任务<b>≈6%</b></div>
+            <div class="li"><span class="dot" style="background:#94a3b8"></span>unknown<b>≈61%</b></div>
+          </div>
+        </div>
+        <div class="tiny" style="text-align:center;margin-top:.6vh">
+          比例仅为示意，实际以 <code>rq5_task_ecosystem.csv</code> 为准。
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1vh">
+        <div class="card anim right d2">
+          <h3>可比性判定（关键设计）</h3>
+          <p style="margin-bottom:.8vh">
+            <code>comparable = true</code> 表示<b>有资格参与跨任务比较</b>，
+            而不是"样本量够大"这么简单。判定条件：
+          </p>
+          <ul>
+            <li><b>n_models ≥ 200</b> —— 样本量门槛，避免小样本噪声</li>
+            <li><b>distinct_values ≥ 20</b> —— 属性多样性门槛，避免退化成单一取值</li>
+          </ul>
+        </div>
+        <div class="card o anim right d3">
+          <h3>⚠️ unknown 恒为 false</h3>
+          <p>
+            pipeline_tag 缺失统一记 <code>unknown</code>（约 65.6%），
+            <b>绝不参与任何跨任务排名</b>——否则会人为制造一个"最大类别"，
+            使所有跨任务比较失真。
+          </p>
+        </div>
+        <div class="card c anim right d4">
+          <h3>产物清单</h3>
+          <ul class="c">
+            <li><code>rq5_task_ecosystem.csv</code> — 按任务分组的生态指标</li>
+            <li><code>rq5_summary.json</code> — 汇总与可比性标记</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 17 工程亮点 ═══════════════ -->
+<section class="slide" data-note="工程亮点这页，我想强调这个项目不只是跑了几个分析，而是在大数据工程层面做了很多严谨的设计。可复现性方面，固定快照加 SHA-256 校验。引擎隔离方面，spark 和 local 两套引擎产物落在不同目录，互不覆盖。资源约束方面，driver 3g 配两重保护。还有规模档哨兵处理、shuffle 指标空值不写 0、12 图完整性守卫。这些是真正体现大数据工程能力的地方。">
+  <div class="section-tag">PART 03 / <span>工程亮点</span></div>
+  <h2><span class="bar"></span>工程亮点：可复现性与工程纪律</h2>
+  <div class="slide-body">
+    <div class="grid g3" style="flex:1">
+      <div class="card anim left d1">
+        <div style="font-size:clamp(22px,2.4vw,36px)" class="float">📌</div>
+        <h3 style="margin-top:.6vh">固定快照 · 权威来源唯一</h3>
+        <p>commit + SHA-256 双重校验；所有结果以 <code>results_manifest.json</code> 为权威来源，任何人重跑得到一致数字。</p>
+      </div>
+      <div class="card g anim up d2">
+        <div style="font-size:clamp(22px,2.4vw,36px);animation:float 3.5s ease-in-out infinite;
+             animation-delay:-1.2s">🔒</div>
+        <h3 style="margin-top:.6vh">引擎隔离 · 产物互不覆盖</h3>
+        <p>spark 与 local 两套引擎产物落在不同目录，切换引擎不会污染已有结果，方便对照验证。</p>
+      </div>
+      <div class="card p anim right d3">
+        <div style="font-size:clamp(22px,2.4vw,36px);animation:float 3.5s ease-in-out infinite;
+             animation-delay:-2.4s">🎛️</div>
+        <h3 style="margin-top:.6vh">资源约束 · 两重保护</h3>
+        <p>driver 内存锁 <code>3g</code>，配内存告警 + <code>mem_pressure</code> 标记隔离超限步骤。</p>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:1.3vh;flex:1">
+      <div class="card o anim up d4">
+        <h3>🛡️ 规模档哨兵处理</h3>
+        <p><code>real_cold_touch</code> 行数比 100% 档还多 5 行，按"至少两个分区档中取行数最大者"统一挑选，避免哨兵行误判。</p>
+      </div>
+      <div class="card g anim up d5">
+        <h3>📊 指标诚实性</h3>
+        <p>shuffle / CPU 指标取不到记<b>空值</b>，绝不写 0；关闭 AQE 以避免 shuffle 被系统性低估。</p>
+      </div>
+      <div class="card anim up d6">
+        <h3>✅ 12 图完整性守卫</h3>
+        <p>缺任何一张图即退出码 1；增量图（Fig13–15）输出到独立目录，不污染旧守卫。</p>
+      </div>
+    </div>
+    <div style="margin-top:1.3vh;padding:1.2vh 1.4vw;background:linear-gradient(100deg,#eff6ff,#f5f3ff);
+         border-radius:10px;border-left:4px solid var(--blue);
+         font-size:clamp(10.5px,.9vw,13px);color:var(--blue-d);line-height:1.65;text-align:center"
+         class="anim up d7">
+      📌 这些设计让项目不只是"跑出了结果"，而是 <b>结果可信、可复现、可审计</b> ——
+      这才是大数据工程真正需要的纪律。
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 18 陷阱表 ═══════════════ -->
+<section class="slide" data-note="项目中我们识别并处理了若干个典型陷阱，都记录在 README 第 8 节。血缘缺失率 71.74% 意味着后代指标只能当下界；unknown 标签约 65.6% 绝不能参与跨任务排名；likes 和 downloads 同快照不能当预测；图里有环不能当树遍历；指标取不到不能写 0。这些陷阱在报告里全部显式说明，而不是藏起来。">
+  <div class="section-tag">PART 03 / <span>工程亮点</span></div>
+  <h2><span class="bar"></span>陷阱清单与应对：把局限写在明面上</h2>
+  <div class="slide-body">
+    <table class="anim up d1" style="flex:1">
+      <thead>
+        <tr>
+          <th style="width:20%">陷阱</th>
+          <th style="width:36%">为什么危险</th>
+          <th>我们的应对</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>血缘缺失 71.74%</b></td>
+          <td>未声明血缘 ≠ 没有血缘，谱系在快照边界被截断</td>
+          <td>后代类指标全部标注为 <b>下界</b>，不解释为上界</td>
+        </tr>
+        <tr>
+          <td><b>unknown 占 65.6%</b></td>
+          <td>若参与跨任务排名，会人为制造一个"最大类别"</td>
+          <td><code>unknown</code> 恒为 <b>false</b>，绝不参与排名</td>
+        </tr>
+        <tr>
+          <td><b>likes 与 downloads 同快照</b></td>
+          <td>同期共现 ≠ 因果，更不能当预测</td>
+          <td>明确定位为<b>统计关联分析</b>，先分 train/test 再拟合</td>
+        </tr>
+        <tr>
+          <td><b>图中有环</b></td>
+          <td>按树遍历会死循环，后代统计会爆炸</td>
+          <td>先求 SCC 折叠成超级节点，再在凝聚 DAG 上求最长路径</td>
+        </tr>
+        <tr>
+          <td><b>指标取不到</b></td>
+          <td>把"取不到"写成 0 会系统性低估</td>
+          <td>取不到记<b>空值</b>；关闭 AQE 避免 shuffle 被低估</td>
+        </tr>
+        <tr>
+          <td><b>哨兵行干扰</b></td>
+          <td><code>real_cold_touch</code> 行数比 100% 档还多 5 行</td>
+          <td>按"至少两个分区档中取行数最大者"统一挑选</td>
+        </tr>
+        <tr>
+          <td><b>Windows 三坑</b></td>
+          <td>winutils 缺失 / 时区漂移 / 内存压力</td>
+          <td><code>hadoop-bare-naked-local-fs</code> + UTC 锁定 + 3g 内存 + mem_pressure</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ 19 总结 ═══════════════ -->
+<section class="slide" data-note="最后总结。这个项目用大数据方法系统性地刻画了 Hugging Face 模型生态，核心贡献有四点：完整回答了五个研究问题加两个增量方向；构建了 Bronze-Silver-Gold 三层可复现流水线；在 Windows 上实现了无 winutils 的 Spark 本地运行；产出了 15 张正式图加交互式探索器加完整报告。全程贯彻可复现、可审计、诚实报告的工程纪律。">
+  <div class="section-tag">PART 04 / <span>总结展望</span></div>
+  <h2><span class="bar"></span>项目总结：四项核心贡献</h2>
+  <div class="slide-body">
+    <div class="grid g2" style="flex:1">
+      <div class="card anim up d1">
+        <div style="display:flex;align-items:baseline;gap:.8vw">
+          <div class="num">01</div>
+          <span class="pill">研究问题</span>
+        </div>
+        <h3 style="margin-top:.7vh">完整回答研究问题</h3>
+        <div class="body">
+          <p>系统回答了 <b>5 个核心 RQ + 2 个增量方向</b>，从时间演化、注意力集中、谱系网络、统计关联到任务生态差异，形成完整的生态画像。</p>
+        </div>
+        <div class="grid g2" style="margin-top:1vh;gap:.5vw">
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--blue-bg);border-radius:8px">
+            <b>3.14M</b> 模型规模
+          </div>
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--blue-bg);border-radius:8px">
+            <b>7</b> 研究方向
+          </div>
+        </div>
+      </div>
+      <div class="card g anim up d2">
+        <div style="display:flex;align-items:baseline;gap:.8vw">
+          <div class="num g">02</div>
+          <span class="pill g">工程流水线</span>
+        </div>
+        <h3 style="margin-top:.7vh">可复现的工程流水线</h3>
+        <div class="body">
+          <p>构建 <b>Bronze → Silver → Gold</b> 三层流水线，固定快照 + SHA-256 校验，结果以 manifest 为权威来源，任何一次重跑结果一致。</p>
+        </div>
+        <div class="grid g2" style="margin-top:1vh;gap:.5vw">
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--green-bg);border-radius:8px">
+            <b>3 层</b> 数据湖
+          </div>
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--green-bg);border-radius:8px">
+            <b>100%</b> 可复现
+          </div>
+        </div>
+      </div>
+      <div class="card p anim up d3">
+        <div style="display:flex;align-items:baseline;gap:.8vw">
+          <div class="num p">03</div>
+          <span class="pill p">环境适配</span>
+        </div>
+        <h3 style="margin-top:.7vh">Windows Spark 适配方案</h3>
+        <div class="body">
+          <p>用 <code>hadoop-bare-naked-local-fs</code> 实现<b>无 winutils</b> 的本地运行，锁定 UTC 时区，形成可复用的工程模板。</p>
+        </div>
+        <div class="grid g2" style="margin-top:1vh;gap:.5vw">
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--purple-bg);border-radius:8px">
+            <b>0 依赖</b> 原生二进制
+          </div>
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--purple-bg);border-radius:8px">
+            <b>3 条</b> 可复用经验
+          </div>
+        </div>
+      </div>
+      <div class="card o anim up d4">
+        <div style="display:flex;align-items:baseline;gap:.8vw">
+          <div class="num o">04</div>
+          <span class="pill o">研究纪律</span>
+        </div>
+        <h3 style="margin-top:.7vh">诚实报告的工程纪律</h3>
+        <div class="body">
+          <p>血缘缺失标注下界、unknown 不参与排名、指标取不到记空值、12 图守卫——<b>把局限写在明面上</b>，而不是藏起来。</p>
+        </div>
+        <div class="grid g2" style="margin-top:1vh;gap:.5vw">
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--orange-bg);border-radius:8px">
+            <b>7 条</b> 陷阱显式声明
+          </div>
+          <div class="tiny" style="padding:.6vh .8vw;background:var(--orange-bg);border-radius:8px">
+            <b>12 图</b> 完整性守卫
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 20 展望 ═══════════════ -->
+<section class="slide" data-note="未来有三个方向。第一，接入多个时间点的 Hub 快照，做真正的纵向演化追踪，现在只能做单快照的横截面分析。第二，扩展图算法，加入 PageRank、社区发现和影响力传播模拟。第三，增强交互式可视化，从有界子图扩展到可下钻的全量网络浏览。另外从统计关联走向更严格的因果识别，也是未来的重要方向。">
+  <div class="section-tag">PART 04 / <span>总结展望</span></div>
+  <h2><span class="bar"></span>未来展望：三个方向</h2>
+  <div class="slide-body">
+    <div class="grid g3" style="flex:1">
+      <div class="card anim left d1" style="padding:2vh 1.3vw">
+        <div class="num">01</div>
+        <h3 style="margin-top:1vh">增量快照追踪</h3>
+        <div class="body">
+          <p>当前是单快照横截面分析。接入多个时间点的 Hub 快照，可以做<b>真正的纵向演化追踪</b>：</p>
+          <ul style="margin-top:.8vh">
+            <li>家族如何生长？</li>
+            <li>明星模型的注意力如何衰减？</li>
+            <li>新任务如何从长尾走向主流？</li>
+          </ul>
+        </div>
+        <div class="tiny" style="margin-top:1vh;padding:.7vh .9vw;background:var(--blue-bg);border-radius:8px">
+          <b>时间维度</b> · 从横截面 → 纵向追踪
+        </div>
+      </div>
+      <div class="card g anim up d2" style="padding:2vh 1.3vw">
+        <div class="num g">02</div>
+        <h3 style="margin-top:1vh">图算法扩展</h3>
+        <div class="body">
+          <p>在谱系网络上扩展更丰富的图算法：</p>
+          <ul class="g" style="margin-top:.8vh">
+            <li><b>PageRank</b> —— 谁是影响力枢纽？</li>
+            <li><b>社区发现</b> —— 是否存在模型家族群落？</li>
+            <li><b>传播模拟</b> —— 新模型如何沿谱系扩散？</li>
+          </ul>
+        </div>
+        <div class="tiny" style="margin-top:1vh;padding:.7vh .9vw;background:var(--green-bg);border-radius:8px">
+          <b>关系维度</b> · 从结构 → 影响力
+        </div>
+      </div>
+      <div class="card p anim right d3" style="padding:2vh 1.3vw">
+        <div class="num p">03</div>
+        <h3 style="margin-top:1vh">因果与可视化</h3>
+        <div class="body">
+          <p>两个方向同步推进：</p>
+          <ul class="p" style="margin-top:.8vh">
+            <li>从统计关联走向<b>更严格的因果识别</b></li>
+            <li>可视化从有界子图扩展到<b>可下钻全量网络</b></li>
+            <li>支持按任务 / 时间 / 家族多维筛选</li>
+          </ul>
+        </div>
+        <div class="tiny" style="margin-top:1vh;padding:.7vh .9vw;background:var(--purple-bg);border-radius:8px">
+          <b>方法维度</b> · 从相关 → 因果
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.3vh;padding:1.2vh 1.4vw;background:linear-gradient(100deg,#eff6ff,#ecfdf5,#f5f3ff);
+         border-radius:10px;border-left:4px solid var(--blue);
+         font-size:clamp(11px,.92vw,13.5px);color:var(--blue-d);line-height:1.7;text-align:center"
+         class="anim up d4">
+      📌 本项目为 Hugging Face 生态研究提供了 <b>可复现的数据底座</b> 与 <b>分析方法论</b>，
+      后续工作可以在此基础上持续叠加。
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 21 致谢 ═══════════════ -->
+<section class="slide" data-note="我的汇报到此结束。感谢各位老师和同学的聆听，请批评指正。">
+  <div class="cover-bg">
+    <div class="cover-grid"></div>
+    <div class="cover-orb orb-1 float"></div>
+    <div class="cover-orb orb-2 float" style="animation-delay:-1.2s"></div>
+    <div class="cover-orb orb-3 float" style="animation-delay:-2.4s"></div>
+  </div>
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;
+       justify-content:center;align-items:center;text-align:center">
+    <div class="cover-line gradflow anim pop d0" style="margin:0 auto 3vh"></div>
+    <h1 class="title anim up d1" style="font-size:clamp(32px,3.9vw,58px)">
+      感谢聆听 · 请批评指正
+    </h1>
+    <p class="lead anim up d2" style="margin-top:2.5vh;font-size:clamp(13.5px,1.25vw,19px);max-width:60ch">
+      Hugging Face 开源模型生态的演化、注意力集中与模型谱系分析
+    </p>
+    <div style="margin-top:4vh;display:flex;justify-content:center;gap:.9vw;flex-wrap:wrap"
+         class="anim up d3">
+      <span class="pill pulse">3,138,954 模型</span>
+      <span class="pill g">PySpark 4.2.0</span>
+      <span class="pill o">GraphFrames 0.12.3</span>
+      <span class="pill p">可复现</span>
+      <span class="pill c">可审计</span>
+    </div>
+    <div style="margin-top:4vh;display:grid;grid-template-columns:repeat(3,1fr);gap:2vw;max-width:60ch"
+         class="anim up d4">
+      <div style="text-align:center">
+        <div class="num c sm"><span class="countup" data-count="5">0</span></div>
+        <div class="num-label">核心 RQ</div>
+      </div>
+      <div style="text-align:center">
+        <div class="num c sm"><span class="countup" data-count="2">0</span></div>
+        <div class="num-label">增量方向</div>
+      </div>
+      <div style="text-align:center">
+        <div class="num c sm"><span class="countup" data-count="15">0</span></div>
+        <div class="num-label">正式图表</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- ==================== 浮动层 ==================== -->
+<div class="notes" id="notes"></div>
+<div class="progress" id="progress"></div>
+<div class="nav-dots" id="nav-dots"></div>
+<div class="pg" id="pg"><b>1</b> / 21</div>
+<div class="hint">← → 翻页 &nbsp;|&nbsp; S 讲稿 &nbsp;|&nbsp; Home / End</div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let idx = 0, notesOn = false;
+
+  const pgEl    = document.getElementById('pg');
+  const progEl  = document.getElementById('progress');
+  const notesEl = document.getElementById('notes');
+  const dotsEl  = document.getElementById('nav-dots');
+
+  // 生成导航点
+  slides.forEach((_, i) => {
+    const dot = document.createElement('i');
+    dot.addEventListener('click', e => { e.stopPropagation(); idx = i; render(); });
+    dotsEl.appendChild(dot);
+  });
+  const dots = Array.from(dotsEl.children);
+
+  // 数字滚动
+  function countUp(el){
+    const target = parseFloat(el.dataset.count);
+    const dec    = parseInt(el.dataset.dec || '0');
+    const suffix = el.dataset.suffix || '';
+    const dur    = 1100;
+    const start  = performance.now();
+    function tick(now){
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const v = target * eased;
+      el.textContent = (dec > 0 ? v.toFixed(dec) : Math.round(v).toLocaleString()) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = (dec > 0 ? target.toFixed(dec) : target.toLocaleString()) + suffix;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function render(){
+    slides.forEach((s, i) => s.classList.toggle('on', i === idx));
+    pgEl.innerHTML = '<b>' + (idx + 1) + '</b> / ' + total;
+    progEl.style.width = ((idx + 1) / total * 100) + '%';
+    dots.forEach((d, i) => d.classList.toggle('on', i === idx));
+
+    const cur = slides[idx];
+
+    // 重置并重放数字滚动
+    cur.querySelectorAll('[data-count]').forEach(el => {
+      el.textContent = '0';
+      setTimeout(() => countUp(el), 220);
+    });
+
+    // 柱状图条错峰延迟
+    cur.querySelectorAll('.bars .bar').forEach((b, i) => {
+      b.style.transitionDelay = (i * 0.07) + 's';
+    });
+
+    // SVG 描边重放
+    cur.querySelectorAll('.draw').forEach(el => {
+      el.style.transition = 'none';
+      el.style.strokeDashoffset = '1';
+      void el.offsetWidth;
+      el.style.transition = '';
+      el.style.strokeDashoffset = '0';
+    });
+
+    // 讲稿
+    const note = cur.getAttribute('data-note') || '';
+    notesEl.innerHTML = note
+      ? '<b>🎙 讲稿：</b>' + note
+      : '<b>🎙 讲稿：</b><span style="color:#94a3b8">（本页无讲稿）</span>';
+  }
+
+  function go(d){ idx = (idx + d + total) % total; render(); }
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight',' ','PageDown'].includes(e.key)){ e.preventDefault(); go(1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(-1); }
+    else if (e.key === 's' || e.key === 'S'){ notesOn = !notesOn; notesEl.classList.toggle('show', notesOn); }
+    else if (e.key === 'Home'){ idx = 0; render(); }
+    else if (e.key === 'End'){ idx = total - 1; render(); }
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    const x = e.clientX, w = window.innerWidth;
+    if (x > w * 0.62) go(1);
+    else if (x < w * 0.38) go(-1);
+  });
+
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.changedTouches[0].screenX; }, {passive:true});
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - tx;
+    if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
+  }, {passive:true});
+
+  render();
+})();
+</script>
+</body>
+</html>
