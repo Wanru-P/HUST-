@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HF 模型家族疆域演化图（真实数据回放）</title>
+<style>
+  :root{ --paper:#efe3c5; --ink:#2b2317; --ink2:#5b4a32; --red:#9e2b25; --gold:#9a7b2e; --line:#b89b6a; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:radial-gradient(circle at 25% 10%,#f7efda,transparent 60%),var(--paper);
+    color:var(--ink);font-family:"KaiTi","STKaiti","楷体",serif;line-height:1.6;padding:22px 16px 50px;}
+  .wrap{max-width:1200px;margin:0 auto;}
+  header{position:relative;border:2px solid var(--red);border-radius:8px;padding:16px 64px 16px 22px;
+    background:linear-gradient(180deg,#fbf4e2,#f1e6cb);box-shadow:0 4px 0 rgba(158,43,37,.18),0 10px 24px rgba(120,80,30,.12);}
+  h1{font-size:27px;letter-spacing:4px;color:var(--red);text-align:center;text-shadow:0 1px 0 #fff;}
+  .sub{text-align:center;color:var(--ink2);font-size:13px;margin-top:4px;letter-spacing:1px;}
+  .meta{text-align:center;font-size:11.5px;color:#8a7142;margin-top:6px;}
+  .seal{position:absolute;top:50%;right:16px;transform:translateY(-50%);width:46px;height:46px;border:2px solid var(--red);border-radius:6px;
+    color:var(--red);font-size:14px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;
+    background:rgba(158,43,37,.06);box-shadow:inset 0 0 0 1px rgba(158,43,37,.25);letter-spacing:1px;}
+  .stage{display:flex;gap:16px;margin-top:18px;flex-wrap:wrap;}
+  .mapcol{flex:1 1 650px;min-width:320px;}
+  .side{flex:1 1 320px;min-width:280px;}
+  .mapbox{border:1px solid var(--line);border-radius:8px;background:#0b1320;overflow:hidden;position:relative;box-shadow:0 6px 20px rgba(20,30,50,.25);}
+  canvas{display:block;width:100%;height:auto;background:#0b1320;}
+  .hud{position:absolute;top:9px;left:11px;color:#f0e6cc;font-size:13px;
+    text-shadow:0 1px 3px #000;line-height:1.5;pointer-events:none;}
+  .hud b{color:#ffd98a;}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:12.5px;color:var(--ink2);}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.15);}
+  .ctrl{margin-top:11px;border:1px solid var(--line);border-radius:8px;background:#fbf4e2;padding:11px 14px;box-shadow:0 2px 8px rgba(120,80,30,.08);}
+  .ctrl .row1{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  button{font-family:inherit;font-size:15px;background:linear-gradient(180deg,#b5392f,#9e2b25);color:#fff;border:0;
+    padding:7px 18px;border-radius:6px;cursor:pointer;letter-spacing:2px;box-shadow:0 2px 0 rgba(120,30,25,.5);transition:.15s;}
+  button:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  button:active{transform:translateY(1px);box-shadow:none;}
+  .timeline{flex:1;min-width:180px;}
+  input[type=range]{width:100%;accent-color:var(--red);}
+  .speed{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2);}
+  select{font-family:inherit;font-size:13px;padding:2px 4px;border:1px solid var(--line);border-radius:4px;background:#fff;}
+  .mon{font-size:14px;color:var(--red);font-weight:bold;min-width:92px;text-align:center;}
+  .board{border:1px solid var(--line);border-radius:8px;background:#fbf4e2;padding:12px 14px;margin-top:14px;box-shadow:0 2px 8px rgba(120,80,30,.08);}
+  .board h2{font-size:17px;color:var(--red);letter-spacing:2px;margin-bottom:8px;border-left:6px solid var(--gold);padding-left:8px;}
+  .srow{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12.5px;}
+  .srow .gw{width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;font-size:21px;line-height:1;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.55);}
+  .srow .nm{flex:1;min-width:0;}
+  .srow .nm .t{font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .srow .nm .b{font-size:11px;color:var(--ink2);}
+  .bar{height:12px;background:#e7d8b6;border-radius:3px;position:relative;overflow:hidden;margin-top:2px;box-shadow:inset 0 1px 2px rgba(0,0,0,.12);}
+  .bar>i{display:block;height:100%;border-radius:3px;}
+  .metrics{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px;}
+  .metric{flex:1 1 100px;border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center;background:linear-gradient(180deg,#fdf7e7,#f3e8cf);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);}
+  .metric .v{font-size:18px;color:var(--red);font-weight:bold;}
+  .metric .k{font-size:11px;color:var(--ink2);margin-top:2px;}
+  .note{font-size:11px;color:#8a7142;margin-top:9px;border-top:1px dashed var(--line);padding-top:7px;}
+  .endcard{position:absolute;inset:0;background:rgba(8,12,18,.94);color:#f0e6cc;
+    display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;text-align:center;backdrop-filter:blur(2px);}
+  .endcard h3{color:#ffd98a;font-size:23px;letter-spacing:4px;margin-bottom:12px;}
+  .endcard p{font-size:14px;line-height:1.9;max-width:560px;}
+  .endcard .gv{color:#ffd98a;font-weight:bold;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>HF 模型家族疆域演化图</h1>
+    <span class="seal">HF</span>
+    <div class="sub">真实月度数据回放 · 领土=格子归属，沿城邦边界按概率生长 · AI 模型家族皮肤</div>
+    <div class="meta">数据取自 HUST 论文仓库 gold 分析结果（逐月新增 / 家族规模 / 集中度），累计模型数精确 = 3,138,954</div>
+  </header>
+
+  <div class="stage">
+    <div class="mapcol">
+      <div class="mapbox">
+        <canvas id="map"></canvas>
+        <div class="hud" id="hud"></div>
+        <div class="endcard" id="endcard">
+          <h3>疆域终局</h3>
+          <p>
+            截至 2026-10，版图既定：<span class="gv">Gini 0.995</span> 的极端集中、<span class="gv">Top 1% 家族占 97.1%</span> 下载、<span class="gv">零下载死城 43.5%</span> 长眠、<span class="gv">unknown 任务 65.6%</span> 灰雾不参战。<br>
+            模型家族并立：FLUX 独霸文生图，千问（Qwen）合族之众冠绝，Llama 血脉绵长。<br>
+            <span style="font-size:12px;color:#9a8">注：2022-03-02 单日涌入 29,573 模型（占该月 90.7%）为早期元数据批写入异常，非自然高峰。</span>
+          </p>
+        </div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div class="ctrl">
+        <div class="row1">
+          <button id="play">▶ 播放演化</button>
+          <span class="mon" id="mon">2022-03</span>
+          <div class="timeline"><input type="range" id="tl" min="0" max="55" value="0" step="1"></div>
+          <span class="speed">速度
+            <select id="spd">
+              <option value="2">慢</option>
+              <option value="5" selected>中</option>
+              <option value="11">快</option>
+              <option value="22">极快</option>
+            </select>
+          </span>
+        </div>
+        <div class="note">操作：点「播放演化」自动回放；拖时间轴可定格任一年月。领土 ≠ 辐射光环，而是「该家族已占领的格子」——每月在已有城邦周围、沿边界向未占空地按概率随机生长；各家族按真实规模扩张、互不吞并，消亡仅来自真实死城率。</div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="board">
+        <h2>🏰 模型家族军情（真实规模 · 实时占地）</h2>
+        <div id="panel"></div>
+        <div class="metrics">
+          <div class="metric"><div class="v" id="m-total">0</div><div class="k">累计模型</div></div>
+          <div class="metric"><div class="v" id="m-occ">0%</div><div class="k">家族占地占比</div></div>
+          <div class="metric"><div class="v" id="m-dead">0%</div><div class="k">零下载消亡</div></div>
+        </div>
+      </div>
+      <div class="board">
+        <h2>📈 月度新增（真实曲线）</h2>
+        <canvas id="spark" width="300" height="120" style="width:100%;height:auto;background:#0b1320;border-radius:5px;"></canvas>
+        <div class="note">朱线为逐月新增真实值（56 个月），★ 为峰值 <b>2024-09 ≈ 125,030</b>。下方填充随播放推进。</div>
+      </div>
+      <div class="note">说明：各家族「疆域（衍生子孙）/兵力（累积下载）/血脉（衍生链深）」为仓库实测真值；而每个月的「逐家出生分布」为示意模型（真实仅含月度总量与末态规模），领土大小按真实子孙数比例、边界生长按真实规模推演。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ===================== 真实数据 ===================== */
+const NEW = [32621,5509,7089,6779,6046,5537,6159,7867,9535,13250,14659,16269,22021,22556,23327,23700,29738,34664,29838,30977,36223,34234,37633,37710,41749,47910,54451,51760,55011,78222,125030,64281,69385,77694,99926,94802,92739,100136,103977,78901,72818,94269,78971,94744,95532,96347,122841,84759,84915,91033,97878,84977,89047,92465,92463,35980];
+const TOTAL = 3138954;
+const NMON = NEW.length;            // 56
+const PEAK_IDX = 30;                // 2024-09
+
+// 模型家族：根模型（按组织/品牌聚类）真实规模
+// desc=衍生子孙(疆域) dl=累积下载(兵力) depth=衍生链最深(血脉)
+const FACT = [
+  {gw:'FLUX',paths:["M11.402 23.747c.154.075.306.154.454.238.181.038.37.004.525-.097l.386-.251c-1.242-.831-2.622-1.251-3.998-1.602l2.633 1.712Zm-7.495-5.783a8.088 8.088 0 0 1-.222-.236.696.696 0 0 0 .112 1.075l2.304 1.498c1.019.422 2.085.686 3.134.944 1.636.403 3.2.79 4.554 1.728l.697-.453c-1.541-1.158-3.327-1.602-5.065-2.03-2.039-.503-3.965-.977-5.514-2.526Zm1.414-1.322-.665.432c.023.024.044.049.068.073 1.702 1.702 3.825 2.225 5.877 2.731 1.778.438 3.469.856 4.9 1.982l.682-.444c-1.612-1.357-3.532-1.834-5.395-2.293-2.019-.497-3.926-.969-5.467-2.481Zm7.502 2.084c1.596.412 3.096.904 4.367 2.036l.67-.436c-1.484-1.396-3.266-1.953-5.037-2.403v.803Zm.698-2.337a64.695 64.695 0 0 1-.698-.174v.802l.512.127c2.039.503 3.965.978 5.514 2.526l.007.009.663-.431c-.041-.042-.079-.086-.121-.128-1.702-1.701-3.824-2.225-5.877-2.731Zm-.698-1.928v.816c.624.19 1.255.347 1.879.501 2.039.502 3.965.977 5.513 2.526.077.077.153.157.226.239a.704.704 0 0 0-.238-.911l-3.064-1.992c-.744-.245-1.502-.433-2.251-.618a31.436 31.436 0 0 1-2.065-.561Zm-1.646 3.049c-1.526-.4-2.96-.888-4.185-1.955l-.674.439c1.439 1.326 3.151 1.88 4.859 2.319v-.803Zm0-1.772a8.543 8.543 0 0 1-2.492-1.283l-.686.446c.975.804 2.061 1.293 3.178 1.655v-.818Zm0-1.946a7.59 7.59 0 0 1-.776-.453l-.701.456c.462.337.957.627 1.477.865v-.868Zm3.533.269-1.887-1.226v.581c.614.257 1.244.473 1.887.645Zm5.493-8.863L12.381.112a.705.705 0 0 0-.762 0L3.797 5.198a.698.698 0 0 0 0 1.171l7.38 4.797V7.678a.414.414 0 0 0-.412-.412h-.543a.413.413 0 0 1-.356-.617l1.777-3.079a.412.412 0 0 1 .714 0l1.777 3.079a.413.413 0 0 1-.356.617h-.543a.414.414 0 0 0-.412.412v3.488l7.38-4.797a.7.7 0 0 0 0-1.171Z"],vb:24,name:'FLUX.1-dev',org:'黑森林实验室',camp:'文生图',color:'#7d4ba8',desc:43682,dl:34112217,depth:5, struct:'星型',birth:'2024-07',x:0.30,y:0.50},
+  {gw:'千问',paths:["M23.919 14.545 20.817 9.17l1.47-2.544a.56.56 0 0 0 0-.566l-1.633-2.83a.57.57 0 0 0-.49-.283h-6.207L12.487.402a.57.57 0 0 0-.49-.284H8.732a.56.56 0 0 0-.49.284L5.139 5.775h-2.94a.56.56 0 0 0-.49.284L.077 8.887a.56.56 0 0 0 0 .567L3.18 14.83l-1.47 2.545a.56.56 0 0 0 0 .566l1.634 2.83a.57.57 0 0 0 .49.283h6.205l1.47 2.545a.57.57 0 0 0 .49.284h3.266a.57.57 0 0 0 .49-.284l3.104-5.375h2.94a.57.57 0 0 0 .49-.283l1.634-2.828a.55.55 0 0 0-.004-.568M8.733.686l1.634 2.828-1.634 2.828H21.8L20.164 9.17H7.425L5.63 6.06Zm1.306 19.801-6.205-.002 1.634-2.83h3.265L2.201 6.344h3.267q3.182 5.517 6.367 11.032zm10.124-5.66L18.53 12l-6.532 11.315-1.634-2.83c2.129-3.673 4.25-7.351 6.373-11.028h3.592l3.102 5.374z"],vb:24,name:'Qwen 系列',org:'阿里·通义千问',camp:'文本',color:'#2f9e4f',desc:136390,dl:340116314,depth:3, struct:'星型',birth:'2024-02',x:0.44,y:0.74},
+  {gw:'Gemma',paths:["M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"],vb:24,name:'Gemma 系列（谷歌）',org:'Google',camp:'文本',color:'#17a2a2',desc:33965,dl:13459481,depth:3, struct:'星型',birth:'2024-02',x:0.50,y:0.54},
+  {gw:'Llama',paths:["M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303zm10.16 2.053c1.147 0 2.188.758 2.992 1.999 1.132 1.748 1.647 4.195 1.647 6.4 0 1.548-.368 2.9-1.839 2.9-.58 0-1.027-.23-1.664-1.004-.496-.601-1.343-1.878-2.832-4.358l-.617-1.028a44.908 44.908 0 0 0-1.255-1.98c.07-.109.141-.224.211-.327 1.12-1.667 2.118-2.602 3.358-2.602zm-10.201.553c1.265 0 2.058.791 2.675 1.446.307.327.737.871 1.234 1.579l-1.02 1.566c-.757 1.163-1.882 3.017-2.837 4.338-1.191 1.649-1.81 1.817-2.486 1.817-.524 0-1.038-.237-1.383-.794-.263-.426-.464-1.13-.464-2.046 0-2.221.63-4.535 1.66-6.088.454-.687.964-1.226 1.533-1.533a2.264 2.264 0 0 1 1.088-.285z"],vb:24,name:'Llama 系列（Meta）',org:'Meta',camp:'文本',color:'#3a6fd6',desc:42903,dl:264648156,depth:141,struct:'链型',birth:'2024-04',x:0.70,y:0.50},
+  {gw:'BERT',paths:["M12.025 1.13c-5.77 0-10.449 4.647-10.449 10.378 0 1.112.178 2.181.503 3.185.064-.222.203-.444.416-.577a.96.96 0 0 1 .524-.15c.293 0 .584.124.84.284.278.173.48.408.71.694.226.282.458.611.684.951v-.014c.017-.324.106-.622.264-.874s.403-.487.762-.543c.3-.047.596.06.787.203s.31.313.4.467c.15.257.212.468.233.542.01.026.653 1.552 1.657 2.54.616.605 1.01 1.223 1.082 1.912.055.537-.096 1.059-.38 1.572.637.121 1.294.187 1.967.187.657 0 1.298-.063 1.921-.178-.287-.517-.44-1.041-.384-1.581.07-.69.465-1.307 1.081-1.913 1.004-.987 1.647-2.513 1.657-2.539.021-.074.083-.285.233-.542.09-.154.208-.323.4-.467a1.08 1.08 0 0 1 .787-.203c.359.056.604.29.762.543s.247.55.265.874v.015c.225-.34.457-.67.683-.952.23-.286.432-.52.71-.694.257-.16.547-.284.84-.285a.97.97 0 0 1 .524.151c.228.143.373.388.43.625l.006.04a10.3 10.3 0 0 0 .534-3.273c0-5.731-4.678-10.378-10.449-10.378M8.327 6.583a1.5 1.5 0 0 1 .713.174 1.487 1.487 0 0 1 .617 2.013c-.183.343-.762-.214-1.102-.094-.38.134-.532.914-.917.71a1.487 1.487 0 0 1 .69-2.803m7.486 0a1.487 1.487 0 0 1 .689 2.803c-.385.204-.536-.576-.916-.71-.34-.12-.92.437-1.103.094a1.487 1.487 0 0 1 .617-2.013 1.5 1.5 0 0 1 .713-.174m-10.68 1.55a.96.96 0 1 1 0 1.921.96.96 0 0 1 0-1.92m13.838 0a.96.96 0 1 1 0 1.92.96.96 0 0 1 0-1.92M8.489 11.458c.588.01 1.965 1.157 3.572 1.164 1.607-.007 2.984-1.155 3.572-1.164.196-.003.305.12.305.454 0 .886-.424 2.328-1.563 3.202-.22-.756-1.396-1.366-1.63-1.32q-.011.001-.02.006l-.044.026-.01.008-.03.024q-.018.017-.035.036l-.032.04a1 1 0 0 0-.058.09l-.014.025q-.049.088-.11.19a1 1 0 0 1-.083.116 1.2 1.2 0 0 1-.173.18q-.035.029-.075.058a1.3 1.3 0 0 1-.251-.243 1 1 0 0 1-.076-.107c-.124-.193-.177-.363-.337-.444-.034-.016-.104-.008-.2.022q-.094.03-.216.087-.06.028-.125.063l-.13.074q-.067.04-.136.086a3 3 0 0 0-.135.096 3 3 0 0 0-.26.219 2 2 0 0 0-.12.121 2 2 0 0 0-.106.128l-.002.002a2 2 0 0 0-.09.132l-.001.001a1.2 1.2 0 0 0-.105.212q-.013.036-.024.073c-1.139-.875-1.563-2.317-1.563-3.203 0-.334.109-.457.305-.454m.836 10.354c.824-1.19.766-2.082-.365-3.194-1.13-1.112-1.789-2.738-1.789-2.738s-.246-.945-.806-.858-.97 1.499.202 2.362c1.173.864-.233 1.45-.685.64-.45-.812-1.683-2.896-2.322-3.295s-1.089-.175-.938.647 2.822 2.813 2.562 3.244-1.176-.506-1.176-.506-2.866-2.567-3.49-1.898.473 1.23 2.037 2.16c1.564.932 1.686 1.178 1.464 1.53s-3.675-2.511-4-1.297c-.323 1.214 3.524 1.567 3.287 2.405-.238.839-2.71-1.587-3.216-.642-.506.946 3.49 2.056 3.522 2.064 1.29.33 4.568 1.028 5.713-.624m5.349 0c-.824-1.19-.766-2.082.365-3.194 1.13-1.112 1.789-2.738 1.789-2.738s.246-.945.806-.858.97 1.499-.202 2.362c-1.173.864.233 1.45.685.64.451-.812 1.683-2.896 2.322-3.295s1.089-.175.938.647-2.822 2.813-2.562 3.244 1.176-.506 1.176-.506 2.866-2.567 3.49-1.898-.473 1.23-2.037 2.16c-1.564.932-1.686 1.178-1.464 1.53s3.675-2.511 4-1.297c.323 1.214-3.524 1.567-3.287 2.405.238.839 2.71-1.587 3.216-.642.506.946-3.49 2.056-3.522 2.064-1.29.33-4.568 1.028-5.713-.624"],vb:24,name:'distilbert-base-uncased',org:'HuggingFace·BERT系',camp:'NLP',color:'#c8921e',desc:13550,dl:693258213,depth:8, struct:'链型',birth:'2022-03',x:0.52,y:0.27},
+  {gw:'SDXL',paths:["M72.418 212.45c49.478 0 81.658-26.205 81.658-65.626c0-30.572-19.572-49.998-54.569-58.043l-22.469-6.74c-19.71-4.424-31.215-9.738-28.505-23.312c2.255-11.292 9.002-17.667 24.69-17.667c49.872 0 68.35 17.667 68.35 17.667V16.237S123.583 0 73.223 0C25.757 0 0 24.424 0 62.236c0 30.571 17.85 48.35 54.052 56.798q3.802.95 3.885.976q8.26 2.556 22.293 6.755c18.504 4.425 23.262 9.121 23.262 23.2c0 12.872-13.374 20.19-31.074 20.19C21.432 170.154 0 144.36 0 144.36v47.078s13.402 21.01 72.418 21.01", "M225.442 209.266c17.515 0 30.558-12.67 30.558-29.812c0-17.515-12.67-29.813-30.558-29.813c-17.515 0-30.185 12.298-30.185 29.813s12.67 29.812 30.185 29.812"],vb:256,name:'SDXL-base-1.0',org:'Stability AI',camp:'文生图',color:'#c0508f',desc:11371,dl:126659657,depth:7, struct:'链型',birth:'2023-07',x:0.70,y:0.28},
+  {gw:'Mistral',paths:["M17.143 3.429v3.428h-3.429v3.429h-3.428V6.857H6.857V3.43H3.43v13.714H0v3.428h10.286v-3.428H6.857v-3.429h3.429v3.429h3.429v-3.429h3.428v3.429h-3.428v3.428H24v-3.428h-3.43V3.429z"],vb:24,name:'Mistral-7B-v0.1',org:'Mistral AI',camp:'文本',color:'#c0392b',desc:10487,dl:27754713,depth:58, struct:'链型',birth:'2023-09',x:0.55,y:0.66},
+];
+const sumDesc = FACT.reduce((s,f)=>s+f.desc,0);
+FACT.forEach((f,i)=>{ f.idx=i; f.frac=f.desc/sumDesc;
+  const [y,m]=f.birth.split('-').map(Number);
+  f.birthIdx=(y-2022)*12+(m-3); f.placed=false; });
+
+const MONTHS=[]; (function(){ let y=2022,mo=3; for(let i=0;i<NMON;i++){ MONTHS.push(y+'-'+String(mo).padStart(2,'0')); mo++; if(mo>12){mo=1;y++;} } })();
+const cum=[]; (function(){ let s=0; for(let i=0;i<NMON;i++){ s+=NEW[i]; cum.push(s); } })();
+
+/* ===================== 大陆几何 ===================== */
+const W=1080, H=640, CELL=8;
+const CX=W/2, CY=H/2, RX=372, RY=296;
+const cont=[]; (function(){ const NV=28; for(let i=0;i<NV;i++){ const a=i/NV*Math.PI*2;
+  const mult = 0.88 + 0.16*Math.abs(Math.sin(i*1.21+0.6));
+  cont.push({x:CX+Math.cos(a)*RX*mult, y:CY+Math.sin(a)*RY*mult}); } })();
+function inLand(x,y){ let ins=false; for(let i=0,j=cont.length-1;i<cont.length;j=i++){
+  const xi=cont[i].x,yi=cont[i].y,xj=cont[j].x,yj=cont[j].y;
+  if(((yi>y)!=(yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi)) ins=!ins; } return ins; }
+
+/* ===================== 格子世界 ===================== */
+const cols=Math.ceil(W/CELL), rows=Math.ceil(H/CELL);
+const landCells=[], landMap=new Map();
+for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cols;gx++){
+  const x=(gx+0.5)*CELL, y=(gy+0.5)*CELL;
+  if(!inLand(x,y)) continue;
+  const c={gx,gy,x,y,owner:-1,claimed:false,dead:false,born:-1,deathMonth:Infinity,flash:0,nb:[]};
+  landCells.push(c); landMap.set(gy*cols+gx,c);
+}
+const landCount=landCells.length;
+// 邻居（8 邻）
+const D8=[[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+for(const c of landCells){ for(const [dx,dy] of D8){ const n=landMap.get((c.gy+dy)*cols+(c.gx+dx)); if(n) c.nb.push(n); } }
+// 首都落点：确保在大陸内（向外找最近陆地）
+for(const f of FACT){
+  let px=f.x*W, py=f.y*H;
+  if(!inLand(px,py)){ let t=0; while(t<1 && !inLand(px,py)){ px+=(CX-px)*0.1; py+=(CY-py)*0.1; t+=0.1; } }
+  let best=null,bd=1e9;
+  for(const c of landCells){ const d=(c.x-px)**2+(c.y-py)**2; if(d<bd){bd=d;best=c;} }
+  f.cap=best;
+}
+
+/* ===================== 演化引擎（确定性回放） ===================== */
+let _seed=987654321;
+function rnd(){ _seed|=0; _seed=_seed+0x6D2B79F5|0; let t=Math.imul(_seed^_seed>>>15,1|_seed);
+  t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }
+
+const factionCells=Math.round(0.42*landCount);
+const loneCells=Math.round(0.42*landCount);
+const DEATHRATE=0.435;
+let cnt=new Array(8).fill(0);
+const owned=FACT.map(()=>[]);
+let loneBorn=0, loneDead=0;
+
+function claim(cell,owner,m){
+  if(cell.owner===7) cnt[7]--;
+  if(owner===7 && !cell.claimed) loneBorn++;
+  cell.claimed=true; cell.owner=owner; cell.born=m; cell.dead=false;
+  cnt[owner]++;
+  if(owner>=0&&owner<7) owned[owner].push(cell);
+  // 仅孤城（零下载个体模型）会按真实死城率 43.5% 消亡；模型家族（根家族）持续演进、不死
+  if(owner===7 && cell.deathMonth===Infinity && m>0){
+    if(rnd()<DEATHRATE){ const span=Math.max(1, NMON-1-m);
+      cell.deathMonth=m+1+Math.floor(rnd()*span); if(cell.deathMonth>NMON-1) cell.deathMonth=NMON-1;
+    } else cell.deathMonth=Infinity;
+  }
+}
+
+function growOne(f,m){
+  const arr=owned[f.idx]; let tries=0;
+  while(tries++<16){
+    if(arr.length===0) break;
+    const base=arr[(rnd()*arr.length)|0];
+    if(!base||base.owner!==f.idx) continue;
+    const nb=base.nb[(rnd()*base.nb.length)|0];
+    if(!nb) continue;
+    // 纯演化：只向未占的空地生长，互不吞并、也不抢占长尾孤城
+    if(!nb.claimed){ claim(nb,f.idx,m); return; }
+  }
+}
+function growLone(m){
+  let tries=0;
+  while(tries++<20){
+    const c=landCells[(rnd()*landCount)|0];
+    if(!c.claimed){ claim(c,7,m); return; }
+    const nb=c.nb[(rnd()*c.nb.length)|0];
+    if(nb && !nb.claimed){ claim(nb,7,m); return; }
+  }
+}
+function placeCapital(f,m){ const c=f.cap; c.claimed=true; c.owner=f.idx; c.born=m; c.deathMonth=Infinity; cnt[f.idx]++; owned[f.idx].push(c); f.placed=true; }
+
+function stepMonth(m){
+  for(const f of FACT){ if(!f.placed && m>=f.birthIdx) placeCapital(f,m); }
+  // 各势力按「自出生起的局部进度」生长，避免晚出生的大势力在出生瞬间被一次性补齐而“暴涨”
+  for(const f of FACT){ if(!f.placed) continue;
+    const baseCum = f.birthIdx>0 ? cum[f.birthIdx-1] : 0;
+    const lprog = (cum[m]-baseCum)/(TOTAL-baseCum);
+    const tgt=Math.round(f.frac*factionCells*lprog);
+    let need=tgt-cnt[f.idx]; while(need-- >0) growOne(f,m);
+  }
+  const prog=cum[m]/TOTAL;
+  const loneTgt=Math.round(loneCells*prog);
+  let lneed=loneTgt-cnt[7]; while(lneed-- >0) growLone(m);
+  // 消亡：到死亡月的格子彻底释放（不再占位），空地由周围活着的城邦沿边自然填上
+  for(const c of landCells){
+    if(c.claimed && c.deathMonth!==Infinity && c.deathMonth<=m){
+      cnt[c.owner]--;
+      if(c.owner>=0 && c.owner<7){ const a=owned[c.owner]; const i=a.indexOf(c); if(i>=0) a.splice(i,1); }
+      if(c.owner===7) loneDead++;
+      c.claimed=false; c.owner=-1; c.dead=false; c.deathMonth=Infinity; c.born=-1;
+    }
+  }
+}
+function resetWorld(){
+  _seed=987654321;
+  cnt=new Array(8).fill(0);
+  for(const f of FACT){ owned[f.idx].length=0; f.placed=false; }
+  for(const c of landCells){ c.claimed=false; c.owner=-1; c.dead=false; c.born=-1; c.deathMonth=Infinity; c.flash=0; }
+  loneBorn=0; loneDead=0;
+  for(const f of FACT){ if(f.birthIdx<=0) placeCapital(f,0); }
+}
+function rebuildTo(v){
+  resetWorld();
+  const last=Math.min(NMON-1, Math.floor(v));
+  for(let m=1;m<=last;m++) stepMonth(m);
+}
+
+/* ===================== 渲染 ===================== */
+const canvas=document.getElementById('map'); canvas.width=W; canvas.height=H;
+const ctx=canvas.getContext('2d');
+const bg=document.createElement('canvas'); bg.width=W; bg.height=H; const bx=bg.getContext('2d');
+
+function drawBG(){
+  // 海洋：深邃多层渐变
+  const og=bx.createLinearGradient(0,0,0,H); og.addColorStop(0,'#0a1626'); og.addColorStop(0.5,'#0c1d33'); og.addColorStop(1,'#070f1a');
+  bx.fillStyle=og; bx.fillRect(0,0,W,H);
+  // 海洋微光
+  const seaGlow=bx.createRadialGradient(CX,CY,RX*0.2,CX,CY,RX*1.5);
+  seaGlow.addColorStop(0,'rgba(46,86,140,0.10)'); seaGlow.addColorStop(1,'rgba(0,0,0,0)');
+  bx.fillStyle=seaGlow; bx.fillRect(0,0,W,H);
+  // 极淡经纬网格
+  bx.strokeStyle='rgba(202,168,95,0.045)'; bx.lineWidth=1;
+  for(let gx=0;gx<=W;gx+=64){ bx.beginPath(); bx.moveTo(gx,0); bx.lineTo(gx,H); bx.stroke(); }
+  for(let gy=0;gy<=H;gy+=64){ bx.beginPath(); bx.moveTo(0,gy); bx.lineTo(W,gy); bx.stroke(); }
+  const path=()=>{ bx.beginPath(); cont.forEach((p,i)=> i?bx.lineTo(p.x,p.y):bx.moveTo(p.x,p.y)); bx.closePath(); };
+  // 大陆外发光
+  bx.save(); bx.shadowColor='rgba(255,216,138,0.45)'; bx.shadowBlur=26;
+  path(); bx.fillStyle='#1a140c'; bx.fill(); bx.restore();
+  // 大陆填充：径向渐变（中心暖、边缘暗）
+  path();
+  const lg=bx.createRadialGradient(CX,CY*0.9,30,CX,CY,RX*1.2);
+  lg.addColorStop(0,'#46402e'); lg.addColorStop(0.55,'#3a3326'); lg.addColorStop(1,'#221c14');
+  bx.fillStyle=lg; bx.fill();
+  // 内陆暖色高光
+  const hi=bx.createRadialGradient(CX,CY*0.85,10,CX,CY*0.85,RX*0.62);
+  hi.addColorStop(0,'rgba(255,236,184,0.07)'); hi.addColorStop(1,'rgba(255,236,184,0)');
+  path(); bx.fillStyle=hi; bx.fill();
+  // 内陆纹理：淡噪点
+  let s=12345; const r2=()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; };
+  bx.fillStyle='rgba(0,0,0,0.10)';
+  for(let i=0;i<3200;i++){ const x=r2()*W,y=r2()*H; if(inLand(x,y)) bx.fillRect(x,y,1.5,1.5); }
+  // 海岸线双层发光
+  path(); bx.lineJoin='round';
+  bx.shadowColor='rgba(255,216,138,0.55)'; bx.shadowBlur=10;
+  bx.lineWidth=2.5; bx.strokeStyle='#e8c878'; bx.stroke();
+  bx.shadowBlur=0;
+  bx.lineWidth=1; bx.strokeStyle='rgba(202,168,95,0.5)'; bx.stroke();
+  // 罗盘（精致）
+  const cxp=W-52,cyp=54,cr=30;
+  bx.strokeStyle='rgba(202,168,95,0.7)'; bx.lineWidth=1.2;
+  bx.beginPath(); bx.arc(cxp,cyp,cr,0,Math.PI*2); bx.stroke();
+  bx.beginPath(); bx.arc(cxp,cyp,cr-5,0,Math.PI*2); bx.stroke();
+  for(let k=0;k<8;k++){ const a=k/8*Math.PI*2; bx.beginPath(); bx.moveTo(cxp+Math.cos(a)*(cr-5),cyp+Math.sin(a)*(cr-5)); bx.lineTo(cxp+Math.cos(a)*cr,cyp+Math.sin(a)*cr); bx.stroke(); }
+  bx.fillStyle='#e8c878'; bx.beginPath(); bx.moveTo(cxp,cyp-cr+2); bx.lineTo(cxp-4,cyp); bx.lineTo(cxp+4,cyp); bx.closePath(); bx.fill();
+  bx.fillStyle='#f0e6cc'; bx.font='11px serif'; bx.textAlign='center'; bx.fillText('北',cxp,cyp-cr-4);
+}
+function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+// 画真实品牌 logo（白色剪影）到 canvas：以 (cx,cy) 为中心、边长 size 像素
+function drawLogo(g,f,cx,cy,size){ const s=size/f.vb; g.save(); g.translate(cx-size/2,cy-size/2); g.scale(s,s); g.fillStyle='#fff'; for(const d of f.paths){ g.fill(new Path2D(d)); } g.restore(); }
+// 生成内联 SVG 字符串（fill 决定颜色：深色底用白，浅色底用品色）
+function svgTag(f,size,fill){ fill=fill||'#fff'; return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+f.vb+' '+f.vb+'" fill="'+fill+'" xmlns="http://www.w3.org/2000/svg">'+f.paths.map(function(d){return '<path d="'+d+'"></path>';}).join('')+'</svg>'; }
+function render(){
+  ctx.drawImage(bg,0,0);
+  const hs=CELL/2;
+  for(const c of landCells){
+    if(!c.claimed) continue;
+    const col = c.owner===7 ? 'rgba(150,150,128,0.5)' : FACT[c.owner].color;
+    ctx.fillStyle=col; ctx.fillRect(c.x-hs,c.y-hs,CELL-0.6,CELL-0.6);
+    // 质感：家族格子加内高光边；孤城保持半透
+    if(c.owner!==7){
+      ctx.strokeStyle='rgba(255,255,255,0.14)'; ctx.lineWidth=0.6;
+      ctx.strokeRect(c.x-hs+0.8,c.y-hs+0.8,CELL-2.0,CELL-2.0);
+    }
+  }
+  for(const f of FACT){ if(!f.placed) continue; const c=f.cap;
+    ctx.save();
+    // 旗杆
+    ctx.strokeStyle='rgba(233,220,192,.85)'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(c.x,c.y); ctx.lineTo(c.x,c.y-34); ctx.stroke();
+    // 圆形图标徽章（势力色描边 + 内嵌 emoji 图腾）
+    ctx.shadowColor=f.color; ctx.shadowBlur=16;
+    ctx.beginPath(); ctx.arc(c.x,c.y-42,16,0,Math.PI*2); ctx.fillStyle='#13202f'; ctx.fill();
+    ctx.lineWidth=3.2; ctx.strokeStyle=f.color; ctx.stroke();
+    ctx.shadowBlur=0;
+    drawLogo(ctx, f, c.x, c.y-42, 21);
+    ctx.textBaseline='alphabetic';
+    // 名牌（模型家族）
+    ctx.font='bold 14px "KaiTi","Microsoft YaHei",sans-serif';
+    const label=f.gw, lw=ctx.measureText(label).width, bw=lw+12, bh=19, bx0=c.x-bw/2, by0=c.y+9;
+    ctx.fillStyle='rgba(11,19,32,.88)'; rr(ctx,bx0,by0,bw,bh,5); ctx.fill();
+    ctx.lineWidth=1.6; ctx.strokeStyle=f.color; rr(ctx,bx0,by0,bw,bh,5); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.fillText(label, c.x, by0+14);
+    ctx.restore();
+  }
+}
+function fmtDL(n){ if(n>=1e8) return (n/1e8).toFixed(2)+'亿'; if(n>=1e4) return (n/1e4).toFixed(1)+'万'; return n.toLocaleString(); }
+function fmtN(n){ return n.toLocaleString('en-US'); }
+function updateHUD(mf){
+  const mi=Math.min(NMON-1,Math.floor(mf));
+  let claimed=0,facSum=0;
+  for(const c of landCells){ if(c.claimed) claimed++; }
+  for(const f of FACT) facSum+=cnt[f.idx];
+  const occPct=claimed?(facSum/claimed*100):0;
+  document.getElementById('hud').innerHTML='当前年月 <b>'+MONTHS[mi]+'</b><br>累计模型 <b>'+fmtN(cum[mi])+'</b><br>已占城格 <b>'+claimed.toLocaleString()+'</b> / 陆地 <b>'+landCount.toLocaleString()+'</b>';
+  document.getElementById('m-total').textContent=fmtN(cum[mi]);
+  document.getElementById('m-occ').textContent=occPct.toFixed(1)+'%';
+  document.getElementById('m-dead').textContent=(loneBorn?(loneDead/loneBorn*100):0).toFixed(1)+'%';
+  let maxc=1; for(const f of FACT) maxc=Math.max(maxc,cnt[f.idx]);
+  let html='';
+  for(const f of FACT){
+    html+='<div class="srow"><div class="gw" style="background:'+f.color+'">'+svgTag(f,22,'#fff')+'</div>'+
+      '<div class="nm"><div class="t"><b style="color:'+f.color+'">'+f.gw+'</b> <span style="font-size:11.5px;color:var(--ink2)">'+f.org+'</span></div>'+
+      '<div class="b">'+f.name+' · 疆域 '+fmtN(f.desc)+' · 兵力 '+fmtDL(f.dl)+' · 血脉 '+f.depth+'</div>'+
+      '<div class="bar"><i style="width:'+(cnt[f.idx]/maxc*100)+'%;background:'+f.color+'"></i></div>'+
+      '<div class="b">当前占地 '+cnt[f.idx]+'</div></div></div>';
+  }
+  document.getElementById('panel').innerHTML=html;
+  drawSpark(mi);
+}
+const sc=document.getElementById('spark'); const sx=sc.getContext('2d');
+function drawSpark(mi){
+  const w=sc.width,h=sc.height; sx.clearRect(0,0,w,h);
+  const maxN=Math.max.apply(null,NEW);
+  sx.strokeStyle='#5a4632'; sx.lineWidth=1; sx.beginPath();
+  for(let i=0;i<NMON;i++){ const x=i/(NMON-1)*w, y=h-(NEW[i]/maxN)*(h-12)-6; i?sx.lineTo(x,y):sx.moveTo(x,y); }
+  sx.stroke();
+  sx.beginPath(); sx.moveTo(0,h);
+  for(let i=0;i<=mi;i++){ const x=i/(NMON-1)*w, y=h-(NEW[i]/maxN)*(h-12)-6; sx.lineTo(x,y); }
+  sx.lineTo(mi/(NMON-1)*w,h); sx.closePath(); sx.fillStyle='rgba(158,43,37,.55)'; sx.fill();
+  const px=PEAK_IDX/(NMON-1)*w, py=h-(NEW[PEAK_IDX]/maxN)*(h-12)-6;
+  sx.fillStyle='#ffd98a'; sx.beginPath(); sx.arc(px,py,3,0,Math.PI*2); sx.fill();
+}
+(function(){ let h=''; for(const f of FACT) h+='<span style="display:inline-flex;align-items:center;gap:5px">'+svgTag(f,16,f.color)+'<span>'+f.gw+'·'+f.name+'</span></span>';
+  h+='<span><i class="dot" style="background:rgba(150,150,128,0.6)"></i>孤城/长尾</span>';
+  h+='<span><i class="dot" style="background:#241f17;border:1px solid #caa85f"></i>死城（零下载）</span>';
+  document.getElementById('legend').innerHTML=h; })();
+
+/* ===================== 交互与播放 ===================== */
+const tl=document.getElementById('tl'), mon=document.getElementById('mon'),
+      playBtn=document.getElementById('play'), spd=document.getElementById('spd'),
+      endcard=document.getElementById('endcard');
+let monthFloat=0, playing=false, speed=5, lastTs=0;
+
+function setMonth(v){
+  monthFloat=Math.max(0,Math.min(NMON-1,v));
+  rebuildTo(monthFloat);
+  tl.value=Math.floor(monthFloat);
+  mon.textContent=MONTHS[Math.floor(monthFloat)];
+  render(); updateHUD(monthFloat);
+  endcard.style.display = (Math.floor(monthFloat)>=NMON-1) ? 'flex' : 'none';
+}
+playBtn.addEventListener('click',()=>{
+  playing=!playing; playBtn.textContent=playing?'⏸ 暂停':'▶ 播放演化';
+  if(playing && monthFloat>=NMON-1) monthFloat=0;
+  lastTs=0;
+});
+tl.addEventListener('input',()=>{ playing=false; playBtn.textContent='▶ 播放演化'; setMonth(parseInt(tl.value)); });
+spd.addEventListener('change',()=>{ speed=parseInt(spd.value); });
+
+function loop(ts){
+  if(playing){
+    if(!lastTs) lastTs=ts;
+    const dt=(ts-lastTs)/1000; lastTs=ts;
+    monthFloat+=speed*dt;
+    if(monthFloat>=NMON-1){ monthFloat=NMON-1; playing=false; playBtn.textContent='▶ 播放演化'; }
+    rebuildTo(monthFloat);
+    tl.value=Math.floor(monthFloat);
+    mon.textContent=MONTHS[Math.floor(monthFloat)];
+    render(); updateHUD(monthFloat);
+    endcard.style.display = (monthFloat>=NMON-1) ? 'flex' : 'none';
+  } else { lastTs=0; }
+  requestAnimationFrame(loop);
+}
+drawBG();
+setMonth(0);
+requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>
